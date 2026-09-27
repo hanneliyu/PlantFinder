@@ -1,0 +1,650 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Council Plant Finder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+:root {
+  --bg: #E9EDE6; --surface: #F8FAF6; --surface-2: #F0F3EE; --ink: #1B2520; --muted: #5A675F; --line: #CDD5CB;
+  --accent: #2C6651; --accent-ink: #FFFFFF; --accent-soft: #D7E6DD; --wattle: #C99612; --wattle-soft: #F6EBC8;
+  --good: #3A7A48; --good-soft: #DCEBDD; --warn: #A8641A; --warn-soft: #F4E4CF; --bad: #A33228; --bad-soft: #F3D9D5;
+  --serif: "Libre Caslon Text", Georgia, "Times New Roman", serif;
+  --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --shadow: 0 1px 2px rgba(27,37,32,.06), 0 4px 16px rgba(27,37,32,.06);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #111713; --surface: #18201B; --surface-2: #1E2721; --ink: #E4EBE5; --muted: #98A69D; --line: #2E3A33;
+    --accent: #6DB596; --accent-ink: #0E1611; --accent-soft: #1F3A2F; --wattle: #E2B53C; --wattle-soft: #3A3117;
+    --good: #7BC08A; --good-soft: #1D3423; --warn: #E0A15A; --warn-soft: #3A2A17; --bad: #EE8A80; --bad-soft: #3D1F1C;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #111713; --surface: #18201B; --surface-2: #1E2721; --ink: #E4EBE5; --muted: #98A69D; --line: #2E3A33;
+  --accent: #6DB596; --accent-ink: #0E1611; --accent-soft: #1F3A2F; --wattle: #E2B53C; --wattle-soft: #3A3117;
+  --good: #7BC08A; --good-soft: #1D3423; --warn: #E0A15A; --warn-soft: #3A2A17; --bad: #EE8A80; --bad-soft: #3D1F1C;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25);
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { background: var(--bg); }
+body { color: var(--ink); font-family: var(--sans); font-size: 14px; line-height: 1.5; padding: 0 16px; }
+.wrap { max-width: 1280px; margin: 0 auto; padding-block: 20px 48px; display: flex; flex-direction: column; gap: 18px; }
+button, input, select { font: inherit; color: inherit; }
+a { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.sci { font-family: var(--serif); font-style: italic; }
+.mono { font-family: var(--mono); font-size: 12px; }
+
+/* Header */
+header.top { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px; }
+header.top h1 { font-family: var(--serif); font-weight: 700; font-size: clamp(26px, 4vw, 34px); line-height: 1.1; margin: 0; letter-spacing: -.01em; text-wrap: balance; }
+header.top h1 em { font-weight: 400; color: var(--accent); }
+header.top p { margin: 4px 0 0; color: var(--muted); max-width: 60ch; }
+.src { font-size: 12px; color: var(--muted); text-align: right; }
+
+/* Council matcher — styled like a herbarium label */
+.matcher { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; box-shadow: var(--shadow); display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }
+.matcher .in { padding: 18px 20px; display: flex; flex-direction: column; gap: 10px; border-right: 1px dashed var(--line); }
+.matcher label.eyebrow, .eyebrow { font-size: 11px; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); }
+.addr { display: flex; gap: 8px; }
+.addr input { flex: 1; min-width: 0; padding: 10px 12px; border: 1px solid var(--line); border-radius: 4px; background: var(--surface-2); }
+.btn { padding: 9px 14px; border-radius: 4px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; white-space: nowrap; }
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 500; }
+.btn.primary:hover { filter: brightness(1.08); }
+.examples { display: flex; flex-wrap: wrap; gap: 6px; font-size: 12px; color: var(--muted); align-items: center; }
+.examples button { border: none; background: none; padding: 0; color: var(--accent); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+.result { padding: 18px 20px; display: flex; flex-direction: column; gap: 6px; }
+.result .council { font-family: var(--serif); font-size: 22px; line-height: 1.2; }
+.result .msg { color: var(--muted); }
+.status { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; padding: 2px 9px; border-radius: 999px; width: fit-content; }
+.status.ok { background: var(--good-soft); color: var(--good); }
+.status.part { background: var(--wattle-soft); color: var(--warn); }
+.status.no { background: var(--bad-soft); color: var(--bad); }
+.status.idle { background: var(--surface-2); color: var(--muted); }
+
+/* Layout */
+.main { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 18px; align-items: start; }
+aside.filters { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 16px; display: flex; flex-direction: column; gap: 16px; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 12px); max-height: calc(100vh - 24px); overflow: auto; }
+.fgroup { display: flex; flex-direction: column; gap: 7px; }
+.fgroup select, .fgroup input[type="search"] { width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 4px; background: var(--surface-2); }
+.chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.chip { border: 1px solid var(--line); background: var(--surface-2); border-radius: 999px; padding: 3px 10px; font-size: 12.5px; cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.chip .mono { font-size: 11px; }
+.toggle { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; }
+.toggle input { accent-color: var(--accent); width: 16px; height: 16px; }
+.range-row { display: flex; align-items: center; gap: 10px; }
+.range-row input { flex: 1; accent-color: var(--accent); }
+.range-row output { font-family: var(--mono); font-size: 12px; min-width: 44px; text-align: right; }
+.help { font-size: 12px; color: var(--muted); margin: 0; }
+.reset { align-self: flex-start; }
+
+/* Results */
+.results { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.count { font-size: 15px; }
+.count b { font-family: var(--serif); font-size: 22px; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+.seg button { border: none; background: var(--surface); padding: 7px 12px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.bar-right { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.toast { font-size: 12px; color: var(--good); }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 14px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; text-align: left; transition: border-color .15s, transform .15s; }
+.card:hover { border-color: var(--accent); transform: translateY(-1px); }
+.card-head { display: flex; gap: 10px; align-items: start; }
+.ico { width: 38px; height: 38px; flex: none; border-radius: 50%; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); }
+.ico svg { width: 24px; height: 24px; }
+.card h3 { margin: 0; font-size: 15px; font-weight: 600; line-height: 1.25; }
+.card .sci { font-size: 13.5px; color: var(--muted); }
+.type-tag { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.dims { display: flex; gap: 14px; font-family: var(--mono); font-size: 12px; color: var(--ink); font-variant-numeric: tabular-nums; }
+.dims span { color: var(--muted); }
+.codes { display: flex; flex-wrap: wrap; gap: 4px; }
+.code { font-family: var(--mono); font-size: 11px; padding: 1px 6px; border-radius: 3px; background: var(--surface-2); border: 1px solid var(--line); }
+.code.sun { background: var(--wattle-soft); border-color: transparent; }
+.code.water { background: var(--accent-soft); border-color: transparent; }
+.months { display: grid; grid-template-columns: repeat(12, 1fr); gap: 2px; }
+.months i { height: 7px; border-radius: 1px; background: var(--surface-2); border: 1px solid var(--line); }
+.months i.on { border-color: rgba(0,0,0,.14); }
+.months-lbl { display: grid; grid-template-columns: repeat(12, 1fr); font-family: var(--mono); font-size: 9px; color: var(--muted); text-align: center; margin-top: 2px; }
+.flower { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; border: 1px solid rgba(0,0,0,.15); flex: none; }
+.pills { display: flex; flex-wrap: wrap; gap: 5px; margin-top: auto; }
+.pill { font-size: 11.5px; padding: 1px 8px; border-radius: 999px; font-weight: 500; }
+.pill.safe, .pill.low { background: var(--good-soft); color: var(--good); }
+.pill.caution, .pill.moderate { background: var(--warn-soft); color: var(--warn); }
+.pill.toxic, .pill.high { background: var(--bad-soft); color: var(--bad); }
+.star { margin-left: auto; border: none; background: none; cursor: pointer; font-size: 18px; line-height: 1; color: var(--muted); padding: 2px; }
+.star[aria-pressed="true"] { color: var(--wattle); }
+
+.table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); background: var(--surface-2); position: sticky; top: 0; white-space: nowrap; cursor: pointer; user-select: none; }
+th[aria-sort="ascending"]::after { content: " ↑"; }
+th[aria-sort="descending"]::after { content: " ↓"; }
+td.num { font-family: var(--mono); font-size: 12px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+tbody tr { cursor: pointer; }
+tbody tr:hover { background: var(--surface-2); }
+.empty { padding: 40px 20px; text-align: center; color: var(--muted); background: var(--surface); border: 1px dashed var(--line); border-radius: 6px; }
+
+/* Detail panel */
+.scrim { position: fixed; inset: 0; background: rgba(10,15,12,.45); z-index: 10; }
+.panel { position: fixed; top: 0; right: 0; bottom: 0; width: min(480px, 100%); background: var(--surface); z-index: 11; overflow: auto; padding: calc(env(safe-area-inset-top, 0px) + 20px) 22px calc(env(safe-area-inset-bottom, 0px) + 28px); box-shadow: -8px 0 30px rgba(0,0,0,.2); display: flex; flex-direction: column; gap: 16px; }
+.panel h2 { font-family: var(--serif); font-size: 26px; margin: 0; line-height: 1.15; font-weight: 700; }
+.panel .sci { font-size: 17px; color: var(--muted); }
+.close { position: absolute; top: calc(env(safe-area-inset-top, 0px) + 12px); right: 14px; }
+dl.spec { display: grid; grid-template-columns: 128px minmax(0, 1fr); margin: 0; border-top: 1px solid var(--line); }
+dl.spec dt, dl.spec dd { padding: 9px 0; border-bottom: 1px solid var(--line); margin: 0; }
+dl.spec dt { font-size: 12px; color: var(--muted); font-weight: 500; }
+dl.spec dd { font-size: 13.5px; }
+.ref { font-size: 10px; font-family: var(--mono); color: var(--muted); border: 1px solid var(--line); border-radius: 3px; padding: 0 4px; margin-left: 4px; vertical-align: 1px; }
+.note-box { background: var(--surface-2); border-radius: 4px; padding: 12px 14px; font-size: 13px; color: var(--muted); }
+
+.legend { font-size: 12px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 6px 16px; }
+footer { font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 14px; display: flex; flex-direction: column; gap: 4px; }
+
+@media (max-width: 860px) {
+  .main { grid-template-columns: minmax(0, 1fr); }
+  aside.filters { position: static; max-height: none; }
+  .matcher { grid-template-columns: minmax(0, 1fr); }
+  .matcher .in { border-right: none; border-bottom: 1px dashed var(--line); }
+  .src { text-align: left; }
+}
+@media (max-width: 480px) { .addr { flex-direction: column; } }
+@media (prefers-reduced-motion: reduce) { .card { transition: none; } .card:hover { transform: none; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Council Plant Finder <em>· Inner West</em></h1>
+      <p>Native plants from council planting lists, sorted by the conditions of your site. Enter an address to find its council, then filter by sun, water, height and flowering.</p>
+    </div>
+    <div class="src">Plant list source:<br><a id="srcLink" href="#" target="_blank" rel="noopener">Inner West Council — Native Plants of the Inner West</a></div>
+  </header>
+
+  <section class="matcher" aria-label="Find your council">
+    <form class="in" id="addrForm" autocomplete="off">
+      <label class="eyebrow" for="addr">Site address</label>
+      <div class="addr">
+        <input id="addr" type="text" placeholder="e.g. 12 Smith St, Marrickville NSW 2204">
+        <button class="btn primary" type="submit">Find council</button>
+      </div>
+      <div class="examples">Try:
+        <button type="button" data-ex="45 Norton St, Leichhardt NSW 2040">Leichhardt</button>
+        <button type="button" data-ex="Newtown 2042">Newtown</button>
+        <button type="button" data-ex="2203">2203</button>
+        <button type="button" data-ex="Glebe NSW 2037">Glebe</button>
+      </div>
+      <p class="help">Matches on suburb name or postcode. Street-level boundaries aren't checked yet, so shared suburbs are flagged for you to confirm.</p>
+    </form>
+    <div class="result" id="result" aria-live="polite"></div>
+  </section>
+
+  <div class="main">
+    <aside class="filters" aria-label="Filters">
+      <div class="fgroup">
+        <label class="eyebrow" for="council">Council</label>
+        <select id="council">
+          <option value="inner-west">Inner West Council</option>
+          <option disabled>City of Sydney — coming soon</option>
+          <option disabled>Hornsby Shire — coming soon</option>
+        </select>
+      </div>
+      <div class="fgroup">
+        <label class="eyebrow" for="q">Search</label>
+        <input id="q" type="search" placeholder="Common or scientific name">
+      </div>
+      <div class="fgroup"><span class="eyebrow">Type</span><div class="chips" id="fType"></div></div>
+      <div class="fgroup"><span class="eyebrow">Sunlight</span><div class="chips" id="fSun"></div><p class="help">Shows plants that tolerate any selected condition.</p></div>
+      <div class="fgroup"><span class="eyebrow">Water</span><div class="chips" id="fWater"></div></div>
+      <div class="fgroup">
+        <span class="eyebrow">Maximum height</span>
+        <div class="range-row"><input id="maxH" type="range" min="0.5" max="20" step="0.5" value="20" aria-label="Maximum height in metres"><output id="maxHOut">20 m</output></div>
+      </div>
+      <div class="fgroup">
+        <label class="eyebrow" for="season">Flowering in</label>
+        <select id="season">
+          <option value="">Any time</option>
+          <option value="spring">Spring (Sep–Nov)</option>
+          <option value="summer">Summer (Dec–Feb)</option>
+          <option value="autumn">Autumn (Mar–May)</option>
+          <option value="winter">Winter (Jun–Aug)</option>
+        </select>
+      </div>
+      <div class="fgroup">
+        <span class="eyebrow">Vegetation zone</span><div class="chips" id="fZone"></div>
+        <p class="help">Inner West has three native vegetation zones. <a id="zoneLink" href="#" target="_blank" rel="noopener">Check yours on council's website</a>.</p>
+      </div>
+      <div class="fgroup">
+        <span class="eyebrow">Household</span>
+        <label class="toggle"><input type="checkbox" id="petSafe"> Pet &amp; child friendly</label>
+        <label class="toggle"><input type="checkbox" id="lowAllergy"> Low allergy only</label>
+        <label class="toggle"><input type="checkbox" id="onlyFav"> My shortlist only</label>
+      </div>
+      <button class="btn reset" id="reset" type="button">Clear filters</button>
+    </aside>
+
+    <section class="results">
+      <div class="bar">
+        <div class="count" id="count"></div>
+        <div class="bar-right">
+          <span class="toast" id="toast" aria-live="polite"></span>
+          <button class="btn" id="copyCsv" type="button">Copy as CSV</button>
+          <div class="seg" role="group" aria-label="View">
+            <button type="button" id="vCards" aria-pressed="true">Cards</button>
+            <button type="button" id="vTable" aria-pressed="false">Table</button>
+          </div>
+        </div>
+      </div>
+      <div class="legend">
+        <span><b class="mono">FS</b> full sun</span><span><b class="mono">PS</b> part shade</span><span><b class="mono">S</b> shade</span>
+        <span><b class="mono">LW</b> dry-tolerant</span><span><b class="mono">MW</b> moist soil</span>
+      </div>
+      <div id="out"></div>
+    </section>
+  </div>
+
+  <footer>
+    <span>Height, sunlight, water, soil, vegetation zone and flowering come from the Inner West Council list. Width, toxicity, allergy and pot size (marked <span class="ref">ref</span>) are general horticultural guidance — check before specifying.</span>
+    <span>Toxicity and allergy notes are not medical advice. If a child or pet eats a plant, call the Poisons Information Centre on 13 11 26 or your vet.</span>
+  </footer>
+</div>
+
+<div class="scrim" id="scrim" hidden></div>
+<aside class="panel" id="panel" hidden role="dialog" aria-modal="true" aria-labelledby="pTitle"></aside>
+<script>
+// ===== Plant database =====
+// Council fields (height, sun, water, soil, vegetation zone, flowering) come from
+// Inner West Council "Native Plants of the Inner West" list (Nature for Backyards).
+// Width, toxicity, allergy and pot size are general horticultural reference values — verify before use.
+// Months: 1 = Jan … 12 = Dec. m(9,2) = Sep→Feb (wraps).
+function m(a, b) { const r = []; let i = a; while (true) { r.push(i); if (i === b) break; i = i % 12 + 1; } return r; }
+
+const COUNCILS = {
+  "inner-west": {
+    name: "Inner West Council",
+    list: "Native Plants of the Inner West (Nature for Backyards)",
+    url: "https://www.innerwest.nsw.gov.au/trees-gardens-and-wildlife/native-plants-inner-west",
+    pdf: "https://www.innerwest.nsw.gov.au/sites/default/files/2026-02/Native%20Plants%20of%20the%20Inner%20West%20list%20FINAL%20181120%20(10).pdf"
+  }
+};
+
+const ZONES = {
+  SSFW: "Sandstone Slopes Forest & Woodland",
+  STIF: "Sydney Turpentine-Ironbark Forest",
+  WC: "Wetland Complex (Swamp Oak, saltmarsh, reedland)"
+};
+const ALLZ = ["SSFW", "STIF", "WC"];
+
+// tox: safe | low | caution | toxic     allergy: low | moderate | high
+const PLANTS = [
+  // ---------- Climbers ----------
+  { type: "Climber", sci: "Hardenbergia violacea", common: "Purple Coral Pea", h: [1.5, 3], w: [1.5, 3], sun: ["FS"], water: "LW", soil: "Any", zones: ["SSFW", "STIF"], months: m(8, 10), colour: "Purple", hex: "#6B3FA0", tox: ["low", "Not known to be toxic. Pea-family seeds are best not eaten."], allergy: ["low", "Insect-pollinated."], pot: "140 mm", note: "Twining climber or scrambling groundcover. Good on fences and trellis; also copes with part shade." },
+  { type: "Climber", sci: "Hibbertia scandens", common: "Climbing Guinea Flower", h: [1, 3], w: [1, 2], sun: ["FS", "PS"], water: "LW", soil: "Any", zones: ["SSFW", "STIF"], months: m(9, 3), colour: "Bright yellow", hex: "#E3B400", tox: ["safe", "No known toxicity."], allergy: ["low", "Insect-pollinated."], pot: "140 mm", note: "Also works as a groundcover or spilling over low walls. Salt tolerant." },
+  { type: "Climber", sci: "Kennedia rubicunda", common: "Dusky Coral Pea", h: [2, 4], w: [3, 5], sun: ["FS"], water: "LW", soil: "Any", zones: ["SSFW", "STIF"], months: m(8, 11), colour: "Dark red", hex: "#8E1F2B", tox: ["low", "Not known to be toxic. Pea-family seeds are best not eaten."], allergy: ["low", "Bird-pollinated."], pot: "140 mm", note: "Vigorous. Give it strong support and room; good for covering long fences." },
+  { type: "Climber", sci: "Pandorea pandorana", common: "Wonga Wonga Vine", h: [3, 6], w: [3, 6], sun: ["FS", "PS"], water: "LW", soil: "Any", zones: ["SSFW", "STIF"], months: m(6, 12), colour: "Cream-white", hex: "#EFE6CF", tox: ["safe", "No known toxicity."], allergy: ["low", "Insect-pollinated."], pot: "140–200 mm", note: "Woody climber for pergolas and large fences. Prune after flowering to control size." },
+  { type: "Climber", sci: "Billardiera scandens", common: "Apple Berry", h: [1, 2], w: [1, 2], sun: ["PS", "S"], water: "MW", soil: "Any", zones: ["SSFW", "STIF"], months: m(9, 12), colour: "Cream", hex: "#EADFB4", tox: ["safe", "Ripe fruit is edible (bush food)."], allergy: ["low", "Insect-pollinated."], pot: "Tubestock / 140 mm", note: "Light twiner that won't smother other plants. Purple fruit." },
+  { type: "Climber", sci: "Clematis aristata", common: "Old Man's Beard", h: [3, 5], w: [2, 4], sun: ["PS"], water: "MW", soil: "Any – clay", zones: ["STIF"], months: m(8, 11), colour: "White", hex: "#F3F3EE", tox: ["caution", "Sap and leaves contain irritant compounds (protoanemonin). Can irritate skin and is harmful if eaten — keep pets from chewing it."], allergy: ["low", "Sap may irritate skin; wear gloves when pruning."], pot: "140 mm", note: "Fluffy silver seed heads follow the flowers." },
+
+  // ---------- Groundcovers, grasses, strappy, sedges ----------
+  { type: "Strappy", sci: "Dianella caerulea", common: "Blue Flax-lily", h: [0.5, 0.5], w: [0.4, 0.6], sun: ["FS", "PS", "S"], water: "LW", soil: "Any", zones: ["STIF"], months: m(9, 2), colour: "Blue", hex: "#3E5FB8", tox: ["low", "Low risk; berries not recommended for pets or small children."], allergy: ["low", "Insect-pollinated."], pot: "140 mm", note: "Tough strappy plant for borders and mass planting. Purple berries attract birds." },
+  { type: "Strappy", sci: "Lomandra longifolia", common: "Mat Rush", h: [1, 1], w: [1, 1], sun: ["FS", "PS", "S"], water: "LW", soil: "Any", zones: ["STIF"], months: m(10, 1), colour: "Yellow (tiny, scented)", hex: "#D9B84A", tox: ["safe", "No known toxicity."], allergy: ["low", "Low pollen."], pot: "140 mm", note: "Very hardy. Good for slopes, verges and erosion control. Leaf edges are sharp." },
+  { type: "Grass", sci: "Themeda triandra", common: "Kangaroo Grass", h: [0.75, 0.75], w: [0.4, 0.6], sun: ["FS", "PS"], water: "LW", soil: "Any", zones: ["SSFW", "STIF"], months: m(10, 3), colour: "Rusty-purple seed heads", hex: "#8A4B3A", tox: ["safe", "No known toxicity."], allergy: ["moderate", "Wind-pollinated grass; can affect hay fever sufferers in spring–summer."], pot: "Tubestock / 140 mm", note: "Cut back or thin in late winter to keep it tidy." },
+  { type: "Grass", sci: "Cymbopogon refractus", common: "Barbed Wire Grass", h: [0.6, 0.6], w: [0.3, 0.5], sun: ["FS", "PS"], water: "LW", soil: "Any", zones: ["STIF"], months: m(12, 4), colour: "Reddish seed heads", hex: "#9A5A3C", tox: ["safe", "No known toxicity."], allergy: ["moderate", "Wind-pollinated grass."], pot: "Tubestock", note: "Tufted, wiry stems with barbed seed heads. Very drought tolerant." },
+  { type: "Grass", sci: "Microlaena stipoides", common: "Weeping Grass", h: [0.3, 0.3], w: [0.3, 0.6], sun: ["PS", "S"], water: "MW", soil: "Any", zones: ["SSFW", "STIF"], months: m(1, 12), colour: "Green seed heads", hex: "#7C9A5B", tox: ["safe", "No known toxicity."], allergy: ["moderate", "Wind-pollinated grass."], pot: "Tubestock", note: "Shade-tolerant native lawn alternative; can be mown." },
+  { type: "Groundcover", sci: "Dichondra repens", common: "Kidney Weed", h: [0.05, 0.05], w: [0.5, 1], sun: ["FS", "PS", "S"], water: "MW", soil: "Any", zones: ["STIF"], months: m(9, 2), colour: "Tiny white", hex: "#F1F1EA", tox: ["safe", "No known toxicity."], allergy: ["low", "Low pollen."], pot: "Tubestock", note: "Lawn alternative for light foot traffic and between stepping stones." },
+  { type: "Groundcover", sci: "Viola hederacea", common: "Native Violet", h: [0.15, 0.15], w: [0.5, 1], sun: ["PS", "S"], water: "MW", soil: "Any – sand", zones: ["WC"], months: m(9, 2), colour: "White & purple", hex: "#8F7CC4", tox: ["safe", "Flowers are edible."], allergy: ["low", "Insect-pollinated."], pot: "Tubestock", note: "Spreads by runners. Great under trees in moist shade." },
+  { type: "Groundcover", sci: "Carpobrotus glaucescens", common: "Pig Face", h: [0.2, 0.2], w: [1, 2], sun: ["FS", "PS", "S"], water: "LW", soil: "Well-drained", zones: ["WC"], months: m(8, 4), colour: "Pink-purple", hex: "#C2449A", tox: ["safe", "Fruit is edible (bush food)."], allergy: ["low", "Insect-pollinated."], pot: "140 mm", note: "Succulent. Good for coastal, dry and bank planting." },
+  { type: "Groundcover", sci: "Scaevola albida", common: "Fanflower", h: [0.3, 0.3], w: [0.5, 1], sun: ["FS", "PS", "S"], water: "MW", soil: "Any", zones: ["SSFW"], months: m(10, 3), colour: "Mauve", hex: "#9B86C9", tox: ["safe", "No known toxicity."], allergy: ["low", "Insect-pollinated."], pot: "140 mm", note: "Long flowering. Good for edging and spilling over walls." },
+  { type: "Groundcover", sci: "Commelina cyanea", common: "Scurvy Weed", h: [0.2, 0.2], w: [0.5, 1], sun: ["PS", "S"], water: "MW", soil: "Any", zones: ALLZ, months: m(12, 5), colour: "Blue", hex: "#2F6FD0", tox: ["safe", "No known toxicity."], allergy: ["low", "Insect-pollinated."], pot: "Tubestock", note: "Fast-spreading groundcover for moist shade. Can be vigorous." },
+  { type: "Groundcover", sci: "Wahlenbergia gracilis", common: "Australian Bluebell", h: [0.3, 0.3], w: [0.2, 0.3], sun: ["FS", "PS"], water: "LW", soil: "Any", zones: ALLZ, months: m(1, 12), colour: "Sky blue", hex: "#6FA3DE", tox: ["safe", "No known toxicity."], allergy: ["low", "Insect-pollinated."], pot: "Tubestock", note: "Delicate. Self-seeds into gaps between other plants." },
+  { type: "Groundcover", sci: "Tetragonia tetragonioides", common: "Warrigal Greens", h: [0.2, 0.2], w: [1, 2], sun: ["PS", "S"], water: "MW", soil: "Any – sand", zones: ["WC"], months: m(9, 3), colour: "Small yellow", hex: "#E0C340", tox: ["caution", "Edible bush food, but leaves contain oxalates — blanch before eating."], allergy: ["low", "Low pollen."], pot: "140 mm", note: "Edible native groundcover with fleshy leaves. (Flowering season from general reference.)" },
+  { type: "Groundcover", sci: "Pelargonium inodorum", common: "Wild Geranium", h: [0.3, 0.3], w: [0.3, 0.5], sun: ["FS", "PS"], water: "LW", soil: "Any – sand", zones: ["SSFW"], months: m(10, 3), colour: "Pink", hex: "#E08AA8", tox: ["low", "Pelargoniums are listed as mildly toxic to cats and dogs."], allergy: ["low", "Insect-pollinated."], pot: "Tubestock", note: "Short-lived; lets itself seed around." },
+  { type: "Sedge & Rush", sci: "Carex appressa", common: "Tall Sedge", h: [0.5, 0.5], w: [0.5, 0.8], sun: ["FS", "PS", "S"], water: "MW", soil: "Any", zones: ["WC"], months: m(10, 1), colour: "Brown seed heads", hex: "#8A6A3E", tox: ["safe", "No known toxicity."], allergy: ["low", "Low pollen."], pot: "Tubestock", note: "Rain gardens, swales and pond edges." },
+  { type: "Sedge & Rush", sci: "Ficinia nodosa", common: "Knobby Club Rush", h: [0.6, 0.6], w: [0.5, 0.8], sun: ["FS", "PS", "S"], water: "MW", soil: "Any", zones: ["WC"], months: m(10, 1), colour: "Brown seed heads", hex: "#8A6A3E", tox: ["safe", "No known toxicity."], allergy: ["low", "Low pollen."], pot: "Tubestock / 140 mm", note: "Salt and wind tolerant. Works in rain gardens and pots." },
+  { type: "Sedge & Rush", sci: "Juncus usitatus", common: "Common Rush", h: [1, 1], w: [0.5, 0.8], sun: ["FS", "PS", "S"], water: "MW", soil: "Any", zones: ["WC"], months: m(10, 1), colour: "Straw seed heads", hex: "#C8B27A", tox: ["safe", "No known toxicity."], allergy: ["low", "Low pollen."], pot: "Tubestock", note: "Wet areas, detention basins and pond margins." },
+
+  // ---------- Shrubs ----------
+  { type: "Shrub", sci: "Westringia fruticosa", common: "Coastal Rosemary", h: [1, 2], w: [1, 2], sun: ["PS", "S"], water: "LW", soil: "Any – sand", zones: ALLZ, months: m(1, 12), colour: "White", hex: "#F1F0EC", tox: ["safe", "No known toxicity."], allergy: ["low", "Insect-pollinated."], pot: "140–200 mm", note: "Takes clipping well — ideal hedge. Also grows well in full sun." },
+  { type: "Shrub", sci: "Correa alba", common: "White Correa", h: [1, 1], w: [1, 1.5], sun: ["FS", "PS"], water: "LW", soil: "Any – sand", zones: ["SSFW"], months: m(3, 8), colour: "White", hex: "#F1F0EC", tox: ["safe", "No known toxicity."], allergy: ["low", "Insect-pollinated."], pot: "140 mm", note: "Salt tolerant with grey-green leaves. Good low hedge." },
+  { type: "Shrub", sci: "Correa reflexa", common: "Native Fuchsia", h: [1.5, 1.5], w: [1, 1], sun: ["FS", "PS", "S"], water: "MW", soil: "Any", zones: ["STIF"], months: m(3, 11), colour: "Red & green", hex: "#C0392B", tox: ["safe", "No known toxicity."], allergy: ["low", "Bird-pollinated."], pot: "140 mm", note: "Bell flowers feed honeyeaters in the cooler months." },
+  { type: "Shrub", sci: "Callistemon linearis", common: "Narrow-leaved Bottlebrush", h: [2, 2], w: [1.5, 1.5], sun: ["FS", "PS"], water: "MW", soil: "Any", zones: ["SSFW"], months: m(9, 11), colour: "Red", hex: "#C41E3A", tox: ["safe", "No known toxicity."], allergy: ["low", "Bird-pollinated."], pot: "140–200 mm", note: "Bird-attracting. Prune lightly after flowering." },
+  { type: "Shrub", sci: "Banksia spinulosa", common: "Hairpin Banksia", h: [2, 2], w: [1.5, 1.5], sun: ["PS"], water: "MW", soil: "Any", zones: ["SSFW"], months: m(4, 8), colour: "Yellow-orange", hex: "#E08A1E", tox: ["safe", "No known toxicity."], allergy: ["low", "Bird-pollinated."], pot: "140–200 mm", note: "Needs good drainage. Avoid high-phosphorus fertiliser." },
+  { type: "Shrub", sci: "Grevillea buxifolia", common: "Grey Spider Flower", h: [2, 2], w: [1.5, 1.5], sun: ["FS", "PS"], water: "LW", soil: "Any – sand", zones: ["SSFW"], months: m(10, 3), colour: "Grey (felty)", hex: "#9C9A94", tox: ["low", "Not considered toxic if eaten."], allergy: ["moderate", "Some grevilleas cause skin irritation — wear gloves when pruning."], pot: "140 mm", note: "Needs well-drained sandy soil. Avoid high-phosphorus fertiliser." },
+  { type: "Shrub", sci: "Grevillea linearifolia", common: "White Spider Flower", h: [2, 2], w: [1.5, 1.5], sun: ["FS", "PS"], water: "LW", soil: "Any – sand", zones: ["SSFW"], months: m(6, 11), colour: "Pinkish white", hex: "#F2D9DE", tox: ["low", "Not considered toxic if eaten."], allergy: ["moderate", "Some grevilleas cause skin irritation — wear gloves when pruning."], pot: "140 mm", note: "Shelter for small birds. Needs good drainage." },
+  { type: "Shrub", sci: "Kunzea ambigua", common: "Tick Bush", h: [3, 3], w: [2, 3], sun: ["FS", "PS"], water: "LW", soil: "Any", zones: ["STIF"], months: m(10, 12), colour: "White (honey-scented)", hex: "#F4F2EA", tox: ["safe", "No known toxicity."], allergy: ["low", "Insect-pollinated; strong scent may bother some people."], pot: "140 mm", note: "Dense habitat shrub for small birds. Fast-growing screen." },
+  { type: "Shrub", sci: "Leptospermum polygalifolium", common: "Lemon-scented Tea Tree", h: [3, 3], w: [2, 2], sun: ["FS", "PS"], water: "MW", soil: "Any", zones: ["SSFW", "WC"], months: m(10, 12), colour: "White", hex: "#F4F2EA", tox: ["safe", "No known toxicity."], allergy: ["low", "Insect-pollinated."], pot: "140–200 mm", note: "Good informal screen. Tolerates damp soil." },
+  { type: "Shrub", sci: "Acacia suaveolens", common: "Sweet Wattle", h: [2, 2], w: [1, 1], sun: ["FS", "PS"], water: "LW", soil: "Any – sand", zones: ["SSFW"], months: m(6, 8), colour: "Cream (perfumed)", hex: "#EFE3A8", tox: ["low", "Not considered toxic."], allergy: ["moderate", "Wattle pollen is heavy and mostly insect-carried, but sensitive people may react."], pot: "Tubestock / 140 mm", note: "Fast-growing and short-lived (about 5–10 years)." },
+  { type: "Shrub", sci: "Acacia longifolia", common: "Sydney Golden Wattle", h: [3, 4], w: [3, 3], sun: ["FS", "PS", "S"], water: "LW", soil: "Any – sand", zones: ALLZ, months: m(7, 9), colour: "Golden yellow", hex: "#E8B90C", tox: ["low", "Not considered toxic."], allergy: ["moderate", "Wattle pollen is heavy and mostly insect-carried, but sensitive people may react."], pot: "140–200 mm", note: "Fast screening plant. Relatively short-lived." },
+  { type: "Shrub", sci: "Acacia myrtifolia", common: "Myrtle Wattle", h: [0.5, 1], w: [1, 1], sun: ["FS", "PS", "S"], water: "MW", soil: "Any", zones: ["SSFW", "STIF"], months: m(6, 8), colour: "Pale yellow", hex: "#F0DD7A", tox: ["low", "Not considered toxic."], allergy: ["moderate", "Wattle pollen is heavy and mostly insect-carried, but sensitive people may react."], pot: "Tubestock / 140 mm", note: "Compact wattle with red stems. Suits small gardens." },
+  { type: "Shrub", sci: "Bursaria spinosa", common: "Sweet Bursaria", h: [2, 3], w: [2, 2], sun: ["FS", "PS"], water: "MW", soil: "Any – clay", zones: ["STIF"], months: m(1, 3), colour: "White", hex: "#F4F2EA", tox: ["safe", "No known toxicity. Spiny."], allergy: ["low", "Insect-pollinated."], pot: "Tubestock / 140 mm", note: "Spiny shelter for small birds; nectar for butterflies." },
+  { type: "Shrub", sci: "Goodenia ovata", common: "Hop Goodenia", h: [2, 2], w: [1.5, 1.5], sun: ["PS", "S"], water: "MW", soil: "Any – sand", zones: ALLZ, months: m(9, 3), colour: "Yellow", hex: "#E6C21F", tox: ["safe", "No known toxicity."], allergy: ["low", "Insect-pollinated."], pot: "140 mm", note: "Fast filler. Prune to keep it dense." },
+  { type: "Shrub", sci: "Dodonaea triquetra", common: "Hop Bush", h: [2, 2], w: [1.5, 1.5], sun: ["PS", "S"], water: "LW", soil: "Any", zones: ALLZ, months: m(9, 2), colour: "Lime-green winged fruit", hex: "#A9C94A", tox: ["low", "Not considered toxic."], allergy: ["moderate", "Wind-pollinated."], pot: "140 mm", note: "Fast, hardy filler shrub. Decorative winged fruit." },
+  { type: "Shrub", sci: "Indigofera australis", common: "Austral Indigo", h: [1.5, 1.5], w: [1, 1], sun: ["PS", "S"], water: "MW", soil: "Any – clay", zones: ["STIF"], months: m(8, 10), colour: "Pink", hex: "#D46BA0", tox: ["caution", "Reported as toxic to livestock. Keep pets from chewing it."], allergy: ["low", "Insect-pollinated."], pot: "140 mm", note: "Soft, open shrub. Good under trees." },
+  { type: "Shrub", sci: "Solanum aviculare", common: "Kangaroo Apple", h: [2, 2], w: [2, 2], sun: ["PS", "S"], water: "MW", soil: "Any", zones: ALLZ, months: m(9, 3), colour: "Mauve", hex: "#8D6FC4", tox: ["toxic", "Unripe (green) fruit and leaves are poisonous (solanine). Avoid near play areas and pets."], allergy: ["low", "Insect-pollinated."], pot: "140 mm", note: "Fast-growing, short-lived pioneer shrub. Orange fruit." },
+  { type: "Shrub", sci: "Pittosporum revolutum", common: "Rough Fruit Pittosporum", h: [1, 3], w: [1.5, 1.5], sun: ["PS", "S"], water: "MW", soil: "Any – sand", zones: ["SSFW", "STIF"], months: m(9, 11), colour: "Cream-yellow (scented)", hex: "#EAD27A", tox: ["low", "Fruit contains saponins; not for eating."], allergy: ["low", "Insect-pollinated."], pot: "140 mm", note: "Shade tolerant. Orange fruit with sticky red seeds for birds." },
+
+  // ---------- Trees ----------
+  { type: "Tree", size: "Small tree", sci: "Ceratopetalum gummiferum", common: "NSW Christmas Bush", h: [5, 8], w: [3, 4], sun: ["FS", "PS"], water: "LW", soil: "Any – sand", zones: ["SSFW"], months: m(9, 12), colour: "White, then red sepals", hex: "#C8323C", tox: ["safe", "No known toxicity."], allergy: ["low", "Insect-pollinated."], pot: "200 mm / 45 L", note: "Red sepals colour up around Christmas. Good small garden tree." },
+  { type: "Tree", size: "Small tree", sci: "Angophora hispida", common: "Dwarf Apple", h: [6, 8], w: [4, 6], sun: ["FS", "PS"], water: "LW", soil: "Any – sand", zones: ["SSFW"], months: m(12, 2), colour: "Cream", hex: "#EFE6C9", tox: ["safe", "No known toxicity."], allergy: ["low", "Insect-pollinated."], pot: "200 mm / 45 L", note: "Small, often multi-stemmed tree with red new growth." },
+  { type: "Tree", size: "Small tree", sci: "Melaleuca decora", common: "White Feather Honeymyrtle", h: [6, 7], w: [3, 5], sun: ["FS"], water: "MW", soil: "Any – clay", zones: ["STIF"], months: m(11, 12), colour: "White (scented)", hex: "#F4F2EA", tox: ["low", "Tea-tree oil is toxic to pets in concentrated form; the plant itself is low risk."], allergy: ["low", "Insect-pollinated."], pot: "45 L", note: "Suits clay soils. Scented flowers." },
+  { type: "Tree", size: "Small tree", sci: "Melaleuca linariifolia", common: "Snow-in-Summer", h: [8, 10], w: [4, 6], sun: ["FS", "PS"], water: "MW", soil: "Any", zones: ["SSFW", "WC"], months: m(9, 2), colour: "Cream (honey-scented)", hex: "#F1EBD4", tox: ["low", "Tea-tree oil is toxic to pets in concentrated form; the plant itself is low risk."], allergy: ["low", "Insect-pollinated."], pot: "45 L", note: "Papery bark. Tolerates wet soils. Mass white flowering." },
+  { type: "Tree", size: "Medium tree", sci: "Banksia integrifolia", common: "Coast Banksia", h: [10, 15], w: [5, 8], sun: ["FS", "PS"], water: "LW", soil: "Any – sand", zones: ["SSFW", "WC"], months: m(1, 6), colour: "Pale yellow", hex: "#E8D98A", tox: ["safe", "No known toxicity."], allergy: ["low", "Bird-pollinated."], pot: "45 L", note: "Salt and wind tolerant. Food for birds and possums." },
+  { type: "Tree", size: "Medium tree", sci: "Banksia serrata", common: "Old Man Banksia", h: [10, 12], w: [4, 6], sun: ["FS", "PS"], water: "LW", soil: "Any – sand", zones: ["SSFW"], months: m(1, 6), colour: "Creamy yellow", hex: "#E3D596", tox: ["safe", "No known toxicity."], allergy: ["low", "Bird-pollinated."], pot: "45 L", note: "Gnarled bark. Needs sandy, free-draining soil." },
+  { type: "Tree", size: "Medium tree", sci: "Allocasuarina littoralis", common: "Black She-oak", h: [10, 12], w: [3, 5], sun: ["FS", "PS"], water: "LW", soil: "Any", zones: ["SSFW", "STIF"], months: m(9, 11), colour: "Red (female) / rusty (male)", hex: "#A0402E", tox: ["safe", "No known toxicity."], allergy: ["high", "Wind-pollinated; casuarina pollen is a known hay fever trigger."], pot: "Tubestock / 45 L", note: "Needle drop forms a natural mulch. Cones feed cockatoos." },
+  { type: "Tree", size: "Medium tree", sci: "Eucalyptus haemastoma", common: "Scribbly Gum", h: [10, 14], w: [6, 10], sun: ["FS", "PS"], water: "LW", soil: "Any – sand", zones: ["SSFW"], months: m(3, 11), colour: "Cream", hex: "#EEE6C8", tox: ["low", "Leaves and oil can make pets sick if eaten in quantity."], allergy: ["moderate", "Mostly insect-pollinated; some people react to eucalypt pollen and oil."], pot: "45 L", note: "Smooth white bark with insect 'scribbles'. Needs space — check tree setback rules." },
+  { type: "Tree", size: "Medium tree", sci: "Eucalyptus robusta", common: "Swamp Mahogany", h: [10, 15], w: [8, 12], sun: ["FS"], water: "MW", soil: "Any – sand", zones: ["WC"], months: m(6, 8), colour: "Cream", hex: "#EEE6C8", tox: ["low", "Leaves and oil can make pets sick if eaten in quantity."], allergy: ["moderate", "Mostly insect-pollinated; some people react to eucalypt pollen and oil."], pot: "45 L", note: "Tolerates wet soil. Key winter nectar for birds and flying-foxes. Large tree — not for small yards." },
+  { type: "Tree", size: "Tall tree", sci: "Syncarpia glomulifera", common: "Turpentine", h: [18, 20], w: [8, 12], sun: ["FS"], water: "LW", soil: "Any – clay", zones: ["STIF"], months: m(9, 11), colour: "White", hex: "#F4F2EA", tox: ["safe", "No known toxicity."], allergy: ["low", "Insect-pollinated."], pot: "45 L", note: "Signature tree of the critically endangered Sydney Turpentine-Ironbark Forest. Slow-growing and large." }
+];
+PLANTS.forEach((p, i) => { p.id = i + 1; p.councils = ["inner-west"]; });
+
+// ===== Suburb → council lookup =====
+// share: other councils that cover part of the suburb
+const SUBURBS = [
+  ["Annandale", "2038", "inner-west"], ["Ashbury", "2193", "inner-west", ["City of Canterbury Bankstown"]],
+  ["Ashfield", "2131", "inner-west"], ["Balmain", "2041", "inner-west"], ["Balmain East", "2041", "inner-west"],
+  ["Birchgrove", "2041", "inner-west"], ["Camperdown", "2050", "inner-west", ["City of Sydney"]],
+  ["Croydon", "2132", "inner-west", ["Burwood Council"]], ["Croydon Park", "2133", "inner-west", ["City of Canterbury Bankstown", "Burwood Council"]],
+  ["Dobroyd Point", "2045", "inner-west"], ["Dulwich Hill", "2203", "inner-west"], ["Enmore", "2042", "inner-west"],
+  ["Haberfield", "2045", "inner-west"], ["Hurlstone Park", "2193", "inner-west", ["City of Canterbury Bankstown"]],
+  ["Leichhardt", "2040", "inner-west"], ["Lewisham", "2049", "inner-west"], ["Lilyfield", "2040", "inner-west"],
+  ["Marrickville", "2204", "inner-west"], ["Newtown", "2042", "inner-west", ["City of Sydney"]],
+  ["Petersham", "2049", "inner-west"], ["Rozelle", "2039", "inner-west"], ["St Peters", "2044", "inner-west", ["City of Sydney"]],
+  ["Stanmore", "2048", "inner-west"], ["Summer Hill", "2130", "inner-west"], ["Sydenham", "2044", "inner-west"], ["Tempe", "2044", "inner-west"],
+  // Neighbouring / other councils (not in the database yet)
+  ["Glebe", "2037", "City of Sydney"], ["Forest Lodge", "2037", "City of Sydney"], ["Erskineville", "2043", "City of Sydney"],
+  ["Alexandria", "2015", "City of Sydney"], ["Redfern", "2016", "City of Sydney"], ["Chippendale", "2008", "City of Sydney"],
+  ["Surry Hills", "2010", "City of Sydney"], ["Sydney", "2000", "City of Sydney"],
+  ["Drummoyne", "2047", "City of Canada Bay"], ["Five Dock", "2046", "City of Canada Bay"], ["Abbotsford", "2046", "City of Canada Bay"], ["Concord", "2137", "City of Canada Bay"],
+  ["Burwood", "2134", "Burwood Council"], ["Strathfield", "2135", "Strathfield Council"],
+  ["Canterbury", "2193", "City of Canterbury Bankstown"], ["Earlwood", "2206", "City of Canterbury Bankstown"], ["Campsie", "2194", "City of Canterbury Bankstown"],
+  ["Arncliffe", "2205", "Bayside Council"], ["Mascot", "2020", "Bayside Council"], ["Wolli Creek", "2205", "Bayside Council"],
+  ["Thornleigh", "2120", "Hornsby Shire Council"], ["Hornsby", "2077", "Hornsby Shire Council"],
+  ["Parramatta", "2150", "City of Parramatta"], ["Chatswood", "2067", "Willoughby City Council"]
+].map(([name, pc, council, share]) => ({ name, pc, council, share: share || [] }));
+</script>
+<script>
+(function () {
+  const $ = (s) => document.querySelector(s);
+  const MONTHS = ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"];
+  const SEASONS = { spring: [9, 10, 11], summer: [12, 1, 2], autumn: [3, 4, 5], winter: [6, 7, 8] };
+  const TYPES = ["Tree", "Shrub", "Climber", "Groundcover", "Grass", "Strappy", "Sedge & Rush"];
+  const SUN = { FS: "Full sun", PS: "Part shade", S: "Shade" };
+  const WATER = { LW: "Dry-tolerant", MW: "Moist", HW: "Wet-tolerant" };
+  const TOX = { safe: "Non-toxic", low: "Low toxicity", caution: "Caution", toxic: "Toxic" };
+  const ALG = { low: "Low allergy", moderate: "Moderate allergy", high: "High allergy" };
+  const ICONS = {
+    Tree: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="9" r="6" fill="currentColor" fill-opacity=".18"/><path d="M12 15v6M9 21h6"/></svg>',
+    Shrub: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 19c0-5 3.5-9 8-9s8 4 8 9z" fill="currentColor" fill-opacity=".18"/><path d="M3 19h18"/></svg>',
+    Climber: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 3v18"/><path d="M6 17c4 0 5-3 3-4s-3-3 1-4 3-3 0-4" /><circle cx="14" cy="8" r="2" fill="currentColor" fill-opacity=".3"/><circle cx="12" cy="15" r="2" fill="currentColor" fill-opacity=".3"/></svg>',
+    Groundcover: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><ellipse cx="7" cy="16" rx="4" ry="2.4" fill="currentColor" fill-opacity=".18"/><ellipse cx="16" cy="16.5" rx="5" ry="2.6" fill="currentColor" fill-opacity=".18"/><path d="M2 19h20"/></svg>',
+    Grass: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 20V6M12 20c-1-5-4-8-6-9M12 20c1-5 4-8 6-9M12 20c-2-3-5-4-7-4M12 20c2-3 5-4 7-4"/></svg>',
+    Strappy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 20c0-6-2-10-5-14M12 20c0-6 2-10 5-14M12 20c-1-4-4-6-8-7M12 20c1-4 4-6 8-7M12 20V5"/></svg>',
+    "Sedge & Rush": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M8 20V5M12 20V3M16 20V6M4 20h16"/><path d="M11 7h2M7 9h2M15 10h2" stroke-width="2.4"/></svg>'
+  };
+
+  const council = COUNCILS["inner-west"];
+  $("#srcLink").href = council.pdf;
+  $("#zoneLink").href = council.url;
+
+  // ---------- State ----------
+  const state = { q: "", types: new Set(), sun: new Set(), water: new Set(), zones: new Set(), maxH: 20, season: "", petSafe: false, lowAllergy: false, onlyFav: false, view: "cards", sort: { key: "common", dir: 1 } };
+  let favs = new Set();
+  try { favs = new Set(JSON.parse(localStorage.getItem("cpf-favs") || "[]")); } catch (e) {}
+  try { const v = localStorage.getItem("cpf-view"); if (v === "table" || v === "cards") state.view = v; } catch (e) {}
+  const saveFavs = () => { try { localStorage.setItem("cpf-favs", JSON.stringify([...favs])); } catch (e) {} };
+
+  // ---------- Helpers ----------
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const rng = (a) => (a[0] === a[1] ? fmt(a[0]) : fmt(a[0]) + "–" + fmt(a[1])) + " m";
+  function fmt(n) { return n < 1 ? String(n).replace(/^0/, "0") : String(n); }
+  function monthsText(ms) {
+    if (ms.length === 12) return "All year";
+    const N = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    return N[ms[0] - 1] + (ms.length > 1 ? "–" + N[ms[ms.length - 1] - 1] : "");
+  }
+  function monthsBar(p) {
+    return '<div><div class="months" aria-label="Flowering: ' + monthsText(p.months) + '">' +
+      MONTHS.map((_, i) => '<i class="' + (p.months.includes(i + 1) ? "on" : "") + '"' + (p.months.includes(i + 1) ? ' style="background:' + p.hex + '"' : "") + "></i>").join("") +
+      '</div><div class="months-lbl">' + MONTHS.map((m) => "<span>" + m + "</span>").join("") + "</div></div>";
+  }
+  const zoneText = (z) => (z.length === 3 ? "All zones" : z.join(", "));
+
+  // ---------- Filter chips ----------
+  function chips(el, opts, set, labelFn) {
+    el.innerHTML = opts.map((o) => '<button type="button" class="chip" aria-pressed="false" data-v="' + esc(o) + '">' + labelFn(o) + "</button>").join("");
+    el.addEventListener("click", (e) => {
+      const b = e.target.closest(".chip"); if (!b) return;
+      const v = b.dataset.v;
+      set.has(v) ? set.delete(v) : set.add(v);
+      b.setAttribute("aria-pressed", set.has(v));
+      render();
+    });
+  }
+  chips($("#fType"), TYPES, state.types, (t) => esc(t));
+  chips($("#fSun"), Object.keys(SUN), state.sun, (k) => '<span class="mono">' + k + "</span> " + SUN[k]);
+  chips($("#fWater"), ["LW", "MW"], state.water, (k) => '<span class="mono">' + k + "</span> " + WATER[k]);
+  chips($("#fZone"), Object.keys(ZONES), state.zones, (k) => '<span class="mono" title="' + esc(ZONES[k]) + '">' + k + "</span>");
+  $("#fZone").querySelectorAll(".chip").forEach((b) => (b.title = ZONES[b.dataset.v]));
+
+  $("#q").addEventListener("input", (e) => { state.q = e.target.value.trim().toLowerCase(); render(); });
+  $("#maxH").addEventListener("input", (e) => { state.maxH = +e.target.value; $("#maxHOut").textContent = e.target.value + " m"; render(); });
+  $("#season").addEventListener("change", (e) => { state.season = e.target.value; render(); });
+  ["petSafe", "lowAllergy", "onlyFav"].forEach((k) => $("#" + k).addEventListener("change", (e) => { state[k] = e.target.checked; render(); }));
+  $("#reset").addEventListener("click", () => {
+    state.q = ""; state.maxH = 20; state.season = ""; state.petSafe = state.lowAllergy = state.onlyFav = false;
+    [state.types, state.sun, state.water, state.zones].forEach((s) => s.clear());
+    $("#q").value = ""; $("#maxH").value = 20; $("#maxHOut").textContent = "20 m"; $("#season").value = "";
+    ["petSafe", "lowAllergy", "onlyFav"].forEach((k) => ($("#" + k).checked = false));
+    document.querySelectorAll(".chip").forEach((b) => b.setAttribute("aria-pressed", "false"));
+    render();
+  });
+
+  function filtered() {
+    const c = $("#council").value;
+    const list = PLANTS.filter((p) => {
+      if (!p.councils.includes(c)) return false;
+      if (state.q && !(p.common + " " + p.sci).toLowerCase().includes(state.q)) return false;
+      if (state.types.size && !state.types.has(p.type)) return false;
+      if (state.sun.size && !p.sun.some((s) => state.sun.has(s))) return false;
+      if (state.water.size && !state.water.has(p.water)) return false;
+      if (state.zones.size && !p.zones.some((z) => state.zones.has(z))) return false;
+      if (p.h[1] > state.maxH) return false;
+      if (state.season && !p.months.some((mo) => SEASONS[state.season].includes(mo))) return false;
+      if (state.petSafe && !(p.tox[0] === "safe" || p.tox[0] === "low")) return false;
+      if (state.lowAllergy && p.allergy[0] !== "low") return false;
+      if (state.onlyFav && !favs.has(p.id)) return false;
+      return true;
+    });
+    const { key, dir } = state.sort;
+    const val = (p) => (key === "h" ? p.h[1] : key === "w" ? p.w[1] : key === "type" ? TYPES.indexOf(p.type) : String(p[key]).toLowerCase());
+    return list.sort((a, b) => (val(a) > val(b) ? dir : val(a) < val(b) ? -dir : 0));
+  }
+
+  // ---------- Render ----------
+  function starBtn(p) {
+    return '<button type="button" class="star" data-fav="' + p.id + '" aria-pressed="' + favs.has(p.id) + '" aria-label="Add ' + esc(p.common) + ' to shortlist" title="Shortlist">' + (favs.has(p.id) ? "★" : "☆") + "</button>";
+  }
+  function card(p) {
+    return '<article class="card" tabindex="0" data-id="' + p.id + '">' +
+      '<div class="card-head"><div class="ico">' + ICONS[p.type] + '</div><div><div class="type-tag">' + esc(p.size || p.type) + '</div><h3>' + esc(p.common) + '</h3><div class="sci">' + esc(p.sci) + "</div></div>" + starBtn(p) + "</div>" +
+      '<div class="dims"><div><span>H </span>' + rng(p.h) + '</div><div><span>W </span>' + rng(p.w) + "</div></div>" +
+      '<div class="codes">' + p.sun.map((s) => '<span class="code sun" title="' + SUN[s] + '">' + s + "</span>").join("") + '<span class="code water" title="' + WATER[p.water] + '">' + p.water + '</span><span class="code" title="' + esc(p.zones.map((z) => ZONES[z]).join("; ")) + '">' + zoneText(p.zones) + "</span></div>" +
+      monthsBar(p) +
+      '<div class="flower"><span class="dot" style="background:' + p.hex + '"></span>' + esc(p.colour) + " · " + monthsText(p.months) + "</div>" +
+      '<div class="pills"><span class="pill ' + p.tox[0] + '">' + TOX[p.tox[0]] + '</span><span class="pill ' + p.allergy[0] + '">' + ALG[p.allergy[0]] + "</span></div>" +
+      "</article>";
+  }
+  const COLS = [["common", "Common name"], ["sci", "Scientific name"], ["type", "Type"], ["h", "Height"], ["w", "Width"], ["sun", "Sun"], ["water", "Water"], ["zones", "Zone"], ["months", "Flowering"], ["tox", "Toxicity"], ["allergy", "Allergy"], ["pot", "Pot size"]];
+  function table(list) {
+    const sortable = ["common", "sci", "type", "h", "w"];
+    return '<div class="table-wrap"><table><thead><tr><th scope="col" aria-label="Shortlist"></th>' +
+      COLS.map(([k, l]) => '<th scope="col"' + (sortable.includes(k) ? ' data-sort="' + k + '"' + (state.sort.key === k ? ' aria-sort="' + (state.sort.dir > 0 ? "ascending" : "descending") + '"' : "") : ' style="cursor:default"') + ">" + l + "</th>").join("") +
+      "</tr></thead><tbody>" +
+      list.map((p) => '<tr data-id="' + p.id + '"><td>' + starBtn(p) + "</td><td><b>" + esc(p.common) + '</b></td><td class="sci">' + esc(p.sci) + "</td><td>" + esc(p.size || p.type) + '</td><td class="num">' + rng(p.h) + '</td><td class="num">' + rng(p.w) + '</td><td class="num">' + p.sun.join(" ") + '</td><td class="num">' + p.water + '</td><td class="num">' + zoneText(p.zones) + '</td><td><span class="dot" style="display:inline-block;vertical-align:-1px;background:' + p.hex + '"></span> ' + esc(p.colour) + ", " + monthsText(p.months) + '</td><td><span class="pill ' + p.tox[0] + '">' + TOX[p.tox[0]] + '</span></td><td><span class="pill ' + p.allergy[0] + '">' + ALG[p.allergy[0]] + "</span></td><td>" + esc(p.pot) + "</td></tr>").join("") +
+      "</tbody></table></div>";
+  }
+  let current = [];
+  function render() {
+    current = filtered();
+    const total = PLANTS.filter((p) => p.councils.includes($("#council").value)).length;
+    $("#count").innerHTML = "<b>" + current.length + "</b> of " + total + " plants";
+    $("#vCards").setAttribute("aria-pressed", state.view === "cards");
+    $("#vTable").setAttribute("aria-pressed", state.view === "table");
+    if (!current.length) {
+      $("#out").innerHTML = '<div class="empty">No plants match all these filters. Try raising the maximum height or removing a filter.</div>';
+      return;
+    }
+    $("#out").innerHTML = state.view === "cards" ? '<div class="grid">' + current.map(card).join("") + "</div>" : table(current);
+  }
+
+  $("#vCards").addEventListener("click", () => { state.view = "cards"; try { localStorage.setItem("cpf-view", "cards"); } catch (e) {} render(); });
+  $("#vTable").addEventListener("click", () => { state.view = "table"; try { localStorage.setItem("cpf-view", "table"); } catch (e) {} render(); });
+
+  $("#out").addEventListener("click", (e) => {
+    const f = e.target.closest("[data-fav]");
+    if (f) {
+      const id = +f.dataset.fav;
+      favs.has(id) ? favs.delete(id) : favs.add(id);
+      saveFavs(); render(); return;
+    }
+    const th = e.target.closest("th[data-sort]");
+    if (th) {
+      const k = th.dataset.sort;
+      state.sort = { key: k, dir: state.sort.key === k ? -state.sort.dir : 1 };
+      render(); return;
+    }
+    const row = e.target.closest("[data-id]");
+    if (row) openPanel(+row.dataset.id);
+  });
+  $("#out").addEventListener("keydown", (e) => {
+    if ((e.key === "Enter" || e.key === " ") && e.target.matches(".card")) { e.preventDefault(); openPanel(+e.target.dataset.id); }
+  });
+
+  // ---------- Detail panel ----------
+  let lastFocus = null;
+  function openPanel(id) {
+    const p = PLANTS.find((x) => x.id === id);
+    lastFocus = document.activeElement;
+    const ref = '<span class="ref" title="General horticultural reference, not from the council list">ref</span>';
+    $("#panel").innerHTML =
+      '<button class="btn close" type="button" id="pClose">Close</button>' +
+      '<div class="card-head" style="padding-right:70px"><div class="ico">' + ICONS[p.type] + '</div><div><div class="type-tag">' + esc(p.size || p.type) + '</div><h2 id="pTitle">' + esc(p.common) + '</h2><div class="sci">' + esc(p.sci) + "</div></div></div>" +
+      monthsBar(p) +
+      '<dl class="spec">' +
+      "<dt>Type</dt><dd>" + esc(p.size || p.type) + "</dd>" +
+      "<dt>Height</dt><dd>" + rng(p.h) + (p.type === "Climber" ? " " + ref : "") + "</dd>" +
+      "<dt>Width</dt><dd>" + rng(p.w) + " " + ref + "</dd>" +
+      "<dt>Sunlight</dt><dd>" + p.sun.map((s) => SUN[s]).join(", ") + "</dd>" +
+      "<dt>Water</dt><dd>" + WATER[p.water] + ' <span class="mono">(' + p.water + ")</span></dd>" +
+      "<dt>Soil</dt><dd>" + esc(p.soil) + "</dd>" +
+      "<dt>Flowers</dt><dd>" + esc(p.colour) + " · " + monthsText(p.months) + "</dd>" +
+      '<dt>Toxicity</dt><dd><span class="pill ' + p.tox[0] + '">' + TOX[p.tox[0]] + "</span> " + ref + "<br>" + esc(p.tox[1]) + "</dd>" +
+      '<dt>Allergy</dt><dd><span class="pill ' + p.allergy[0] + '">' + ALG[p.allergy[0]] + "</span> " + ref + "<br>" + esc(p.allergy[1]) + "</dd>" +
+      "<dt>Pot size</dt><dd>" + esc(p.pot) + " " + ref + "</dd>" +
+      "<dt>Native to</dt><dd>" + p.councils.map((c) => esc(COUNCILS[c].name)).join(", ") + "<br><span class=\"help\">" + p.zones.map((z) => z + " – " + ZONES[z]).join("<br>") + "</span></dd>" +
+      "</dl>" +
+      '<div class="note-box"><div class="eyebrow" style="margin-bottom:4px">Note</div>' + esc(p.note) + "</div>" +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap">' + '<button class="btn primary" type="button" id="pFav">' + (favs.has(p.id) ? "Remove from shortlist" : "Add to shortlist") + "</button>" +
+      '<a class="btn" style="text-decoration:none;color:var(--ink)" target="_blank" rel="noopener" href="https://www.google.com/search?tbm=isch&q=' + encodeURIComponent(p.sci) + '">Photos ↗</a>' +
+      '<a class="btn" style="text-decoration:none;color:var(--ink)" target="_blank" rel="noopener" href="https://bie.ala.org.au/search?q=' + encodeURIComponent(p.sci) + '">Atlas of Living Australia ↗</a></div>';
+    $("#panel").hidden = false; $("#scrim").hidden = false;
+    $("#pClose").focus();
+    $("#pClose").addEventListener("click", closePanel);
+    $("#pFav").addEventListener("click", () => { favs.has(p.id) ? favs.delete(p.id) : favs.add(p.id); saveFavs(); render(); openPanel(p.id); });
+  }
+  function closePanel() { $("#panel").hidden = true; $("#scrim").hidden = true; if (lastFocus && lastFocus.focus) lastFocus.focus(); }
+  $("#scrim").addEventListener("click", closePanel);
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("#panel").hidden) closePanel(); });
+
+  // ---------- CSV ----------
+  $("#copyCsv").addEventListener("click", () => {
+    const head = ["Type", "Scientific name", "Common name", "Height (m)", "Width (m)", "Sunlight", "Water", "Soil", "Vegetation zone", "Toxicity", "Allergy", "Native to council", "Pot size", "Flower season", "Flower colour", "Note"];
+    const q = (v) => '"' + String(v).replace(/"/g, '""') + '"';
+    const rows = current.map((p) => [p.size || p.type, p.sci, p.common, rng(p.h).replace(" m", ""), rng(p.w).replace(" m", ""), p.sun.map((s) => SUN[s]).join("/"), WATER[p.water], p.soil, p.zones.join("/"), TOX[p.tox[0]] + " – " + p.tox[1], ALG[p.allergy[0]] + " – " + p.allergy[1], p.councils.map((c) => COUNCILS[c].name).join("/"), p.pot, monthsText(p.months), p.colour, p.note].map(q).join(","));
+    const csv = [head.map(q).join(",")].concat(rows).join("\n");
+    const done = (msg) => { $("#toast").textContent = msg; setTimeout(() => ($("#toast").textContent = ""), 3000); };
+    try {
+      navigator.clipboard.writeText(csv).then(() => done("Copied " + current.length + " rows — paste into Excel or Sheets"), () => fallback());
+    } catch (e) { fallback(); }
+    function fallback() {
+      const ta = document.createElement("textarea"); ta.value = csv; ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select();
+      let ok = false; try { ok = document.execCommand("copy"); } catch (e) {}
+      ta.remove(); done(ok ? "Copied " + current.length + " rows" : "Copy isn't available here");
+    }
+  });
+
+  // ---------- Council matching ----------
+  const byLen = SUBURBS.slice().sort((a, b) => b.name.length - a.name.length);
+  function councilName(key) { return COUNCILS[key] ? COUNCILS[key].name : key; }
+  function match(input) {
+    const s = " " + input.toLowerCase().replace(/[,.]/g, " ").replace(/\bnsw\b/g, " ").replace(/\s+/g, " ") + " ";
+    const pcM = s.match(/\b(\d{4})\b/g);
+    const pc = pcM ? pcM[pcM.length - 1] : null;
+    const sub = byLen.find((x) => s.includes(" " + x.name.toLowerCase() + " "));
+    if (sub) return { kind: "suburb", sub, pcMismatch: pc && pc !== sub.pc ? pc : null };
+    if (pc) {
+      const subs = SUBURBS.filter((x) => x.pc === pc);
+      if (subs.length) return { kind: "postcode", pc, subs };
+    }
+    return { kind: "none" };
+  }
+  function showResult(r, raw) {
+    const el = $("#result");
+    if (!raw) {
+      el.innerHTML = '<span class="status idle">Waiting for an address</span><div class="council">Which council is your site in?</div><div class="msg">Councils publish their own local native plant lists. Enter an address to load the right one.</div>';
+      return;
+    }
+    if (r.kind === "none") {
+      el.innerHTML = '<span class="status no">Not found</span><div class="council">No suburb or postcode recognised</div><div class="msg">Include the suburb name or a 4-digit postcode, e.g. "Marrickville 2204". Only Sydney suburbs near the Inner West are in the lookup so far.</div>';
+      return;
+    }
+    if (r.kind === "postcode") {
+      const iw = r.subs.filter((x) => x.council === "inner-west");
+      const list = r.subs.map((x) => esc(x.name) + " (" + esc(councilName(x.council)) + (x.share.length ? ", part" : "") + ")").join(", ");
+      if (iw.length === r.subs.length && iw.every((x) => !x.share.length)) {
+        el.innerHTML = '<span class="status ok">✓ Supported</span><div class="council">Inner West Council</div><div class="msg">Postcode ' + r.pc + " covers " + list + ". Showing plants from the Inner West list.</div>";
+        selectCouncil("inner-west");
+      } else if (iw.length) {
+        el.innerHTML = '<span class="status part">Check boundary</span><div class="council">Probably Inner West Council</div><div class="msg">Postcode ' + r.pc + " is split between councils: " + list + ". Add the suburb name, or check your rates notice. Showing the Inner West list for now.</div>";
+        selectCouncil("inner-west");
+      } else {
+        el.innerHTML = '<span class="status no">Not in database yet</span><div class="council">' + esc(councilName(r.subs[0].council)) + '</div><div class="msg">Postcode ' + r.pc + " (" + list + ") isn't in the Inner West. This council's plant list hasn't been added yet.</div>";
+      }
+      return;
+    }
+    const x = r.sub;
+    const warnPc = r.pcMismatch ? " Note: postcode " + r.pcMismatch + " doesn't usually match " + esc(x.name) + " (" + x.pc + ")." : "";
+    if (x.council === "inner-west" && !x.share.length) {
+      el.innerHTML = '<span class="status ok">✓ Supported</span><div class="council">Inner West Council</div><div class="msg">' + esc(x.name) + " " + x.pc + " is fully within Inner West. Showing plants from the council's native plant list." + warnPc + "</div>";
+      selectCouncil("inner-west");
+    } else if (x.council === "inner-west") {
+      el.innerHTML = '<span class="status part">Check boundary</span><div class="council">Inner West Council <span style="font-size:15px;color:var(--muted)">(part of suburb)</span></div><div class="msg">' + esc(x.name) + " is shared with " + x.share.map(esc).join(" and ") + ". Check your rates notice to confirm which council your street is in. Showing the Inner West list for now." + warnPc + "</div>";
+      selectCouncil("inner-west");
+    } else {
+      el.innerHTML = '<span class="status no">Not in database yet</span><div class="council">' + esc(x.council) + '</div><div class="msg">' + esc(x.name) + " " + x.pc + " is outside the Inner West. This council's plant list hasn't been added yet." + warnPc + "</div>";
+    }
+  }
+  function selectCouncil(key) { $("#council").value = key; render(); }
+  $("#addrForm").addEventListener("submit", (e) => { e.preventDefault(); const v = $("#addr").value.trim(); showResult(match(v), v); });
+  document.querySelectorAll("[data-ex]").forEach((b) => b.addEventListener("click", () => { $("#addr").value = b.dataset.ex; showResult(match(b.dataset.ex), b.dataset.ex); }));
+  $("#council").addEventListener("change", render);
+
+  // Start with a worked example so the page opens in a real state
+  $("#addr").value = "45 Norton St, Leichhardt NSW 2040";
+  showResult(match($("#addr").value), $("#addr").value);
+  render();
+})();
+</script>
+</html>
