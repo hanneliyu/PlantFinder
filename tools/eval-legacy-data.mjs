@@ -1,6 +1,6 @@
-// Runs the old inline "Plant database" <script> from a single-file index.html and returns
+// Runs the old "Plant database" script (inline in index.html, or js/data.js) and returns
 // the final values the app reads (after all the patch steps in that script have run).
-// Usage: node tools/eval-legacy-data.mjs [path/to/index.html]  -> prints a summary
+// Usage: node tools/eval-legacy-data.mjs [index.html | js/data.js]  -> prints a summary
 import fs from "node:fs";
 import vm from "node:vm";
 import { fileURLToPath } from "node:url";
@@ -9,7 +9,7 @@ export function evalLegacyData(htmlPath) {
   const html = fs.readFileSync(htmlPath, "utf8");
   const start = html.indexOf("// ===== Plant database =====");
   if (start < 0) throw new Error("No inline plant database found in " + htmlPath);
-  const end = html.indexOf("</script>", start);
+  const end = html.includes("</script>", start) ? html.indexOf("</script>", start) : html.length;
   const code = html.slice(start, end) +
     "\n;globalThis.__out = { COUNCILS, PLANTS, SUBURBS, COLOUR_GROUPS, USAGES, NSW_COUNCILS };";
   const ctx = vm.createContext({});
