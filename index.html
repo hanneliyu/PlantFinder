@@ -99,6 +99,18 @@ aside.filters { background: var(--surface); border: 1px solid var(--line); borde
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 14px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; text-align: left; transition: border-color .15s, transform .15s; }
 .card:hover { border-color: var(--accent); transform: translateY(-1px); }
+.card { padding-top: 0; overflow: hidden; }
+.photo { position: relative; margin: 0 -14px; aspect-ratio: 4 / 3; max-width: calc(100% + 28px); background: var(--surface-2); display: grid; place-items: center; overflow: hidden; }
+.photo .ph { width: 56px; height: 56px; color: var(--muted); opacity: .55; }
+.photo .ph svg { width: 100%; height: 100%; }
+.photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .3s; }
+.photo img.ready { opacity: 1; }
+.photo .credit { position: absolute; left: 0; right: 0; bottom: 0; padding: 12px 8px 4px; font-size: 10px; line-height: 1.3; color: #fff; background: linear-gradient(transparent, rgba(0,0,0,.6)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.photo .credit[hidden] { display: none; }
+.panel .photo { margin: 0; border-radius: 6px; max-width: 100%; aspect-ratio: 3 / 2; }
+.panel .photo .credit { white-space: normal; font-size: 11px; }
+.swatch { width: 11px; height: 11px; border-radius: 50%; display: inline-block; vertical-align: -1px; margin-right: 4px; border: 1px solid rgba(0,0,0,.18); }
+.sort-sel { padding: 7px 10px; border: 1px solid var(--line); border-radius: 4px; background: var(--surface); }
 .card-head { display: flex; gap: 10px; align-items: start; }
 .ico { width: 38px; height: 38px; flex: none; border-radius: 50%; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); }
 .ico svg { width: 24px; height: 24px; }
@@ -221,6 +233,7 @@ footer { font-size: 12px; color: var(--muted); border-top: 1px solid var(--line)
           <option value="winter">Winter (Jun–Aug)</option>
         </select>
       </div>
+      <div class="fgroup"><span class="eyebrow">Flower colour</span><div class="chips" id="fColour"></div></div>
       <div class="fgroup">
         <span class="eyebrow">Vegetation zone</span><div class="chips" id="fZone"></div>
         <p class="help">Inner West has three native vegetation zones. <a id="zoneLink" href="#" target="_blank" rel="noopener">Check yours on council's website</a>.</p>
@@ -239,6 +252,13 @@ footer { font-size: 12px; color: var(--muted); border-top: 1px solid var(--line)
         <div class="count" id="count"></div>
         <div class="bar-right">
           <span class="toast" id="toast" aria-live="polite"></span>
+          <label class="eyebrow" for="sortSel" style="letter-spacing:.06em">Sort</label>
+          <select id="sortSel" class="sort-sel">
+            <option value="sci">Scientific name A–Z</option>
+            <option value="common">Common name A–Z</option>
+            <option value="h">Height (low to high)</option>
+            <option value="type">Plant type</option>
+          </select>
           <button class="btn" id="copyCsv" type="button">Copy as CSV</button>
           <div class="seg" role="group" aria-label="View">
             <button type="button" id="vCards" aria-pressed="true">Cards</button>
@@ -256,6 +276,7 @@ footer { font-size: 12px; color: var(--muted); border-top: 1px solid var(--line)
 
   <footer>
     <span>Height, sunlight, water, soil, vegetation zone and flowering come from the Inner West Council list. Width, toxicity, allergy and pot size (marked <span class="ref">ref</span>) are general horticultural guidance — check before specifying.</span>
+    <span>Photos load from <a href="https://www.inaturalist.org" target="_blank" rel="noopener">iNaturalist</a> and are credited to each photographer under their Creative Commons licence. Only openly licensed photos are shown.</span>
     <span>Toxicity and allergy notes are not medical advice. If a child or pet eats a plant, call the Poisons Information Centre on 13 11 26 or your vet.</span>
   </footer>
 </div>
@@ -372,6 +393,33 @@ const SUBURBS = [
   ["Thornleigh", "2120", "Hornsby Shire Council"], ["Hornsby", "2077", "Hornsby Shire Council"],
   ["Parramatta", "2150", "City of Parramatta"], ["Chatswood", "2067", "Willoughby City Council"]
 ].map(([name, pc, council, share]) => ({ name, pc, council, share: share || [] }));
+
+// ===== Flower colour groups (for filtering) =====
+const COLOUR_GROUPS = {
+  white: ["White & cream", "#F3F1E8"], yellow: ["Yellow", "#E6BE1A"], orange: ["Orange", "#E08A1E"],
+  pink: ["Pink", "#E07AA6"], red: ["Red", "#C0262F"], purple: ["Purple & mauve", "#7E5BB5"],
+  blue: ["Blue", "#3E6FC8"], green: ["Green", "#8DB04A"], brown: ["Brown seed heads", "#8A6A3E"]
+};
+const COLOUR_OF = {
+  "Hardenbergia violacea": ["purple"], "Hibbertia scandens": ["yellow"], "Kennedia rubicunda": ["red"],
+  "Pandorea pandorana": ["white"], "Billardiera scandens": ["white"], "Clematis aristata": ["white"],
+  "Dianella caerulea": ["blue"], "Lomandra longifolia": ["yellow"], "Themeda triandra": ["brown"],
+  "Cymbopogon refractus": ["brown"], "Microlaena stipoides": ["green"], "Dichondra repens": ["white"],
+  "Viola hederacea": ["white", "purple"], "Carpobrotus glaucescens": ["pink", "purple"], "Scaevola albida": ["purple"],
+  "Commelina cyanea": ["blue"], "Wahlenbergia gracilis": ["blue"], "Tetragonia tetragonioides": ["yellow"],
+  "Pelargonium inodorum": ["pink"], "Carex appressa": ["brown"], "Ficinia nodosa": ["brown"], "Juncus usitatus": ["brown"],
+  "Westringia fruticosa": ["white"], "Correa alba": ["white"], "Correa reflexa": ["red", "green"],
+  "Callistemon linearis": ["red"], "Banksia spinulosa": ["yellow", "orange"], "Grevillea buxifolia": ["white"],
+  "Grevillea linearifolia": ["white", "pink"], "Kunzea ambigua": ["white"], "Leptospermum polygalifolium": ["white"],
+  "Acacia suaveolens": ["white"], "Acacia longifolia": ["yellow"], "Acacia myrtifolia": ["yellow"],
+  "Bursaria spinosa": ["white"], "Goodenia ovata": ["yellow"], "Dodonaea triquetra": ["green"],
+  "Indigofera australis": ["pink"], "Solanum aviculare": ["purple"], "Pittosporum revolutum": ["yellow"],
+  "Ceratopetalum gummiferum": ["white", "red"], "Angophora hispida": ["white"], "Melaleuca decora": ["white"],
+  "Melaleuca linariifolia": ["white"], "Banksia integrifolia": ["yellow"], "Banksia serrata": ["yellow"],
+  "Allocasuarina littoralis": ["red", "brown"], "Eucalyptus haemastoma": ["white"], "Eucalyptus robusta": ["white"],
+  "Syncarpia glomulifera": ["white"]
+};
+PLANTS.forEach((p) => { p.cg = COLOUR_OF[p.sci] || []; });
 </script>
 <script>
 (function () {
@@ -398,7 +446,7 @@ const SUBURBS = [
   $("#zoneLink").href = council.url;
 
   // ---------- State ----------
-  const state = { q: "", types: new Set(), sun: new Set(), water: new Set(), zones: new Set(), maxH: 20, season: "", petSafe: false, lowAllergy: false, onlyFav: false, view: "cards", sort: { key: "common", dir: 1 } };
+  const state = { q: "", types: new Set(), sun: new Set(), water: new Set(), zones: new Set(), colours: new Set(), maxH: 20, season: "", petSafe: false, lowAllergy: false, onlyFav: false, view: "cards", sort: { key: "sci", dir: 1 } };
   let favs = new Set();
   try { favs = new Set(JSON.parse(localStorage.getItem("cpf-favs") || "[]")); } catch (e) {}
   try { const v = localStorage.getItem("cpf-view"); if (v === "table" || v === "cards") state.view = v; } catch (e) {}
@@ -435,6 +483,7 @@ const SUBURBS = [
   chips($("#fSun"), Object.keys(SUN), state.sun, (k) => '<span class="mono">' + k + "</span> " + SUN[k]);
   chips($("#fWater"), ["LW", "MW"], state.water, (k) => '<span class="mono">' + k + "</span> " + WATER[k]);
   chips($("#fZone"), Object.keys(ZONES), state.zones, (k) => '<span class="mono" title="' + esc(ZONES[k]) + '">' + k + "</span>");
+  chips($("#fColour"), Object.keys(COLOUR_GROUPS), state.colours, (k) => '<span class="swatch" style="background:' + COLOUR_GROUPS[k][1] + '"></span>' + COLOUR_GROUPS[k][0]);
   $("#fZone").querySelectorAll(".chip").forEach((b) => (b.title = ZONES[b.dataset.v]));
 
   $("#q").addEventListener("input", (e) => { state.q = e.target.value.trim().toLowerCase(); render(); });
@@ -443,7 +492,7 @@ const SUBURBS = [
   ["petSafe", "lowAllergy", "onlyFav"].forEach((k) => $("#" + k).addEventListener("change", (e) => { state[k] = e.target.checked; render(); }));
   $("#reset").addEventListener("click", () => {
     state.q = ""; state.maxH = 20; state.season = ""; state.petSafe = state.lowAllergy = state.onlyFav = false;
-    [state.types, state.sun, state.water, state.zones].forEach((s) => s.clear());
+    [state.types, state.sun, state.water, state.zones, state.colours].forEach((s) => s.clear());
     $("#q").value = ""; $("#maxH").value = 20; $("#maxHOut").textContent = "20 m"; $("#season").value = "";
     ["petSafe", "lowAllergy", "onlyFav"].forEach((k) => ($("#" + k).checked = false));
     document.querySelectorAll(".chip").forEach((b) => b.setAttribute("aria-pressed", "false"));
@@ -459,6 +508,7 @@ const SUBURBS = [
       if (state.sun.size && !p.sun.some((s) => state.sun.has(s))) return false;
       if (state.water.size && !state.water.has(p.water)) return false;
       if (state.zones.size && !p.zones.some((z) => state.zones.has(z))) return false;
+      if (state.colours.size && !p.cg.some((c) => state.colours.has(c))) return false;
       if (p.h[1] > state.maxH) return false;
       if (state.season && !p.months.some((mo) => SEASONS[state.season].includes(mo))) return false;
       if (state.petSafe && !(p.tox[0] === "safe" || p.tox[0] === "low")) return false;
@@ -468,7 +518,64 @@ const SUBURBS = [
     });
     const { key, dir } = state.sort;
     const val = (p) => (key === "h" ? p.h[1] : key === "w" ? p.w[1] : key === "type" ? TYPES.indexOf(p.type) : String(p[key]).toLowerCase());
-    return list.sort((a, b) => (val(a) > val(b) ? dir : val(a) < val(b) ? -dir : 0));
+    return list.sort((a, b) => (val(a) > val(b) ? dir : val(a) < val(b) ? -dir : a.sci.localeCompare(b.sci)));
+  }
+
+  // ---------- Photos (iNaturalist, openly licensed only) ----------
+  // Loaded in the visitor's browser. If the host blocks outside requests, cards keep the plant-type icon.
+  const PHOTO_CACHE_KEY = "cpf-photos-v1";
+  let photoCache = {};
+  try { photoCache = JSON.parse(localStorage.getItem(PHOTO_CACHE_KEY) || "{}"); } catch (e) {}
+  const pending = {};
+  let photosBlocked = false, active = 0;
+  const queue = [];
+  function photoBox(p) {
+    return '<div class="photo" data-photo="' + esc(p.sci) + '"><span class="ph">' + ICONS[p.type] + '</span><span class="credit" hidden></span></div>';
+  }
+  function fetchPhoto(sci) {
+    if (photoCache[sci] !== undefined) return Promise.resolve(photoCache[sci]);
+    if (photosBlocked) return Promise.resolve(null);
+    if (pending[sci]) return pending[sci];
+    pending[sci] = new Promise((resolve) => { queue.push({ sci, resolve }); pump(); });
+    return pending[sci];
+  }
+  function pump() {
+    while (active < 4 && queue.length) {
+      const { sci, resolve } = queue.shift();
+      if (photosBlocked) { resolve(null); continue; }
+      active++;
+      const url = "https://api.inaturalist.org/v1/taxa?rank=species&per_page=5&q=" + encodeURIComponent(sci);
+      fetch(url).then((r) => (r.ok ? r.json() : Promise.reject(r.status))).then((d) => {
+        const res = d.results || [];
+        const t = res.find((x) => x.name === sci) || res.find((x) => x.matched_term === sci) || res[0];
+        const ph = t && t.default_photo;
+        const out = ph && ph.license_code && ph.medium_url ? { url: ph.medium_url, credit: ph.attribution, lic: ph.license_code, taxon: t.id } : null;
+        photoCache[sci] = out;
+        try { localStorage.setItem(PHOTO_CACHE_KEY, JSON.stringify(photoCache)); } catch (e) {}
+        resolve(out);
+      }).catch(() => { photosBlocked = true; resolve(null); }).finally(() => { active--; pump(); });
+    }
+  }
+  function loadPhotos(root) {
+    root.querySelectorAll(".photo[data-photo]").forEach((box) => {
+      const sci = box.dataset.photo;
+      fetchPhoto(sci).then((info) => {
+        if (!info || !box.isConnected || box.querySelector("img")) return;
+        const img = new Image();
+        img.alt = sci;
+        img.loading = "lazy";
+        img.decoding = "async";
+        img.referrerPolicy = "no-referrer";
+        img.onload = () => img.classList.add("ready");
+        img.onerror = () => img.remove();
+        img.src = box.closest(".panel") ? info.url.replace("/medium.", "/large.") : info.url;
+        box.insertBefore(img, box.querySelector(".credit"));
+        const c = box.querySelector(".credit");
+        c.textContent = "Photo " + info.credit.replace(/\s*\(c\)\s*/i, "© ");
+        c.title = c.textContent;
+        c.hidden = false;
+      });
+    });
   }
 
   // ---------- Render ----------
@@ -476,7 +583,7 @@ const SUBURBS = [
     return '<button type="button" class="star" data-fav="' + p.id + '" aria-pressed="' + favs.has(p.id) + '" aria-label="Add ' + esc(p.common) + ' to shortlist" title="Shortlist">' + (favs.has(p.id) ? "★" : "☆") + "</button>";
   }
   function card(p) {
-    return '<article class="card" tabindex="0" data-id="' + p.id + '">' +
+    return '<article class="card" tabindex="0" data-id="' + p.id + '">' + photoBox(p) +
       '<div class="card-head"><div class="ico">' + ICONS[p.type] + '</div><div><div class="type-tag">' + esc(p.size || p.type) + '</div><h3>' + esc(p.common) + '</h3><div class="sci">' + esc(p.sci) + "</div></div>" + starBtn(p) + "</div>" +
       '<div class="dims"><div><span>H </span>' + rng(p.h) + '</div><div><span>W </span>' + rng(p.w) + "</div></div>" +
       '<div class="codes">' + p.sun.map((s) => '<span class="code sun" title="' + SUN[s] + '">' + s + "</span>").join("") + '<span class="code water" title="' + WATER[p.water] + '">' + p.water + '</span><span class="code" title="' + esc(p.zones.map((z) => ZONES[z]).join("; ")) + '">' + zoneText(p.zones) + "</span></div>" +
@@ -506,8 +613,10 @@ const SUBURBS = [
       return;
     }
     $("#out").innerHTML = state.view === "cards" ? '<div class="grid">' + current.map(card).join("") + "</div>" : table(current);
+    loadPhotos($("#out"));
   }
 
+  $("#sortSel").addEventListener("change", (e) => { state.sort = { key: e.target.value, dir: 1 }; render(); });
   $("#vCards").addEventListener("click", () => { state.view = "cards"; try { localStorage.setItem("cpf-view", "cards"); } catch (e) {} render(); });
   $("#vTable").addEventListener("click", () => { state.view = "table"; try { localStorage.setItem("cpf-view", "table"); } catch (e) {} render(); });
 
@@ -522,6 +631,7 @@ const SUBURBS = [
     if (th) {
       const k = th.dataset.sort;
       state.sort = { key: k, dir: state.sort.key === k ? -state.sort.dir : 1 };
+      if ([...$("#sortSel").options].some((o) => o.value === k)) $("#sortSel").value = k;
       render(); return;
     }
     const row = e.target.closest("[data-id]");
@@ -540,7 +650,7 @@ const SUBURBS = [
     $("#panel").innerHTML =
       '<button class="btn close" type="button" id="pClose">Close</button>' +
       '<div class="card-head" style="padding-right:70px"><div class="ico">' + ICONS[p.type] + '</div><div><div class="type-tag">' + esc(p.size || p.type) + '</div><h2 id="pTitle">' + esc(p.common) + '</h2><div class="sci">' + esc(p.sci) + "</div></div></div>" +
-      monthsBar(p) +
+      photoBox(p) + monthsBar(p) +
       '<dl class="spec">' +
       "<dt>Type</dt><dd>" + esc(p.size || p.type) + "</dd>" +
       "<dt>Height</dt><dd>" + rng(p.h) + (p.type === "Climber" ? " " + ref : "") + "</dd>" +
@@ -556,9 +666,10 @@ const SUBURBS = [
       "</dl>" +
       '<div class="note-box"><div class="eyebrow" style="margin-bottom:4px">Note</div>' + esc(p.note) + "</div>" +
       '<div style="display:flex;gap:8px;flex-wrap:wrap">' + '<button class="btn primary" type="button" id="pFav">' + (favs.has(p.id) ? "Remove from shortlist" : "Add to shortlist") + "</button>" +
-      '<a class="btn" style="text-decoration:none;color:var(--ink)" target="_blank" rel="noopener" href="https://www.google.com/search?tbm=isch&q=' + encodeURIComponent(p.sci) + '">Photos ↗</a>' +
+      '<a class="btn" style="text-decoration:none;color:var(--ink)" target="_blank" rel="noopener" href="https://www.inaturalist.org/taxa/search?q=' + encodeURIComponent(p.sci) + '">More photos ↗</a>' +
       '<a class="btn" style="text-decoration:none;color:var(--ink)" target="_blank" rel="noopener" href="https://bie.ala.org.au/search?q=' + encodeURIComponent(p.sci) + '">Atlas of Living Australia ↗</a></div>';
     $("#panel").hidden = false; $("#scrim").hidden = false;
+    loadPhotos($("#panel"));
     $("#pClose").focus();
     $("#pClose").addEventListener("click", closePanel);
     $("#pFav").addEventListener("click", () => { favs.has(p.id) ? favs.delete(p.id) : favs.add(p.id); saveFavs(); render(); openPanel(p.id); });
