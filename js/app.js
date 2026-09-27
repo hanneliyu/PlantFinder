@@ -416,9 +416,11 @@
   // ---------- CSV ----------
   $("#copyCsv").addEventListener("click", () => {
     const head = ["Type", "Scientific name", "Common name", "Height (m)", "Width (m)", "Sunlight", "Water", "Soil", "Vegetation zone", "Toxicity", "Allergy", "Native to council", "Pot size", "Flower season", "Flower colour", "Plant usage", "Note"];
-    const q = (v) => '"' + String(v).replace(/"/g, '""') + '"';
-    const rows = current.map((p) => [p.size || p.type, p.sci, p.common, rng(p.h).replace(" m", ""), rng(p.w).replace(" m", ""), p.sun.map((s) => SUN[s]).join("/"), WATER[p.water], p.soil, zonesOf(p).map(zoneName).join("/"), TOX[p.tox[0]] + " – " + p.tox[1], ALG[p.allergy[0]] + " – " + p.allergy[1], p.councils.map((c) => COUNCILS[c].name).join("/"), p.pot, monthsText(p.months), p.colour, p.uses.join(", "), p.note].map(q).join(","));
-    const csv = [head.map(q).join(",")].concat(rows).join("\n");
+    // Tab-separated, so pasting into Excel or Google Sheets puts each field in its own cell.
+    // Tabs and line breaks inside a value would split it, and a leading " makes Excel parse quotes, so clean those out.
+    const q = (v) => String(v).replace(/[\t\r\n]+/g, " ").replace(/"/g, "”");
+    const rows = current.map((p) => [p.size || p.type, p.sci, p.common, rng(p.h).replace(" m", ""), rng(p.w).replace(" m", ""), p.sun.map((s) => SUN[s]).join("/"), WATER[p.water], p.soil, zonesOf(p).map(zoneName).join("/"), TOX[p.tox[0]] + " – " + p.tox[1], ALG[p.allergy[0]] + " – " + p.allergy[1], p.councils.map((c) => COUNCILS[c].name).join("/"), p.pot, monthsText(p.months), p.colour, p.uses.join(", "), p.note].map(q).join("\t"));
+    const csv = [head.map(q).join("\t")].concat(rows).join("\n");
     const done = (msg) => { $("#toast").textContent = msg; setTimeout(() => ($("#toast").textContent = ""), 3000); };
     try {
       navigator.clipboard.writeText(csv).then(() => done("Copied " + current.length + " rows — paste into Excel or Sheets"), () => fallback());
@@ -752,125 +754,28 @@
   // Background wall of council names: hover to highlight, click to open
   const wall = $("#names");
   const nice = (n) => n.toLowerCase().replace(/(^|[\s\-])([a-z])/g, (m, a, c) => a + c.toUpperCase()).replace(/\bOf\b/g, "of");
-  // Seeded random numbers, so a given window size always gets the same layout
-  function seeded(seed) { return () => { seed = (seed + 0x6D2B79F5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
-  const landCard = $(".land-card"), landCredit = $(".landing .credit-line");
-  // Each of the 128 councils appears once, scattered over the free space around the card and the credit line.
-  // Names are placed biggest first at random spots that don't overlap anything; if they don't all fit, the whole
-  // set is tried again smaller. Councils with a plant list are placed first, larger, and shown in green.
+  function rand(seed) { let x = Math.sin(seed * 9301 + 49297) * 233280; return x - Math.floor(x); }
   function buildWall() {
-    if (landing.hidden) return;
-    const W = landing.clientWidth, H = landing.clientHeight;
-    const o = landing.getBoundingClientRect();
-    const blocks = [landCard, landCredit].map((el) => {
-      const r = el.getBoundingClientRect();
-      return { x: r.left - o.left - 16, y: r.top - o.top + landing.scrollTop - 12, w: r.width + 32, h: r.height + 24 };
-    });
-    const rnd = seeded(128);
     wall.innerHTML = "";
-    const items = NSW_COUNCILS.map((n) => {
-      const key = n.toLowerCase().replace(/\s+/g, "-"), live = !!COUNCILS[key], t = nice(n);
+    const add = (copy) => NSW_COUNCILS.forEach((n, i) => {
+      const k = i + copy * 131, r = rand(k);
       const el = document.createElement("span");
-      el.className = "nm" + (rnd() > 0.72 ? " serif" : "") + (live ? " live" : "");
+      el.className = "nm" + (r > 0.72 ? " serif" : "") + (COUNCILS[n.toLowerCase().replace(/\s+/g, "-")] ? " live" : "");
+      const t = nice(n);
       el.dataset.t = t;
-      el.dataset.key = key;
+      el.dataset.key = n.toLowerCase().replace(/\s+/g, "-");
       el.setAttribute("role", "button");
       el.tabIndex = -1;
-      el.innerHTML = "<span>" + esc(t) + "</span>";
+      el.innerHTML = "<span>" + t + "</span>";
+      el.style.fontSize = (15 + Math.round(rand(k + 7) * 17)) + "px";
       wall.appendChild(el);
-      return { el, live, size: live ? 24 + rnd() * 6 : 13 + rnd() * 15 };
     });
-    items.sort((a, b) => (b.live - a.live) || (b.size - a.size));
-    if (W >= 700 && rowLayout()) return;
-    // Wide screens: names fill the page in justified rows that part around the card, at the largest size that
-    // still fits all 128. Phones (and windows too small for rows) use the scattered layout below.
-    function rowLayout() {
-      const pad = 16, gapEm = 0.85, rr = seeded(7);
-      const order = items.slice();
-      for (let i = order.length - 1; i > 0; i--) { const j = Math.floor(rr() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; }
-      order.forEach((it) => {
-        it.base = it.live ? 34 : 17 + rr() * 15;
-        it.el.style.fontSize = "100px";
-        it.w100 = it.el.offsetWidth; // width scales with font size, so measure once at 100px
-      });
-      // Free horizontal stretches of the row between y and y + h
-      const segsAt = (y, h) => {
-        let segs = [[pad, W - pad]];
-        blocks.forEach((b) => {
-          if (y >= b.y + b.h || y + h <= b.y) return;
-          segs = segs.flatMap(([a, z]) => [[a, Math.min(z, b.x)], [Math.max(a, b.x + b.w), z]]).filter(([a, z]) => z - a > 40);
-        });
-        return segs;
-      };
-      function fit(sc) {
-        const rowH = 40 * sc, nRows = Math.floor((H - 2 * pad) / rowH), rows = [];
-        const top = pad + ((H - 2 * pad) - nRows * rowH) / 2;
-        let i = 0;
-        for (let r = 0; r < nRows && i < order.length; r++) {
-          const y = top + r * rowH;
-          segsAt(y, rowH).forEach(([a, z]) => {
-            const run = [];
-            let used = 0;
-            while (i < order.length) {
-              const it = order[i], f = it.base * sc, w = it.w100 * f / 100, g = run.length ? f * gapEm : 0;
-              if (used + g + w > z - a) break;
-              run.push({ it, f, w }); used += g + w; i++;
-            }
-            if (run.length) rows.push({ y, rowH, a, z, run, used });
-          });
-        }
-        return i === order.length ? rows : null;
-      }
-      let lo = 0.45, hi = 3, best = fit(lo);
-      if (!best) return false;
-      for (let k = 0; k < 14; k++) { const mid = (lo + hi) / 2, r = fit(mid); if (r) { lo = mid; best = r; } else hi = mid; }
-      best.forEach(({ y, rowH, a, z, run, used }, idx) => {
-        const spare = z - a - used;
-        // Justify each run edge to edge; if that would leave huge gaps (short last run), centre it instead
-        const stretch = run.length > 1 && spare / (run.length - 1) < 2.5 * run[0].f && idx !== best.length - 1;
-        const gapExtra = stretch ? spare / (run.length - 1) : 0;
-        let x = stretch ? a : a + spare / 2;
-        run.forEach(({ it, f, w }, j) => {
-          if (j) x += f * gapEm + gapExtra;
-          it.el.style.fontSize = f.toFixed(1) + "px";
-          it.el.style.left = x + "px";
-          it.el.style.top = y + (rowH - f * 1.15) / 2 + "px";
-          x += w;
-        });
-      });
-      return true;
-    }
-    const hit = (a, list) => list.some((b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h);
-    // strict: every name must fit in the free space, or give up (returns false) so a smaller size can be tried.
-    // Not strict (window too small at the smallest size): names that don't fit go behind the card, never on the credit line.
-    function place(scale, strict) {
-      const r = seeded(Math.round(scale * 100)), done = [];
-      const find = (w, h, avoid, tries) => {
-        for (let k = 0; k < tries; k++) {
-          const c = { x: r() * Math.max(0, W - w), y: r() * Math.max(0, H - h), w, h };
-          if (!hit(c, done) && !hit(c, avoid)) return c;
-        }
-        return null;
-      };
-      for (const it of items) {
-        it.el.style.fontSize = Math.max(9, it.size * scale).toFixed(1) + "px";
-        const w = it.el.offsetWidth + 14, h = it.el.offsetHeight + 4; // include a little breathing room
-        const spot = find(w, h, blocks, 700) || (!strict && (find(w, h, [blocks[1]], 700) || { x: r() * Math.max(0, W - w), y: blocks[0].y + 12 + r() * Math.max(0, blocks[0].h - 24 - h), w, h }));
-        if (!spot) return false;
-        done.push(spot);
-        it.el.style.left = spot.x + 7 + "px";
-        it.el.style.top = spot.y + 2 + "px";
-      }
-      return true;
-    }
-    for (const scale of [1, 0.9, 0.8, 0.7, 0.62, 0.55]) if (place(scale, true)) return;
-    place(0.55, false);
+    let copy = 0;
+    add(copy++);
+    while (wall.scrollHeight < window.innerHeight * 1.15 && copy < 5) add(copy++);
   }
   buildWall();
-  let rt; const rebuild = () => { clearTimeout(rt); rt = setTimeout(buildWall, 150); };
-  window.addEventListener("resize", rebuild);
-  if (window.ResizeObserver) new ResizeObserver(rebuild).observe(landCard); // e.g. a lookup message makes the card taller
-  if (document.fonts) document.fonts.ready.then(rebuild); // widths change once the web fonts arrive
+  let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(buildWall, 200); });
   const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   let hot = null;
   function ripple(el, cx, cy) {
