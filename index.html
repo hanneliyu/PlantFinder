@@ -52,6 +52,13 @@ header.top p { margin: 4px 0 0; color: var(--muted); max-width: 60ch; }
 .matcher .in { padding: 18px 20px; display: flex; flex-direction: column; gap: 10px; border-right: 1px dashed var(--line); }
 .matcher label.eyebrow, .eyebrow { font-size: 11px; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); }
 .addr { display: flex; gap: 8px; }
+.combo { position: relative; flex: 1; min-width: 0; display: flex; }
+.suggest { position: absolute; z-index: 5; top: calc(100% + 4px); left: 0; right: 0; margin: 0; padding: 4px; list-style: none; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; box-shadow: var(--shadow); max-height: 340px; overflow: auto; }
+.suggest .grp { font-size: 10.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding: 8px 10px 4px; }
+.suggest .opt { padding: 7px 10px; border-radius: 4px; cursor: pointer; display: flex; justify-content: space-between; gap: 10px; }
+.suggest .opt .sub { color: var(--muted); font-size: 12px; white-space: nowrap; }
+.suggest .opt[aria-selected="true"], .suggest .opt:hover { background: var(--accent-soft); }
+.suggest .note { padding: 7px 10px; color: var(--muted); font-size: 12px; }
 .addr input { flex: 1; min-width: 0; padding: 10px 12px; border: 1px solid var(--line); border-radius: 4px; background: var(--surface-2); }
 .btn { padding: 9px 14px; border-radius: 4px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; white-space: nowrap; }
 .btn:hover { border-color: var(--accent); }
@@ -192,18 +199,22 @@ footer { font-size: 12px; color: var(--muted); border-top: 1px solid var(--line)
 
   <section class="matcher" aria-label="Find your council">
     <form class="in" id="addrForm" autocomplete="off">
-      <label class="eyebrow" for="addr">Suburb</label>
+      <label class="eyebrow" for="addr">Site address</label>
       <div class="addr">
-        <input id="addr" type="text" placeholder="e.g. 12 Smith St, Marrickville NSW 2204">
+        <div class="combo">
+          <input id="addr" type="text" placeholder="Start typing a street or suburb, e.g. 12 Norton St" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="addrList" spellcheck="false">
+          <ul class="suggest" id="addrList" role="listbox" aria-label="Address suggestions" hidden></ul>
+        </div>
         <button class="btn primary" type="submit">Find council</button>
       </div>
       <div class="examples">Try:
+        <button type="button" data-ex="Norton St Leich" data-suggest>Norton St Leich…</button>
         <button type="button" data-ex="45 Norton St, Leichhardt NSW 2040">Leichhardt</button>
         <button type="button" data-ex="Newtown 2042">Newtown</button>
         <button type="button" data-ex="2203">2203</button>
         <button type="button" data-ex="Glebe NSW 2037">Glebe</button>
       </div>
-      <p class="help">Matches on suburb name or postcode. Street-level boundaries aren't checked yet, so shared suburbs are flagged for you to confirm.</p>
+      <p class="help" id="addrHelp">Pick an address from the list to check it against official NSW council boundaries. You can also enter just a suburb or postcode.</p>
     </form>
     <div class="result" id="result" aria-live="polite"></div>
   </section>
@@ -883,8 +894,226 @@ PLANTS.forEach((p) => {
     }
   }
   function selectCouncil(key) { $("#council").value = key; render(); }
-  $("#addrForm").addEventListener("submit", (e) => { e.preventDefault(); const v = $("#addr").value.trim(); showResult(match(v), v); });
-  document.querySelectorAll("[data-ex]").forEach((b) => b.addEventListener("click", () => { $("#addr").value = b.dataset.ex; showResult(match(b.dataset.ex), b.dataset.ex); }));
+  // ---------- Address autocomplete (NSW Spatial Services, official government data) ----------
+  const NSW = "https://portal.spatial.nsw.gov.au/server/rest/services/";
+  const ADDR_URL = NSW + "NSW_Geocoded_Addressing_Theme/MapServer/1/query";
+  const SUB_URL = NSW + "NSW_Administrative_Boundaries_Theme/MapServer/2/query";
+  const LGA_URL = NSW + "NSW_Administrative_Boundaries_Theme/MapServer/8/query";
+  const SYDNEY = "150.5,-34.3,151.45,-33.4";
+  const ABBR = { ST: "STREET", RD: "ROAD", AVE: "AVENUE", AV: "AVENUE", PDE: "PARADE", CRES: "CRESCENT", CR: "CRESCENT", CL: "CLOSE", CT: "COURT", DR: "DRIVE", HWY: "HIGHWAY", LN: "LANE", PL: "PLACE", TCE: "TERRACE", BLVD: "BOULEVARD", BVD: "BOULEVARD", CCT: "CIRCUIT", ESP: "ESPLANADE", GR: "GROVE", SQ: "SQUARE", PWY: "PATHWAY", WY: "WAY" };
+  const ROAD_TYPES = new Set(Object.values(ABBR).concat(["WAY", "ROW", "WALK", "MEWS", "RISE", "VIEW", "TRACK", "LOOP", "GLADE", "GREEN", "CORSO", "BROADWAY", "PROMENADE", "QUAY", "RIDGE", "CHASE", "OUTLOOK", "VISTA", "WHARF", "BOULEVARDE", "GARDENS", "ARCADE", "ALLEY", "CROSS", "PASS"]));
+  const qs = (o) => Object.entries(o).map(([k, v]) => k + "=" + encodeURIComponent(v)).join("&");
+  const sql = (t) => t.replace(/'/g, "''");
+  const titleCase = (t) => String(t).toLowerCase().replace(/(^|[\s\-'])([a-z])/g, (m, a, c) => a + c.toUpperCase()).replace(/\bNsw\b/g, "NSW").replace(/\bMc([a-z])/g, (m, c) => "Mc" + c.toUpperCase());
+  let jsonpN = 0, useJsonp = false, nswDown = false;
+  function jsonp(url) {
+    return new Promise((res, rej) => {
+      const cb = "__cpf" + ++jsonpN, s = document.createElement("script");
+      const done = () => { clearTimeout(t); try { delete window[cb]; } catch (e) {} s.remove(); };
+      const t = setTimeout(() => { done(); rej(new Error("timeout")); }, 8000);
+      window[cb] = (d) => { done(); res(d); };
+      s.onerror = () => { done(); rej(new Error("jsonp")); };
+      s.src = url + "&callback=" + cb;
+      document.head.appendChild(s);
+    });
+  }
+  async function arcgis(base, params, signal) {
+    const url = base + "?" + qs(Object.assign({}, params, { f: "json" }));
+    if (!useJsonp) {
+      try {
+        const r = await fetch(url, { signal });
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        const d = await r.json();
+        if (d.error) throw new Error(d.error.message || "error");
+        return d;
+      } catch (e) {
+        if (e.name === "AbortError" || !(e instanceof TypeError)) throw e;
+        useJsonp = true; // blocked by CORS: fall back to JSONP
+      }
+    }
+    const d = await jsonp(url);
+    if (d.error) throw new Error(d.error.message || "error");
+    return d;
+  }
+  function normalise(v) {
+    let s = v.toUpperCase().replace(/,/g, " ").replace(/\b(NSW|AUSTRALIA)\b/g, " ").replace(/\b\d{4}\s*$/, "").replace(/[^A-Z0-9'\-\/ ]/g, " ").replace(/\s+/g, " ").trim();
+    s = s.replace(/^(UNIT|APT|SHOP)\s+\S+\s+/, "").replace(/^\S+\/(?=\d)/, ""); // drop unit prefix: 3/45 -> 45
+    const t = s.split(" ");
+    return t.map((w, i) => (i < t.length - 1 && ABBR[w] ? ABBR[w] : w)).join(" ");
+  }
+  // "83 NORTON STREET ASHFIELD" -> { num, street, suburb }
+  function splitAddress(a) {
+    const t = a.split(" ");
+    let i = 0; const num = [];
+    while (i < t.length && /\d/.test(t[i])) num.push(t[i++]);
+    let j = i + 1;
+    while (j < t.length && !ROAD_TYPES.has(t[j])) j++;
+    if (j >= t.length) return null;
+    return { num: num.join(" "), street: t.slice(i, j + 1).join(" "), suburb: t.slice(j + 1).join(" ") };
+  }
+  async function nswSuggest(text, signal) {
+    const out = [];
+    const jobs = [];
+    if (/^\d/.test(text)) {
+      jobs.push(arcgis(ADDR_URL, { where: "address LIKE '" + sql(text) + "%'", outFields: "address", returnGeometry: true, outSR: 4326, orderByFields: "address", resultRecordCount: 8 }, signal).then((d) => {
+        (d.features || []).forEach((f) => {
+          const sp = splitAddress(f.attributes.address);
+          out.push({ kind: "Addresses", main: titleCase(sp ? sp.num + " " + sp.street : f.attributes.address), sub: sp ? titleCase(sp.suburb) : "", x: f.geometry.x, y: f.geometry.y });
+        });
+      }));
+    } else {
+      jobs.push(arcgis(ADDR_URL, { where: "address LIKE '% " + sql(text) + "%'", outFields: "address", returnGeometry: true, outSR: 4326, geometry: SYDNEY, geometryType: "esriGeometryEnvelope", inSR: 4326, spatialRel: "esriSpatialRelIntersects", resultRecordCount: 300 }, signal).then((d) => {
+        const seen = new Map();
+        (d.features || []).forEach((f) => {
+          const sp = splitAddress(f.attributes.address);
+          if (!sp || !sp.suburb || !(sp.street + " " + sp.suburb).startsWith(text)) return; // text must start at the street name
+          const k = sp.street + "|" + sp.suburb;
+          if (!seen.has(k)) seen.set(k, { kind: "Streets", main: titleCase(sp.street), sub: titleCase(sp.suburb), x: f.geometry.x, y: f.geometry.y });
+        });
+        [...seen.values()].sort((a, b) => (a.main + a.sub).localeCompare(b.main + b.sub)).slice(0, 8).forEach((o) => out.push(o));
+      }));
+      jobs.push(arcgis(SUB_URL, { where: "suburbname LIKE '" + sql(text) + "%'", outFields: "suburbname,postcode", returnGeometry: false, orderByFields: "suburbname", resultRecordCount: 6 }, signal).then((d) => {
+        (d.features || []).forEach((f) => out.push({ kind: "Suburbs", main: titleCase(f.attributes.suburbname), sub: String(f.attributes.postcode || ""), suburb: f.attributes.suburbname, pc: f.attributes.postcode }));
+      }));
+    }
+    const res = await Promise.allSettled(jobs);
+    const abort = res.find((r) => r.status === "rejected" && r.reason && r.reason.name === "AbortError");
+    if (abort) throw abort.reason;
+    if (res.every((r) => r.status === "rejected")) throw res[0].reason;
+    return out;
+  }
+  function localSuggest(v) {
+    const t = v.trim().toLowerCase();
+    if (!t) return [];
+    return SUBURBS.filter((x) => x.name.toLowerCase().startsWith(t) || x.pc.startsWith(t)).slice(0, 6)
+      .map((x) => ({ kind: "Suburbs", main: x.name, sub: x.pc, local: x }));
+  }
+
+  const input = $("#addr"), list = $("#addrList");
+  let opts = [], activeIdx = -1, ctrl = null, timer = null, chosen = null;
+  function drawList(items, note) {
+    opts = items; activeIdx = -1;
+    if (!items.length && !note) { closeList(); return; }
+    let html = "", last = "";
+    items.forEach((o, i) => {
+      if (o.kind !== last) { html += '<li class="grp" role="presentation">' + o.kind + "</li>"; last = o.kind; }
+      html += '<li class="opt" role="option" id="opt' + i + '" data-i="' + i + '" aria-selected="false"><span>' + esc(o.main) + '</span><span class="sub">' + esc(o.sub || "") + "</span></li>";
+    });
+    if (note) html += '<li class="note" role="presentation">' + note + "</li>";
+    list.innerHTML = html; list.hidden = false; input.setAttribute("aria-expanded", "true");
+  }
+  function closeList() { list.hidden = true; input.setAttribute("aria-expanded", "false"); input.removeAttribute("aria-activedescendant"); activeIdx = -1; }
+  function highlight(i) {
+    activeIdx = i;
+    list.querySelectorAll(".opt").forEach((el) => el.setAttribute("aria-selected", String(+el.dataset.i === i)));
+    const el = list.querySelector("#opt" + i);
+    if (el) { input.setAttribute("aria-activedescendant", el.id); el.scrollIntoView({ block: "nearest" }); }
+  }
+  function mergeSuburbs(nsw, local) {
+    const names = new Set(nsw.filter((o) => o.kind === "Suburbs").map((o) => o.main.toLowerCase()));
+    return nsw.concat(local.filter((o) => !names.has(o.main.toLowerCase())));
+  }
+  const ORDER = { Addresses: 0, Suburbs: 1, Streets: 2 };
+  input.addEventListener("input", () => {
+    chosen = null;
+    const v = input.value;
+    clearTimeout(timer); if (ctrl) ctrl.abort();
+    const local = localSuggest(v);
+    const text = normalise(v);
+    if (text.length < 3 || nswDown) { drawList(local); return; }
+    drawList(local, "Searching NSW addresses…");
+    timer = setTimeout(() => {
+      ctrl = new AbortController();
+      const myCtrl = ctrl;
+      nswSuggest(text, ctrl.signal).then((items) => {
+        if (myCtrl.signal.aborted || input.value !== v) return;
+        const all = mergeSuburbs(items, local).sort((a, b) => ORDER[a.kind] - ORDER[b.kind]);
+        drawList(all, all.length ? "" : "No matching NSW addresses. Check the spelling, or enter a suburb or postcode.");
+      }).catch((e) => {
+        if (e && e.name === "AbortError") return;
+        nswDown = true; // offline or blocked: keep the local suburb list
+        if (input.value === v) drawList(local, local.length ? "" : "Address search isn't available here. Enter a suburb or postcode instead.");
+      });
+    }, 250);
+  });
+  input.addEventListener("keydown", (e) => {
+    if (list.hidden || !opts.length) return;
+    if (e.key === "ArrowDown") { e.preventDefault(); highlight((activeIdx + 1) % opts.length); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); highlight((activeIdx - 1 + opts.length) % opts.length); }
+    else if (e.key === "Enter" && activeIdx >= 0) { e.preventDefault(); pick(opts[activeIdx]); }
+    else if (e.key === "Escape") { closeList(); }
+  });
+  list.addEventListener("mousedown", (e) => { const li = e.target.closest(".opt"); if (!li) return; e.preventDefault(); pick(opts[+li.dataset.i]); });
+  input.addEventListener("blur", () => setTimeout(closeList, 150));
+
+  function pick(o) {
+    chosen = o; closeList(); clearTimeout(timer); if (ctrl) ctrl.abort();
+    input.value = o.kind === "Suburbs" ? o.main + " NSW " + o.sub : o.main + ", " + o.sub + " NSW";
+    lookup(o);
+  }
+  const councilKey = (n) => String(n || "").toLowerCase().trim().replace(/\s+/g, "-");
+  function polyCentroid(rings) {
+    let best = null, bestA = 0;
+    (rings || []).forEach((r) => {
+      let a = 0, cx = 0, cy = 0;
+      for (let i = 0, j = r.length - 1; i < r.length; j = i++) { const f = r[j][0] * r[i][1] - r[i][0] * r[j][1]; a += f; cx += (r[j][0] + r[i][0]) * f; cy += (r[j][1] + r[i][1]) * f; }
+      if (a && Math.abs(a) > bestA) { bestA = Math.abs(a); best = [cx / (3 * a), cy / (3 * a)]; }
+    });
+    return best;
+  }
+  function lgaAt(x, y) {
+    return arcgis(LGA_URL, { geometry: x + "," + y, geometryType: "esriGeometryPoint", inSR: 4326, spatialRel: "esriSpatialRelIntersects", outFields: "lganame,councilname", returnGeometry: false })
+      .then((d) => (d.features && d.features[0] ? d.features[0].attributes : null));
+  }
+  async function lookup(o) {
+    if (o.local) { showResult({ kind: "suburb", sub: o.local, pcMismatch: null }, input.value); return; }
+    $("#result").innerHTML = '<span class="status idle">Checking…</span><div class="council">Looking up the council boundary</div>';
+    try {
+      let x = o.x, y = o.y;
+      if (o.kind === "Suburbs") {
+        const d = await arcgis(SUB_URL, { where: "suburbname='" + sql(o.suburb) + "'" + (o.pc ? " AND postcode=" + (+o.pc) : ""), outFields: "suburbname", returnGeometry: true, outSR: 4326, maxAllowableOffset: 0.0005 });
+        const g = d.features && d.features[0] && d.features[0].geometry;
+        const c = g && polyCentroid(g.rings);
+        if (!c) throw new Error("no geometry");
+        [x, y] = c;
+      }
+      const lga = await lgaAt(x, y);
+      if (!lga) throw new Error("no council");
+      if (chosen === o) showExact(o, lga);
+    } catch (e) {
+      if (chosen === o) showResult(match(input.value), input.value); // fall back to the built-in suburb list
+    }
+  }
+  function showExact(o, lga) {
+    const key = councilKey(lga.lganame);
+    const name = titleCase(lga.councilname || lga.lganame);
+    const place = o.kind === "Suburbs" ? o.main : o.main + ", " + o.sub;
+    const local = SUBURBS.find((x) => x.name.toLowerCase() === String(o.kind === "Suburbs" ? o.main : o.sub).toLowerCase());
+    const shared = o.kind === "Suburbs" && local && local.share.length;
+    const how = o.kind === "Addresses" ? "This address is inside the " + esc(name) + " boundary." :
+      o.kind === "Streets" ? "Checked at a property on this street. For a long street near a council border, choose the exact address." :
+      shared ? "The centre of " + esc(o.main) + " is in " + esc(name) + ", but part of the suburb belongs to " + local.share.map(esc).join(" and ") + ". Choose your street address to be sure." :
+      "The centre of this suburb is in " + esc(name) + ".";
+    const src = '<span class="help">Source: NSW Spatial Services council boundaries.</span>';
+    if (COUNCILS[key]) {
+      $("#result").innerHTML = '<span class="status ' + (shared ? "part" : "ok") + '">' + (shared ? "Check boundary" : "✓ Supported") + '</span><div class="council">' + esc(COUNCILS[key].name) + '</div><div class="msg">' + esc(place) + ". " + how + " Showing plants from the council's native plant list.</div>" + src;
+      selectCouncil(key);
+    } else {
+      $("#result").innerHTML = '<span class="status no">Not in database yet</span><div class="council">' + esc(name) + '</div><div class="msg">' + esc(place) + ". " + how + " This council's plant list hasn't been added yet.</div>" + src;
+    }
+  }
+
+  $("#addrForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (!list.hidden && opts.length) { pick(opts[activeIdx >= 0 ? activeIdx : 0]); return; }
+    if (chosen) { lookup(chosen); return; }
+    const v = input.value.trim(); closeList(); showResult(match(v), v);
+  });
+  document.querySelectorAll("[data-ex]").forEach((b) => b.addEventListener("click", () => {
+    input.value = b.dataset.ex; chosen = null;
+    if (b.hasAttribute("data-suggest")) { input.focus(); input.dispatchEvent(new Event("input")); }
+    else { closeList(); showResult(match(b.dataset.ex), b.dataset.ex); }
+  }));
   $("#council").addEventListener("change", render);
 
   // Start with a worked example so the page opens in a real state
