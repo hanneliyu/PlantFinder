@@ -1,0 +1,15 @@
+{
+  "_comment": "Names to search photos under: current names for old synonyms, and the parent species for varieties/cultivars. Used by tools/fetch_photos.py.",
+  "Acmena smithii": { "q": "Syzygium smithii" },
+  "Acmena smithii var. minor": { "q": "Syzygium smithii", "note": "Photo shows the species Syzygium smithii" },
+  "Austrodanthonia racemosa": { "q": "Rytidosperma racemosum" },
+  "Austrodanthonia tenuior": { "q": "Rytidosperma tenuius" },
+  "Morinda jasminoides": { "q": "Gynochthodes jasminoides" },
+  "Pultenaea scabra var. biloba": { "q": "Pultenaea scabra", "note": "Photo shows the species Pultenaea scabra" },
+  "Eriostemon 'Profusion'": { "q": "Philotheca myoporoides", "note": "Photo shows a related species, Philotheca myoporoides" },
+  "Callistemon citrinus": { "q": "Melaleuca citrina" },
+  "Callistemon linearis": { "q": "Melaleuca linearis" },
+  "Pratia purpurascens": { "q": "Lobelia purpurascens" },
+  "Trema aspera": { "q": "Trema tomentosa", "note": "Photo shows Trema tomentosa (aspera is a variety of it)" },
+  "Themeda triandra": { "q": "Themeda triandra" }
+}

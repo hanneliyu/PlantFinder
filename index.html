@@ -338,7 +338,7 @@ footer .credit-line { border-top: 1px solid var(--line); padding-top: 14px; marg
 
   <footer>
     <span>Plant lists, vegetation zones and areas come from each council. For Inner West, height, sunlight, water, soil and flowering also come from the council list; Hornsby's nursery list gives habitat notes only, so those values are general reference. Width, toxicity, allergy and pot size (marked <span class="ref">ref</span>) are general horticultural guidance — check before specifying. Plant usage is design guidance; "Fire retardant" means lower flammability, and no plant is fireproof.</span>
-    <span>Photos load from <a href="https://www.inaturalist.org" target="_blank" rel="noopener">iNaturalist</a>, with <a href="https://commons.wikimedia.org" target="_blank" rel="noopener">Wikimedia Commons</a> as a backup, and are credited to each photographer under their Creative Commons licence. Only openly licensed photos are shown.</span>
+    <span>Photos come from <a href="https://www.inaturalist.org" target="_blank" rel="noopener">iNaturalist</a>, with <a href="https://commons.wikimedia.org" target="_blank" rel="noopener">Wikimedia Commons</a> as a backup, and are credited to each photographer under their Creative Commons licence. Only openly licensed photos are shown.</span>
     <span>Widths, frost tolerance and wildlife were cross-checked against <a href="https://gardeningwithangus.com.au/plantsearch/" target="_blank" rel="noopener">Gardening with Angus</a> (facts only; their text and photos are not reproduced).</span>
     <span>Toxicity and allergy notes are not medical advice. If a child or pet eats a plant, call the Poisons Information Centre on 13 11 26 or your vet.</span>
     <p class="credit-line">Designed and built by <b>Hanneli Yu</b> · © 2026</p>
@@ -1153,28 +1153,15 @@ const NSW_COUNCILS = ["ALBURY CITY", "ARMIDALE REGIONAL", "BALLINA", "BALRANALD"
   }
 
   // ---------- Photos (openly licensed only) ----------
-  // Loaded in the visitor's browser, only for cards near the screen, at about one request per second
-  // (iNaturalist's API limit). Sources in order: iNaturalist default photo, other iNaturalist photos,
-  // Wikipedia / Wikimedia Commons. If the host blocks outside requests, cards keep the plant-type icon.
+  // Stored with the site: images/plants/{sm,lg}/<slug>.webp, with credits in data/photos.json
+  // (built by tools/fetch_photos.py). Species not in photos.json yet fall back to a live lookup in the
+  // visitor's browser, only for cards near the screen, at about one request per second (iNaturalist's
+  // API limit): iNaturalist default photo, other iNaturalist photos, then Wikipedia / Wikimedia Commons.
+  // If the host blocks outside requests, cards keep the plant-type icon.
+  let localPhotos = {};
+  const localPhotosReady = fetch("data/photos.json").then((r) => (r.ok ? r.json() : {})).then((d) => { localPhotos = d; }, () => {});
   const PHOTO_CACHE_KEY = "cpf-photos-v3";
   const MISS_RETRY_MS = 3 * 24 * 3600 * 1000; // try again after 3 days if nothing was found
-  // Add your own or permission-granted photos here: "Scientific name": { url, credit }
-  const PHOTO_OVERRIDES = {};
-  // Names to search under: current names for old synonyms, and the parent species for varieties/cultivars
-  const PHOTO_QUERY = {
-    "Acmena smithii": { q: "Syzygium smithii" },
-    "Acmena smithii var. minor": { q: "Syzygium smithii", note: "Photo shows the species Syzygium smithii" },
-    "Austrodanthonia racemosa": { q: "Rytidosperma racemosum" },
-    "Austrodanthonia tenuior": { q: "Rytidosperma tenuius" },
-    "Morinda jasminoides": { q: "Gynochthodes jasminoides" },
-    "Pultenaea scabra var. biloba": { q: "Pultenaea scabra", note: "Photo shows the species Pultenaea scabra" },
-    "Eriostemon 'Profusion'": { q: "Philotheca myoporoides", note: "Photo shows a related species, Philotheca myoporoides" },
-    "Callistemon citrinus": { q: "Melaleuca citrina" },
-    "Callistemon linearis": { q: "Melaleuca linearis" },
-    "Pratia purpurascens": { q: "Lobelia purpurascens" },
-    "Trema aspera": { q: "Trema tomentosa", note: "Photo shows Trema tomentosa (aspera is a variety of it)" },
-    "Themeda triandra": { q: "Themeda triandra" }
-  };
   let photoCache = {};
   try { photoCache = JSON.parse(localStorage.getItem(PHOTO_CACHE_KEY) || "{}"); } catch (e) {}
   const saveCache = () => { try { localStorage.setItem(PHOTO_CACHE_KEY, JSON.stringify(photoCache)); } catch (e) {} };
@@ -1191,7 +1178,14 @@ const NSW_COUNCILS = ["ALBURY CITY", "ARMIDALE REGIONAL", "BALLINA", "BALRANALD"
     return c;
   }
   function fetchPhoto(sci) {
-    if (PHOTO_OVERRIDES[sci]) return Promise.resolve(PHOTO_OVERRIDES[sci]);
+    return localPhotosReady.then(() => {
+      const e = localPhotos[sci];
+      if (e && e.file) return { file: e.file, credit: e.credit, note: e.note, src: e.src };
+      if (e && e.miss) return null;
+      return livePhoto(sci);
+    });
+  }
+  function livePhoto(sci) {
     const c = cached(sci);
     if (c !== undefined) return Promise.resolve(c);
     if (photosBlocked) return Promise.resolve(null);
@@ -1221,23 +1215,20 @@ const NSW_COUNCILS = ["ALBURY CITY", "ARMIDALE REGIONAL", "BALLINA", "BALRANALD"
   }
   const getJSON = (u) => fetch(u).then((r) => (r.ok ? r.json() : Promise.reject(r.status)));
   const OPEN = (code) => !!code && code !== "all rights reserved";
-  async function findPhoto(sci) {
-    const map = PHOTO_QUERY[sci] || {};
-    const q = map.q || sci;
+  async function findPhoto(q) {
     const plain = !/var\.|subsp\.|'/.test(q);
     const d = await getJSON("https://api.inaturalist.org/v1/taxa?is_active=true&per_page=10" + (plain ? "&rank=species" : "") + "&q=" + encodeURIComponent(q));
     const res = d.results || [];
     const genus = q.split(" ")[0];
     const t = res.find((x) => x.name === q) || res.find((x) => x.matched_term === q) || res.find((x) => x.name && x.name.split(" ")[0] === genus);
-    const tag = (o) => (o && map.note ? Object.assign(o, { note: map.note }) : o);
     if (t) {
       const ph = t.default_photo;
-      if (ph && OPEN(ph.license_code) && ph.medium_url) return tag({ url: ph.medium_url, credit: ph.attribution, src: "iNaturalist" });
+      if (ph && OPEN(ph.license_code) && ph.medium_url) return { url: ph.medium_url, credit: ph.attribution, src: "iNaturalist" };
       const full = await getJSON("https://api.inaturalist.org/v1/taxa/" + t.id);
       const tp = ((full.results && full.results[0] && full.results[0].taxon_photos) || []).map((x) => x.photo).find((x) => x && OPEN(x.license_code) && x.medium_url);
-      if (tp) return tag({ url: tp.medium_url, credit: tp.attribution, src: "iNaturalist" });
+      if (tp) return { url: tp.medium_url, credit: tp.attribution, src: "iNaturalist" };
     }
-    try { const w = await wikiPhoto(q); if (w) return tag(w); } catch (e) {}
+    try { const w = await wikiPhoto(q); if (w) return w; } catch (e) {}
     return null;
   }
   async function wikiPhoto(name) {
@@ -1265,7 +1256,9 @@ const NSW_COUNCILS = ["ALBURY CITY", "ARMIDALE REGIONAL", "BALLINA", "BALRANALD"
       img.referrerPolicy = "no-referrer";
       img.onload = () => img.classList.add("ready");
       img.onerror = () => img.remove();
-      img.src = box.closest(".panel") && info.src === "iNaturalist" ? info.url.replace("/medium.", "/large.") : info.url;
+      const big = !!box.closest(".panel");
+      img.src = info.file ? "images/plants/" + (big ? "lg" : "sm") + "/" + info.file + ".webp"
+        : big && info.src === "iNaturalist" ? info.url.replace("/medium.", "/large.") : info.url;
       box.insertBefore(img, box.querySelector(".credit"));
       const c = box.querySelector(".credit");
       c.textContent = (info.note ? info.note + " · " : "") + "Photo " + String(info.credit || "").replace(/\s*\(c\)\s*/i, "© ");
