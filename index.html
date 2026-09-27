@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="author" content="Hanneli Yu">
 <title>Council Plant Finder</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -186,9 +186,53 @@ footer { font-size: 12px; color: var(--muted); border-top: 1px solid var(--line)
 }
 @media (max-width: 480px) { .addr { flex-direction: column; } }
 @media (prefers-reduced-motion: reduce) { .card { transition: none; } .card:hover { transform: none; } }
+
+/* ---------- Landing ---------- */
+.landing { position: fixed; inset: 0; z-index: 20; background: var(--bg); overflow: hidden; display: grid; place-items: center; padding: calc(env(safe-area-inset-top, 0px) + 16px) 16px calc(env(safe-area-inset-bottom, 0px) + 16px); transition: opacity .45s ease, transform .45s ease; }
+.landing.leaving { opacity: 0; transform: scale(1.03); pointer-events: none; }
+.names { position: absolute; inset: -20px; display: flex; flex-wrap: wrap; justify-content: center; align-content: center; gap: 4px 18px; padding: 10px; line-height: 1.15; user-select: none; }
+.nm { position: relative; display: inline-grid; color: var(--ink); opacity: .16; font-family: var(--sans); font-weight: 400; letter-spacing: .01em; cursor: pointer; transition: opacity .25s, color .25s, transform .3s cubic-bezier(.2,.8,.2,1); will-change: transform; }
+.nm::after { content: attr(data-t); font-weight: 700; visibility: hidden; height: 0; overflow: hidden; }
+.nm > span { grid-area: 1 / 1; }
+.nm.serif { font-family: var(--serif); font-style: italic; }
+.nm.hot { opacity: 1; font-weight: 700; color: var(--accent); transform: scale(1.35); z-index: 2; }
+.nm.live { opacity: .42; color: var(--accent); }
+.nm.live.hot { opacity: 1; }
+.land-card { position: relative; z-index: 3; width: min(560px, 100%); background: color-mix(in srgb, var(--surface) 88%, transparent); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 10px 40px rgba(20,35,28,.14); padding: 28px 28px 22px; display: flex; flex-direction: column; gap: 14px; }
+.land-card h1 { font-family: var(--serif); font-weight: 700; font-size: clamp(28px, 5vw, 40px); line-height: 1.05; margin: 0; letter-spacing: -.01em; text-wrap: balance; }
+.land-card h1 em { font-weight: 400; color: var(--accent); }
+.land-card .lede { margin: 0; color: var(--muted); font-size: 15px; max-width: 46ch; }
+.land-card form.in { padding: 0; border: none; gap: 10px; }
+.land-card .addr input { font-size: 16px; padding: 13px 14px; }
+.land-card .addr .btn { padding: 12px 16px; }
+.land-foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; font-size: 12.5px; color: var(--muted); border-top: 1px dashed var(--line); padding-top: 12px; }
+.land-foot button { border: none; background: none; padding: 0; color: var(--accent); cursor: pointer; font: inherit; text-decoration: underline; text-underline-offset: 2px; }
+#landMsg { display: flex; flex-direction: column; gap: 4px; }
+#landMsg:empty { display: none; }
+#landMsg .council { font-family: var(--serif); font-size: 18px; }
+#landMsg .msg { color: var(--muted); font-size: 13px; }
+.newaddr { align-self: flex-start; }
+.credit-line { text-align: center; font-size: 12px; color: var(--muted); letter-spacing: .02em; }
+.credit-line b { font-weight: 600; color: var(--ink); }
+.landing .credit-line { position: absolute; z-index: 3; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 14px); transform: translateX(-50%); white-space: nowrap; background: color-mix(in srgb, var(--surface) 90%, transparent); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); border: 1px solid var(--line); border-radius: 999px; padding: 4px 14px; }
+footer .credit-line { border-top: 1px solid var(--line); padding-top: 14px; margin-top: 8px; }
+@media (prefers-reduced-motion: reduce) { .landing, .nm { transition: none; } }
+@media (max-width: 600px) { .land-card { padding: 20px 18px 16px; } .names { gap: 2px 12px; } }
 </style>
 
-<div class="wrap">
+<div class="landing" id="landing">
+  <div class="names" id="names" aria-hidden="true"></div>
+  <div class="land-card" role="region" aria-label="Start">
+    <h1>Council Plant Finder <em>· NSW</em></h1>
+    <p class="lede">Every NSW council has its own list of local native plants. Enter your site address to find your council and the plants that belong there.</p>
+    <div id="landSlot"></div>
+    <div id="landMsg" aria-live="polite"></div>
+    <div class="land-foot"><span><span id="nCouncils">128</span> NSW councils · Inner West plant list available now</span><button type="button" id="skip">Browse all plants →</button></div>
+  </div>
+  <p class="credit-line">Designed and built by <b>Hanneli Yu</b> · © 2026</p>
+</div>
+
+<div class="wrap" id="app" hidden>
   <header class="top">
     <div>
       <h1>Council Plant Finder <em>· Inner West</em></h1>
@@ -196,13 +240,14 @@ footer { font-size: 12px; color: var(--muted); border-top: 1px solid var(--line)
     </div>
     <div class="src">Plant list source:<br><a id="srcLink" href="#" target="_blank" rel="noopener">Inner West Council — Native Plants of the Inner West</a></div>
   </header>
+  <button class="btn newaddr" type="button" id="newAddr">← Start again with a new address</button>
 
   <section class="matcher" aria-label="Find your council">
     <form class="in" id="addrForm" autocomplete="off">
       <label class="eyebrow" for="addr">Site address</label>
       <div class="addr">
         <div class="combo">
-          <input id="addr" type="text" placeholder="Start typing a street or suburb, e.g. 12 Norton St" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="addrList" spellcheck="false">
+          <input id="addr" type="text" placeholder="Street address, suburb or postcode" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="addrList" spellcheck="false">
           <ul class="suggest" id="addrList" role="listbox" aria-label="Address suggestions" hidden></ul>
         </div>
         <button class="btn primary" type="submit">Find council</button>
@@ -297,6 +342,7 @@ footer { font-size: 12px; color: var(--muted); border-top: 1px solid var(--line)
     <span>Photos load from <a href="https://www.inaturalist.org" target="_blank" rel="noopener">iNaturalist</a>, with <a href="https://commons.wikimedia.org" target="_blank" rel="noopener">Wikimedia Commons</a> as a backup, and are credited to each photographer under their Creative Commons licence. Only openly licensed photos are shown.</span>
     <span>Widths, frost tolerance and wildlife were cross-checked against <a href="https://gardeningwithangus.com.au/plantsearch/" target="_blank" rel="noopener">Gardening with Angus</a> (facts only; their text and photos are not reproduced).</span>
     <span>Toxicity and allergy notes are not medical advice. If a child or pet eats a plant, call the Poisons Information Centre on 13 11 26 or your vet.</span>
+    <p class="credit-line">Designed and built by <b>Hanneli Yu</b> · © 2026</p>
   </footer>
 </div>
 
@@ -513,6 +559,8 @@ PLANTS.forEach((p) => {
   // Add GwA usages we didn't already have.
   g.uses.forEach((u) => { if (!p.uses.includes(u)) p.uses.push(u); });
 });
+// All 128 NSW local councils (NSW Spatial Services LGA boundaries, Sep 2026)
+const NSW_COUNCILS = ["ALBURY CITY", "ARMIDALE REGIONAL", "BALLINA", "BALRANALD", "BATHURST REGIONAL", "BAYSIDE", "BEGA VALLEY", "BELLINGEN", "BERRIGAN", "BLACKTOWN", "BLAND", "BLAYNEY", "BLUE MOUNTAINS", "BOGAN", "BOURKE", "BREWARRINA", "BROKEN HILL", "BURWOOD", "BYRON", "CABONNE", "CAMDEN", "CAMPBELLTOWN", "CANADA BAY", "CANTERBURY-BANKSTOWN", "CARRATHOOL", "CENTRAL COAST", "CENTRAL DARLING", "CESSNOCK", "CITY OF PARRAMATTA", "CLARENCE VALLEY", "COBAR", "COFFS HARBOUR", "COOLAMON", "COONAMBLE", "COOTAMUNDRA-GUNDAGAI REGIONAL", "COWRA", "CUMBERLAND", "DUBBO REGIONAL", "DUNGOG", "EDWARD RIVER", "EUROBODALLA", "FAIRFIELD", "FEDERATION", "FORBES", "GEORGES RIVER", "GILGANDRA", "GLEN INNES SEVERN", "GOULBURN MULWAREE", "GREATER HUME SHIRE", "GRIFFITH", "GUNNEDAH", "GWYDIR", "HAWKESBURY", "HAY", "HILLTOPS", "HORNSBY", "HUNTERS HILL", "INNER WEST", "INVERELL", "JUNEE", "KEMPSEY", "KIAMA", "KU-RING-GAI", "KYOGLE", "LACHLAN", "LAKE MACQUARIE", "LANE COVE", "LEETON", "LISMORE", "LITHGOW CITY", "LIVERPOOL", "LIVERPOOL PLAINS", "LOCKHART", "MAITLAND", "MID-COAST", "MID-WESTERN REGIONAL", "MOREE PLAINS", "MOSMAN", "MURRAY RIVER", "MURRUMBIDGEE", "MUSWELLBROOK", "NAMBUCCA VALLEY", "NARRABRI", "NARRANDERA", "NARROMINE", "NEWCASTLE", "NORTH SYDNEY", "NORTHERN BEACHES", "OBERON", "ORANGE", "PARKES", "PENRITH", "PORT MACQUARIE-HASTINGS", "PORT STEPHENS", "QUEANBEYAN-PALERANG REGIONAL", "RANDWICK", "RICHMOND VALLEY", "RYDE", "SHELLHARBOUR", "SHOALHAVEN", "SINGLETON", "SNOWY MONARO REGIONAL", "SNOWY VALLEYS", "STRATHFIELD", "SUTHERLAND SHIRE", "SYDNEY", "TAMWORTH REGIONAL", "TEMORA", "TENTERFIELD", "THE HILLS SHIRE", "TWEED", "UPPER HUNTER", "UPPER LACHLAN SHIRE", "URALLA", "WAGGA WAGGA", "WALCHA", "WALGETT", "WARREN", "WARRUMBUNGLE", "WAVERLEY", "WEDDIN", "WENTWORTH", "WILLOUGHBY", "WINGECARRIBEE", "WOLLONDILLY", "WOLLONGONG", "WOOLLAHRA", "YASS VALLEY"];
 </script>
 <script>
 (function () {
@@ -857,7 +905,7 @@ PLANTS.forEach((p) => {
     }
     return { kind: "none" };
   }
-  function showResult(r, raw) {
+  function showResultInner(r, raw) {
     const el = $("#result");
     if (!raw) {
       el.innerHTML = '<span class="status idle">Waiting for an address</span><div class="council">Which council is your site in?</div><div class="msg">Councils publish their own local native plant lists. Enter an address to load the right one.</div>';
@@ -1084,7 +1132,7 @@ PLANTS.forEach((p) => {
       if (chosen === o) showResult(match(input.value), input.value); // fall back to the built-in suburb list
     }
   }
-  function showExact(o, lga) {
+  function showExactInner(o, lga) {
     const key = councilKey(lga.lganame);
     const name = titleCase(lga.councilname || lga.lganame);
     const place = o.kind === "Suburbs" ? o.main : o.main + ", " + o.sub;
@@ -1116,9 +1164,110 @@ PLANTS.forEach((p) => {
   }));
   $("#council").addEventListener("change", render);
 
-  // Start with a worked example so the page opens in a real state
-  $("#addr").value = "45 Norton St, Leichhardt NSW 2040";
-  showResult(match($("#addr").value), $("#addr").value);
+  // ---------- Landing screen ----------
+  function showResult(r, raw) { showResultInner(r, raw); if (raw) afterLookup(); }
+  function showExact(o, lga) { showExactInner(o, lga); afterLookup(); }
+  const landing = $("#landing"), app = $("#app"), form = $("#addrForm"), matcher = $(".matcher");
+  let onLanding = true;
+  function afterLookup() {
+    if (!onLanding) return;
+    const st = $("#result .status");
+    if (st && (st.classList.contains("ok") || st.classList.contains("part"))) { enterApp(); return; }
+    $("#landMsg").innerHTML = $("#result").innerHTML + (st && st.classList.contains("no") ? '<button type="button" class="btn" id="anyway" style="align-self:flex-start;margin-top:4px">Browse Inner West plants anyway</button>' : "");
+    const b = $("#anyway"); if (b) b.addEventListener("click", enterApp);
+  }
+  function enterApp() {
+    onLanding = false;
+    matcher.insertBefore(form, $("#result"));
+    app.hidden = false;
+    landing.classList.add("leaving");
+    setTimeout(() => { landing.hidden = true; }, 450);
+    window.scrollTo(0, 0);
+    render();
+  }
+  function showLanding() {
+    onLanding = true;
+    $("#landMsg").innerHTML = "";
+    $("#landSlot").appendChild(form);
+    landing.hidden = false;
+    requestAnimationFrame(() => landing.classList.remove("leaving"));
+    app.hidden = true;
+    const i = $("#addr"); i.value = ""; i.focus();
+  }
+  $("#skip").addEventListener("click", enterApp);
+  $("#newAddr").addEventListener("click", showLanding);
+
+  // Background wall of council names: hover to highlight, click to open
+  const wall = $("#names");
+  const nice = (n) => n.toLowerCase().replace(/(^|[\s\-])([a-z])/g, (m, a, c) => a + c.toUpperCase()).replace(/\bOf\b/g, "of");
+  function rand(seed) { let x = Math.sin(seed * 9301 + 49297) * 233280; return x - Math.floor(x); }
+  function buildWall() {
+    wall.innerHTML = "";
+    const add = (copy) => NSW_COUNCILS.forEach((n, i) => {
+      const k = i + copy * 131, r = rand(k);
+      const el = document.createElement("span");
+      el.className = "nm" + (r > 0.72 ? " serif" : "") + (n === "INNER WEST" ? " live" : "");
+      const t = nice(n);
+      el.dataset.t = t;
+      el.dataset.key = n.toLowerCase().replace(/\s+/g, "-");
+      el.setAttribute("role", "button");
+      el.tabIndex = -1;
+      el.innerHTML = "<span>" + t + "</span>";
+      el.style.fontSize = (15 + Math.round(rand(k + 7) * 17)) + "px";
+      wall.appendChild(el);
+    });
+    let copy = 0;
+    add(copy++);
+    while (wall.scrollHeight < window.innerHeight * 1.15 && copy < 5) add(copy++);
+  }
+  buildWall();
+  let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(buildWall, 200); });
+  const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let hot = null;
+  function ripple(el, cx, cy) {
+    if (hot) hot.classList.remove("hot");
+    hot = el; el.classList.add("hot");
+    if (still) return;
+    // A wave rolls outward through the neighbouring names
+    wall.querySelectorAll(".nm").forEach((n) => {
+      if (n === el) return;
+      const b = n.getBoundingClientRect();
+      const dx = b.left + b.width / 2 - cx, dy = b.top + b.height / 2 - cy;
+      const d = Math.hypot(dx, dy);
+      if (d > 320 || !n.animate) return;
+      const push = 7 * (1 - d / 320);
+      const ux = dx / (d || 1), uy = dy / (d || 1);
+      n.animate([
+        { transform: "translate(0,0) scale(1)" },
+        { transform: "translate(" + (ux * push) + "px," + (uy * push) + "px) scale(" + (1 + 0.12 * (1 - d / 320)) + ")", opacity: 0.45 },
+        { transform: "translate(0,0) scale(1)" }
+      ], { duration: 700, delay: d * 1.6, easing: "cubic-bezier(.3,.7,.3,1)" });
+    });
+  }
+  wall.addEventListener("pointerover", (e) => {
+    const el = e.target.closest(".nm");
+    if (!el || el === hot) return;
+    const b = el.getBoundingClientRect();
+    ripple(el, b.left + b.width / 2, b.top + b.height / 2);
+  });
+  // Click a name to open that council's plant list
+  wall.addEventListener("click", (e) => {
+    const el = e.target.closest(".nm");
+    if (!el) return;
+    const key = el.dataset.key, name = el.dataset.t;
+    if (COUNCILS[key]) {
+      $("#result").innerHTML = '<span class="status ok">✓ Supported</span><div class="council">' + esc(COUNCILS[key].name) + '</div><div class="msg">Chosen from the council list. Enter your site address to check it is in this council.</div>';
+      selectCouncil(key);
+      enterApp();
+    } else {
+      $("#landMsg").innerHTML = '<span class="status no">Coming soon</span><div class="council">' + esc(name) + ' Council</div><div class="msg">This council\'s native plant list hasn\'t been added yet. Inner West is available now.</div><button type="button" class="btn" id="anyway" style="align-self:flex-start;margin-top:4px">Browse Inner West plants</button>';
+      $("#anyway").addEventListener("click", () => { selectCouncil("inner-west"); enterApp(); });
+    }
+  });
+  wall.addEventListener("pointerleave", () => { if (hot) { hot.classList.remove("hot"); hot = null; } });
+  // Names sit behind the card, so let pointer events reach them around it
+  $("#landSlot").appendChild(form);
+  showResultInner(null, "");
   render();
 })();
 </script>
