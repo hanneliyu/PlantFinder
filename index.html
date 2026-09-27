@@ -75,6 +75,8 @@ aside.filters { background: var(--surface); border: 1px solid var(--line); borde
 .fgroup select, .fgroup input[type="search"] { width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 4px; background: var(--surface-2); }
 .chips { display: flex; flex-wrap: wrap; gap: 5px; }
 .chip { border: 1px solid var(--line); background: var(--surface-2); border-radius: 999px; padding: 3px 10px; font-size: 12.5px; cursor: pointer; }
+.chip:disabled { opacity: .45; cursor: not-allowed; }
+.chip .n { font-family: var(--mono); font-size: 10.5px; opacity: .7; margin-left: 2px; }
 .chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 .chip .mono { font-size: 11px; }
 .toggle { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; }
@@ -159,6 +161,10 @@ dl.spec dt, dl.spec dd { padding: 9px 0; border-bottom: 1px solid var(--line); m
 dl.spec dt { font-size: 12px; color: var(--muted); font-weight: 500; }
 dl.spec dd { font-size: 13.5px; }
 .ref { font-size: 10px; font-family: var(--mono); color: var(--muted); border: 1px solid var(--line); border-radius: 3px; padding: 0 4px; margin-left: 4px; vertical-align: 1px; }
+.gwa { border: 1px solid var(--line); border-radius: 4px; padding: 12px 14px; display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+dl.spec.mini { grid-template-columns: 80px minmax(0, 1fr); border-top: none; }
+dl.spec.mini dt, dl.spec.mini dd { padding: 4px 0; border-bottom: none; }
+.flag { font-size: 11px; background: var(--warn-soft); color: var(--warn); padding: 0 6px; border-radius: 999px; margin-left: 4px; }
 .note-box { background: var(--surface-2); border-radius: 4px; padding: 12px 14px; font-size: 13px; color: var(--muted); }
 
 .legend { font-size: 12px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 6px 16px; }
@@ -233,6 +239,7 @@ footer { font-size: 12px; color: var(--muted); border-top: 1px solid var(--line)
           <option value="winter">Winter (Jun–Aug)</option>
         </select>
       </div>
+      <div class="fgroup"><span class="eyebrow">Plant usage</span><div class="chips" id="fUse"></div><p class="help">Shows plants that suit every usage you pick.</p></div>
       <div class="fgroup"><span class="eyebrow">Flower colour</span><div class="chips" id="fColour"></div></div>
       <div class="fgroup">
         <span class="eyebrow">Vegetation zone</span><div class="chips" id="fZone"></div>
@@ -275,8 +282,9 @@ footer { font-size: 12px; color: var(--muted); border-top: 1px solid var(--line)
   </div>
 
   <footer>
-    <span>Height, sunlight, water, soil, vegetation zone and flowering come from the Inner West Council list. Width, toxicity, allergy and pot size (marked <span class="ref">ref</span>) are general horticultural guidance — check before specifying.</span>
-    <span>Photos load from <a href="https://www.inaturalist.org" target="_blank" rel="noopener">iNaturalist</a> and are credited to each photographer under their Creative Commons licence. Only openly licensed photos are shown.</span>
+    <span>Height, sunlight, water, soil, vegetation zone and flowering come from the Inner West Council list. Width, toxicity, allergy and pot size (marked <span class="ref">ref</span>) are general horticultural guidance — check before specifying. Plant usage is design guidance; "Fire retardant" means lower flammability, and no plant is fireproof.</span>
+    <span>Photos load from <a href="https://www.inaturalist.org" target="_blank" rel="noopener">iNaturalist</a>, with <a href="https://commons.wikimedia.org" target="_blank" rel="noopener">Wikimedia Commons</a> as a backup, and are credited to each photographer under their Creative Commons licence. Only openly licensed photos are shown.</span>
+    <span>Widths, frost tolerance and wildlife were cross-checked against <a href="https://gardeningwithangus.com.au/plantsearch/" target="_blank" rel="noopener">Gardening with Angus</a> (facts only; their text and photos are not reproduced).</span>
     <span>Toxicity and allergy notes are not medical advice. If a child or pet eats a plant, call the Poisons Information Centre on 13 11 26 or your vet.</span>
   </footer>
 </div>
@@ -420,6 +428,80 @@ const COLOUR_OF = {
   "Syncarpia glomulifera": ["white"]
 };
 PLANTS.forEach((p) => { p.cg = COLOUR_OF[p.sci] || []; });
+
+// ===== Plant usage (general landscape guidance) =====
+const USAGES = ["Hedge", "Topiary", "Groundcover", "Feature plant", "Screen", "Windbreak", "Fragrant", "Border plant", "Attractive foliage", "Autumn foliage", "Lawn alternative", "Fire retardant", "Wow factor", "Bush tucker"];
+const USE_OF = {
+  "Hardenbergia violacea": ["Groundcover", "Screen"], "Hibbertia scandens": ["Groundcover", "Screen"],
+  "Kennedia rubicunda": ["Groundcover", "Screen"], "Pandorea pandorana": ["Screen"], "Billardiera scandens": ["Bush tucker"],
+  "Clematis aristata": ["Screen"], "Dianella caerulea": ["Border plant"], "Lomandra longifolia": ["Border plant", "Groundcover"],
+  "Themeda triandra": ["Border plant", "Attractive foliage"], "Cymbopogon refractus": ["Border plant"],
+  "Microlaena stipoides": ["Lawn alternative", "Groundcover"], "Dichondra repens": ["Lawn alternative", "Groundcover", "Fire retardant"],
+  "Viola hederacea": ["Groundcover", "Bush tucker", "Fire retardant"], "Carpobrotus glaucescens": ["Groundcover", "Bush tucker", "Fire retardant"],
+  "Scaevola albida": ["Groundcover", "Border plant"], "Commelina cyanea": ["Groundcover", "Fire retardant"],
+  "Wahlenbergia gracilis": ["Border plant"], "Tetragonia tetragonioides": ["Groundcover", "Bush tucker", "Fire retardant"],
+  "Pelargonium inodorum": ["Border plant"], "Carex appressa": ["Border plant"], "Ficinia nodosa": ["Border plant", "Attractive foliage"],
+  "Juncus usitatus": ["Border plant"], "Westringia fruticosa": ["Hedge", "Topiary", "Screen", "Windbreak", "Attractive foliage"],
+  "Correa alba": ["Hedge", "Topiary", "Border plant", "Attractive foliage", "Fire retardant"], "Correa reflexa": ["Border plant"],
+  "Callistemon linearis": ["Hedge", "Screen", "Feature plant", "Wow factor"], "Banksia spinulosa": ["Feature plant", "Wow factor"],
+  "Grevillea buxifolia": ["Feature plant"], "Grevillea linearifolia": ["Screen"],
+  "Kunzea ambigua": ["Hedge", "Screen", "Windbreak", "Fragrant"], "Leptospermum polygalifolium": ["Hedge", "Screen", "Windbreak", "Fragrant"],
+  "Acacia suaveolens": ["Fragrant"], "Acacia longifolia": ["Screen", "Windbreak", "Wow factor"],
+  "Acacia myrtifolia": ["Border plant", "Attractive foliage"], "Bursaria spinosa": ["Hedge", "Fragrant"],
+  "Goodenia ovata": ["Screen"], "Dodonaea triquetra": ["Hedge", "Screen"], "Indigofera australis": ["Border plant"],
+  "Solanum aviculare": ["Screen", "Attractive foliage"], "Pittosporum revolutum": ["Screen", "Fragrant", "Fire retardant"],
+  "Ceratopetalum gummiferum": ["Feature plant", "Screen", "Wow factor"], "Angophora hispida": ["Feature plant", "Attractive foliage"],
+  "Melaleuca decora": ["Screen", "Windbreak", "Fragrant"], "Melaleuca linariifolia": ["Feature plant", "Screen", "Fragrant", "Wow factor"],
+  "Banksia integrifolia": ["Feature plant", "Screen", "Windbreak"], "Banksia serrata": ["Feature plant", "Wow factor"],
+  "Allocasuarina littoralis": ["Screen", "Windbreak", "Attractive foliage"], "Eucalyptus haemastoma": ["Feature plant", "Wow factor"],
+  "Eucalyptus robusta": ["Windbreak"], "Syncarpia glomulifera": ["Feature plant", "Windbreak"]
+};
+PLANTS.forEach((p) => { p.uses = USE_OF[p.sci] || []; });
+
+// ===== Gardening with Angus cross-reference (gardeningwithangus.com.au, checked Sep 2026) =====
+// Facts only (sizes, frost, wildlife) — GwA text and photos are copyright and are not copied.
+// cv = page is for a cultivar, so its sizes are not used for the species.
+const GWA = {
+  "Hardenbergia violacea": { url: "https://gardeningwithangus.com.au/hardenbergia-violaceae-native-sarsparilla/", h: [2, 5], w: [2, 3], frost: "Light frost", wildlife: "Bees, butterflies, insects", uses: ["Groundcover", "Screen"] },
+  "Hibbertia scandens": { url: "https://gardeningwithangus.com.au/hibbertia-scandens-snake-vine/", h: [0.5, 3], w: [1, 5], frost: "Light frost", wildlife: "Bees, butterflies, lizards", uses: ["Groundcover"] },
+  "Pandorea pandorana": { url: "https://gardeningwithangus.com.au/pandorea-pandorana-wonga-wonga-vine/", h: [2, 20], w: [1, 9], frost: "Heavy frost", wildlife: "Bees, butterflies, insects", uses: ["Feature plant"] },
+  "Billardiera scandens": { url: "https://gardeningwithangus.com.au/billardiera-scandens/", h: [0.2, 1.5], w: [0.5, 3], frost: "Light frost", wildlife: "Bees, nectar-eating birds, butterflies, insects", uses: ["Groundcover", "Screen"] },
+  "Dianella caerulea": { url: "https://gardeningwithangus.com.au/dianella-caerulea/", h: [0.5, 1], w: [0.5, 2], frost: "Light frost", wildlife: "Seed-eating birds", uses: ["Groundcover", "Border plant"] },
+  "Lomandra longifolia": { url: "https://gardeningwithangus.com.au/lomandra-longifolia-mat-rush/", h: [0.4, 1], w: [0.4, 0.6], frost: "Light frost", wildlife: "Bees, insects", uses: ["Fragrant"] },
+  "Dichondra repens": { url: "https://gardeningwithangus.com.au/dichondra-repens-kidney-weed/", h: [0.1, 0.3], w: [1, 5], frost: "Light frost", wildlife: "", uses: ["Groundcover", "Lawn alternative"] },
+  "Viola hederacea": { url: "https://gardeningwithangus.com.au/viola-hederacea-native-violet/", h: [0.1, 0.2], w: [0.3, 1], frost: "Light frost", wildlife: "", uses: ["Groundcover", "Lawn alternative"] },
+  "Correa alba": { url: "https://gardeningwithangus.com.au/correa-alba-white-correa/", h: [1, 1.5], w: [1, 1.5], frost: "Light frost", wildlife: "Nectar-eating birds, insects", uses: ["Topiary", "Border plant", "Attractive foliage"] },
+  "Correa reflexa": { url: "https://gardeningwithangus.com.au/correa-reflexa-native-fuchsia/", h: [0.5, 1.2], w: [0.5, 1], frost: "Light frost", wildlife: "Bees, nectar-eating birds, butterflies, insects", uses: ["Groundcover", "Border plant"] },
+  "Banksia spinulosa": { url: "https://gardeningwithangus.com.au/banksia-spinulosa-hairpin-banksia/", h: [1, 3], w: [1, 3], frost: "Light frost", wildlife: "Bees, nectar-eating birds, butterflies, insects", uses: ["Screen", "Windbreak"] },
+  "Kunzea ambigua": { url: "https://gardeningwithangus.com.au/kunzea-ambigua-tick-bush/", h: [1, 5], w: [1, 3], frost: "Heavy frost", wildlife: "Bees, nectar-eating birds, butterflies, insects", uses: ["Screen", "Windbreak", "Fragrant"] },
+  "Bursaria spinosa": { url: "https://gardeningwithangus.com.au/bursaria-spinosa-sweet-bursaria/", h: [1.5, 4], w: [1.5, 3], frost: "Light frost", wildlife: "Bees, nectar & seed-eating birds, butterflies, insects", uses: ["Feature plant", "Border plant"] },
+  "Indigofera australis": { url: "https://gardeningwithangus.com.au/indigofera-australis-australian-indigo/", h: [1, 2], w: [1, 2], frost: "Light frost", wildlife: "Bees, nectar-eating birds, insects", uses: ["Feature plant", "Border plant"] },
+  "Pittosporum revolutum": { url: "https://gardeningwithangus.com.au/pittosporum-revolutum-yellow-pittosporum/", h: [4, 15], w: [1.5, 4], frost: "Light frost", wildlife: "Bees, seed-eating birds, butterflies, insects", uses: ["Hedge", "Screen", "Windbreak", "Fragrant"] },
+  "Angophora hispida": { url: "https://gardeningwithangus.com.au/angophora-hispida-dwarf-apple-gum/", h: [5, 7], w: [3, 5], frost: "Light frost", wildlife: "Bees, nectar-eating birds, butterflies, insects", uses: ["Feature plant", "Windbreak"] },
+  "Banksia integrifolia": { url: "https://gardeningwithangus.com.au/banksia-integrifolia-coast-banksia/", h: [4, 15], w: [1, 6], frost: "Light frost", wildlife: "Bees, birds, butterflies, insects, mammals", uses: ["Feature plant", "Screen", "Windbreak"] },
+  "Banksia serrata": { url: "https://gardeningwithangus.com.au/banksia-serrata-old-man-banksia/", h: [3, 15], w: [2, 4], frost: "Light frost", wildlife: "Bees, nectar & seed-eating birds, butterflies, insects", uses: ["Feature plant", "Screen", "Windbreak"] },
+  "Allocasuarina littoralis": { url: "https://gardeningwithangus.com.au/allocasuarina-littoralis-black-she-oak/", h: [8, 12], w: [4, 7], frost: "Light frost", wildlife: "Seed-eating birds", uses: ["Screen", "Windbreak"] },
+  // Cultivar pages — link only
+  "Themeda triandra": { url: "https://gardeningwithangus.com.au/themeda-triandra-mingo-kangaroo-grass/", cv: "Mingo" },
+  "Scaevola albida": { url: "https://gardeningwithangus.com.au/scaevola-albida-mauve-carpet-fan-flower/", cv: "Mauve Carpet" },
+  "Westringia fruticosa": { url: "https://gardeningwithangus.com.au/westringia-fruticosa-zena-coastal-rosemary/", cv: "Zena" },
+  "Leptospermum polygalifolium": { url: "https://gardeningwithangus.com.au/leptospermum-polygalifolium-copper-glow-tea-tree/", cv: "Copper Glow" },
+  "Goodenia ovata": { url: "https://gardeningwithangus.com.au/goodenia-ovata-prostrate-goodenia/", cv: "Prostrate" },
+  "Ceratopetalum gummiferum": { url: "https://gardeningwithangus.com.au/ceratopetalum-gummiferum-alberys-red-new-south-wales-christmas-bush/", cv: "Alberys Red" },
+  "Melaleuca linariifolia": { url: "https://gardeningwithangus.com.au/melaleuca-linariifolia-seafoam-paperbark/", cv: "Seafoam" }
+};
+PLANTS.forEach((p) => {
+  const g = GWA[p.sci];
+  p.gwa = g || null;
+  if (!g || g.cv) return;
+  // Width was a reference estimate: widen it to cover the GwA range.
+  p.wOrig = p.w.slice();
+  p.w = [Math.min(p.w[0], g.w[0]), Math.max(p.w[1], g.w[1])];
+  // Climber heights were estimates too (council gives none).
+  if (p.type === "Climber") { p.hOrig = p.h.slice(); p.h = [Math.min(p.h[0], g.h[0]), Math.max(p.h[1], g.h[1])]; }
+  // Add GwA usages we didn't already have.
+  g.uses.forEach((u) => { if (!p.uses.includes(u)) p.uses.push(u); });
+});
 </script>
 <script>
 (function () {
@@ -446,7 +528,7 @@ PLANTS.forEach((p) => { p.cg = COLOUR_OF[p.sci] || []; });
   $("#zoneLink").href = council.url;
 
   // ---------- State ----------
-  const state = { q: "", types: new Set(), sun: new Set(), water: new Set(), zones: new Set(), colours: new Set(), maxH: 20, season: "", petSafe: false, lowAllergy: false, onlyFav: false, view: "cards", sort: { key: "sci", dir: 1 } };
+  const state = { q: "", types: new Set(), sun: new Set(), water: new Set(), zones: new Set(), colours: new Set(), uses: new Set(), maxH: 20, season: "", petSafe: false, lowAllergy: false, onlyFav: false, view: "cards", sort: { key: "sci", dir: 1 } };
   let favs = new Set();
   try { favs = new Set(JSON.parse(localStorage.getItem("cpf-favs") || "[]")); } catch (e) {}
   try { const v = localStorage.getItem("cpf-view"); if (v === "table" || v === "cards") state.view = v; } catch (e) {}
@@ -483,6 +565,10 @@ PLANTS.forEach((p) => { p.cg = COLOUR_OF[p.sci] || []; });
   chips($("#fSun"), Object.keys(SUN), state.sun, (k) => '<span class="mono">' + k + "</span> " + SUN[k]);
   chips($("#fWater"), ["LW", "MW"], state.water, (k) => '<span class="mono">' + k + "</span> " + WATER[k]);
   chips($("#fZone"), Object.keys(ZONES), state.zones, (k) => '<span class="mono" title="' + esc(ZONES[k]) + '">' + k + "</span>");
+  chips($("#fUse"), USAGES, state.uses, (u) => esc(u) + '<span class="n">' + PLANTS.filter((p) => p.uses.includes(u)).length + "</span>");
+  $("#fUse").querySelectorAll(".chip").forEach((b) => {
+    if (!PLANTS.some((p) => p.uses.includes(b.dataset.v))) { b.disabled = true; b.title = "None on this list yet — local natives are evergreen"; }
+  });
   chips($("#fColour"), Object.keys(COLOUR_GROUPS), state.colours, (k) => '<span class="swatch" style="background:' + COLOUR_GROUPS[k][1] + '"></span>' + COLOUR_GROUPS[k][0]);
   $("#fZone").querySelectorAll(".chip").forEach((b) => (b.title = ZONES[b.dataset.v]));
 
@@ -492,7 +578,7 @@ PLANTS.forEach((p) => { p.cg = COLOUR_OF[p.sci] || []; });
   ["petSafe", "lowAllergy", "onlyFav"].forEach((k) => $("#" + k).addEventListener("change", (e) => { state[k] = e.target.checked; render(); }));
   $("#reset").addEventListener("click", () => {
     state.q = ""; state.maxH = 20; state.season = ""; state.petSafe = state.lowAllergy = state.onlyFav = false;
-    [state.types, state.sun, state.water, state.zones, state.colours].forEach((s) => s.clear());
+    [state.types, state.sun, state.water, state.zones, state.colours, state.uses].forEach((s) => s.clear());
     $("#q").value = ""; $("#maxH").value = 20; $("#maxHOut").textContent = "20 m"; $("#season").value = "";
     ["petSafe", "lowAllergy", "onlyFav"].forEach((k) => ($("#" + k).checked = false));
     document.querySelectorAll(".chip").forEach((b) => b.setAttribute("aria-pressed", "false"));
@@ -508,6 +594,7 @@ PLANTS.forEach((p) => { p.cg = COLOUR_OF[p.sci] || []; });
       if (state.sun.size && !p.sun.some((s) => state.sun.has(s))) return false;
       if (state.water.size && !state.water.has(p.water)) return false;
       if (state.zones.size && !p.zones.some((z) => state.zones.has(z))) return false;
+      if (state.uses.size && ![...state.uses].every((u) => p.uses.includes(u))) return false;
       if (state.colours.size && !p.cg.some((c) => state.colours.has(c))) return false;
       if (p.h[1] > state.maxH) return false;
       if (state.season && !p.months.some((mo) => SEASONS[state.season].includes(mo))) return false;
@@ -523,7 +610,9 @@ PLANTS.forEach((p) => { p.cg = COLOUR_OF[p.sci] || []; });
 
   // ---------- Photos (iNaturalist, openly licensed only) ----------
   // Loaded in the visitor's browser. If the host blocks outside requests, cards keep the plant-type icon.
-  const PHOTO_CACHE_KEY = "cpf-photos-v1";
+  const PHOTO_CACHE_KEY = "cpf-photos-v2";
+  // Add your own or permission-granted photos here: "Scientific name": { url, credit }
+  const PHOTO_OVERRIDES = {};
   let photoCache = {};
   try { photoCache = JSON.parse(localStorage.getItem(PHOTO_CACHE_KEY) || "{}"); } catch (e) {}
   const pending = {};
@@ -533,6 +622,7 @@ PLANTS.forEach((p) => { p.cg = COLOUR_OF[p.sci] || []; });
     return '<div class="photo" data-photo="' + esc(p.sci) + '"><span class="ph">' + ICONS[p.type] + '</span><span class="credit" hidden></span></div>';
   }
   function fetchPhoto(sci) {
+    if (PHOTO_OVERRIDES[sci]) return Promise.resolve(PHOTO_OVERRIDES[sci]);
     if (photoCache[sci] !== undefined) return Promise.resolve(photoCache[sci]);
     if (photosBlocked) return Promise.resolve(null);
     if (pending[sci]) return pending[sci];
@@ -544,17 +634,47 @@ PLANTS.forEach((p) => { p.cg = COLOUR_OF[p.sci] || []; });
       const { sci, resolve } = queue.shift();
       if (photosBlocked) { resolve(null); continue; }
       active++;
-      const url = "https://api.inaturalist.org/v1/taxa?rank=species&per_page=5&q=" + encodeURIComponent(sci);
-      fetch(url).then((r) => (r.ok ? r.json() : Promise.reject(r.status))).then((d) => {
-        const res = d.results || [];
-        const t = res.find((x) => x.name === sci) || res.find((x) => x.matched_term === sci) || res[0];
-        const ph = t && t.default_photo;
-        const out = ph && ph.license_code && ph.medium_url ? { url: ph.medium_url, credit: ph.attribution, lic: ph.license_code, taxon: t.id } : null;
+      findPhoto(sci).then((out) => {
         photoCache[sci] = out;
         try { localStorage.setItem(PHOTO_CACHE_KEY, JSON.stringify(photoCache)); } catch (e) {}
         resolve(out);
       }).catch(() => { photosBlocked = true; resolve(null); }).finally(() => { active--; pump(); });
     }
+  }
+  const getJSON = (u) => fetch(u).then((r) => (r.ok ? r.json() : Promise.reject(r.status)));
+  const OPEN = (code) => !!code && code !== "all rights reserved";
+  // 1. iNaturalist default photo  2. other iNaturalist taxon photos  3. Wikipedia / Wikimedia Commons
+  async function findPhoto(sci) {
+    const d = await getJSON("https://api.inaturalist.org/v1/taxa?rank=species&per_page=5&q=" + encodeURIComponent(sci));
+    const res = d.results || [];
+    const t = res.find((x) => x.name === sci) || res.find((x) => x.matched_term === sci) || res[0];
+    if (t) {
+      const ph = t.default_photo;
+      if (ph && OPEN(ph.license_code) && ph.medium_url) return { url: ph.medium_url, credit: ph.attribution, src: "iNaturalist" };
+      try {
+        const full = await getJSON("https://api.inaturalist.org/v1/taxa/" + t.id);
+        const tp = ((full.results && full.results[0] && full.results[0].taxon_photos) || []).map((x) => x.photo).find((x) => x && OPEN(x.license_code) && x.medium_url);
+        if (tp) return { url: tp.medium_url, credit: tp.attribution, src: "iNaturalist" };
+      } catch (e) {}
+    }
+    try { const w = await wikiPhoto(sci); if (w) return w; } catch (e) {}
+    return null;
+  }
+  async function wikiPhoto(sci) {
+    const sum = await getJSON("https://en.wikipedia.org/api/rest_v1/page/summary/" + encodeURIComponent(sci.replace(/ /g, "_")));
+    const src = sum && (sum.originalimage || sum.thumbnail);
+    if (!src) return null;
+    const file = decodeURIComponent(src.source.split("/").pop().replace(/^\d+px-/, ""));
+    const q = "https://commons.wikimedia.org/w/api.php?action=query&format=json&origin=*&prop=imageinfo&iiprop=url|extmetadata&iiurlwidth=640&titles=File:" + encodeURIComponent(file);
+    const d = await getJSON(q);
+    const page = d.query && Object.values(d.query.pages)[0];
+    const ii = page && page.imageinfo && page.imageinfo[0];
+    if (!ii) return null;
+    const md = ii.extmetadata || {};
+    const lic = (md.LicenseShortName && md.LicenseShortName.value) || "";
+    if (!/cc|public domain|pd/i.test(lic)) return null;
+    const artist = ((md.Artist && md.Artist.value) || "Unknown").replace(/<[^>]+>/g, "").trim();
+    return { url: ii.thumburl || ii.url, credit: "© " + artist + " (" + lic + "), via Wikimedia Commons", src: "Wikimedia" };
   }
   function loadPhotos(root) {
     root.querySelectorAll(".photo[data-photo]").forEach((box) => {
@@ -568,10 +688,10 @@ PLANTS.forEach((p) => { p.cg = COLOUR_OF[p.sci] || []; });
         img.referrerPolicy = "no-referrer";
         img.onload = () => img.classList.add("ready");
         img.onerror = () => img.remove();
-        img.src = box.closest(".panel") ? info.url.replace("/medium.", "/large.") : info.url;
+        img.src = box.closest(".panel") && info.src === "iNaturalist" ? info.url.replace("/medium.", "/large.") : info.url;
         box.insertBefore(img, box.querySelector(".credit"));
         const c = box.querySelector(".credit");
-        c.textContent = "Photo " + info.credit.replace(/\s*\(c\)\s*/i, "© ");
+        c.textContent = "Photo " + String(info.credit || "").replace(/\s*\(c\)\s*/i, "© ");
         c.title = c.textContent;
         c.hidden = false;
       });
@@ -592,13 +712,13 @@ PLANTS.forEach((p) => { p.cg = COLOUR_OF[p.sci] || []; });
       '<div class="pills"><span class="pill ' + p.tox[0] + '">' + TOX[p.tox[0]] + '</span><span class="pill ' + p.allergy[0] + '">' + ALG[p.allergy[0]] + "</span></div>" +
       "</article>";
   }
-  const COLS = [["common", "Common name"], ["sci", "Scientific name"], ["type", "Type"], ["h", "Height"], ["w", "Width"], ["sun", "Sun"], ["water", "Water"], ["zones", "Zone"], ["months", "Flowering"], ["tox", "Toxicity"], ["allergy", "Allergy"], ["pot", "Pot size"]];
+  const COLS = [["common", "Common name"], ["sci", "Scientific name"], ["type", "Type"], ["h", "Height"], ["w", "Width"], ["sun", "Sun"], ["water", "Water"], ["zones", "Zone"], ["months", "Flowering"], ["uses", "Usage"], ["tox", "Toxicity"], ["allergy", "Allergy"], ["pot", "Pot size"]];
   function table(list) {
     const sortable = ["common", "sci", "type", "h", "w"];
     return '<div class="table-wrap"><table><thead><tr><th scope="col" aria-label="Shortlist"></th>' +
       COLS.map(([k, l]) => '<th scope="col"' + (sortable.includes(k) ? ' data-sort="' + k + '"' + (state.sort.key === k ? ' aria-sort="' + (state.sort.dir > 0 ? "ascending" : "descending") + '"' : "") : ' style="cursor:default"') + ">" + l + "</th>").join("") +
       "</tr></thead><tbody>" +
-      list.map((p) => '<tr data-id="' + p.id + '"><td>' + starBtn(p) + "</td><td><b>" + esc(p.common) + '</b></td><td class="sci">' + esc(p.sci) + "</td><td>" + esc(p.size || p.type) + '</td><td class="num">' + rng(p.h) + '</td><td class="num">' + rng(p.w) + '</td><td class="num">' + p.sun.join(" ") + '</td><td class="num">' + p.water + '</td><td class="num">' + zoneText(p.zones) + '</td><td><span class="dot" style="display:inline-block;vertical-align:-1px;background:' + p.hex + '"></span> ' + esc(p.colour) + ", " + monthsText(p.months) + '</td><td><span class="pill ' + p.tox[0] + '">' + TOX[p.tox[0]] + '</span></td><td><span class="pill ' + p.allergy[0] + '">' + ALG[p.allergy[0]] + "</span></td><td>" + esc(p.pot) + "</td></tr>").join("") +
+      list.map((p) => '<tr data-id="' + p.id + '"><td>' + starBtn(p) + "</td><td><b>" + esc(p.common) + '</b></td><td class="sci">' + esc(p.sci) + "</td><td>" + esc(p.size || p.type) + '</td><td class="num">' + rng(p.h) + '</td><td class="num">' + rng(p.w) + '</td><td class="num">' + p.sun.join(" ") + '</td><td class="num">' + p.water + '</td><td class="num">' + zoneText(p.zones) + '</td><td><span class="dot" style="display:inline-block;vertical-align:-1px;background:' + p.hex + '"></span> ' + esc(p.colour) + ", " + monthsText(p.months) + '</td><td>' + p.uses.map(esc).join(", ") + '</td><td><span class="pill ' + p.tox[0] + '">' + TOX[p.tox[0]] + '</span></td><td><span class="pill ' + p.allergy[0] + '">' + ALG[p.allergy[0]] + "</span></td><td>" + esc(p.pot) + "</td></tr>").join("") +
       "</tbody></table></div>";
   }
   let current = [];
@@ -657,6 +777,7 @@ PLANTS.forEach((p) => { p.cg = COLOUR_OF[p.sci] || []; });
       "<dt>Width</dt><dd>" + rng(p.w) + " " + ref + "</dd>" +
       "<dt>Sunlight</dt><dd>" + p.sun.map((s) => SUN[s]).join(", ") + "</dd>" +
       "<dt>Water</dt><dd>" + WATER[p.water] + ' <span class="mono">(' + p.water + ")</span></dd>" +
+      "<dt>Usage</dt><dd>" + (p.uses.length ? p.uses.map(esc).join(", ") : "–") + "</dd>" +
       "<dt>Soil</dt><dd>" + esc(p.soil) + "</dd>" +
       "<dt>Flowers</dt><dd>" + esc(p.colour) + " · " + monthsText(p.months) + "</dd>" +
       '<dt>Toxicity</dt><dd><span class="pill ' + p.tox[0] + '">' + TOX[p.tox[0]] + "</span> " + ref + "<br>" + esc(p.tox[1]) + "</dd>" +
@@ -665,6 +786,7 @@ PLANTS.forEach((p) => { p.cg = COLOUR_OF[p.sci] || []; });
       "<dt>Native to</dt><dd>" + p.councils.map((c) => esc(COUNCILS[c].name)).join(", ") + "<br><span class=\"help\">" + p.zones.map((z) => z + " – " + ZONES[z]).join("<br>") + "</span></dd>" +
       "</dl>" +
       '<div class="note-box"><div class="eyebrow" style="margin-bottom:4px">Note</div>' + esc(p.note) + "</div>" +
+      gwaBlock(p) +
       '<div style="display:flex;gap:8px;flex-wrap:wrap">' + '<button class="btn primary" type="button" id="pFav">' + (favs.has(p.id) ? "Remove from shortlist" : "Add to shortlist") + "</button>" +
       '<a class="btn" style="text-decoration:none;color:var(--ink)" target="_blank" rel="noopener" href="https://www.inaturalist.org/taxa/search?q=' + encodeURIComponent(p.sci) + '">More photos ↗</a>' +
       '<a class="btn" style="text-decoration:none;color:var(--ink)" target="_blank" rel="noopener" href="https://bie.ala.org.au/search?q=' + encodeURIComponent(p.sci) + '">Atlas of Living Australia ↗</a></div>';
@@ -674,15 +796,28 @@ PLANTS.forEach((p) => { p.cg = COLOUR_OF[p.sci] || []; });
     $("#pClose").addEventListener("click", closePanel);
     $("#pFav").addEventListener("click", () => { favs.has(p.id) ? favs.delete(p.id) : favs.add(p.id); saveFavs(); render(); openPanel(p.id); });
   }
+  function gwaBlock(p) {
+    const g = p.gwa;
+    if (!g) return "";
+    const link = '<a href="' + esc(g.url) + '" target="_blank" rel="noopener">' + (g.cv ? "View the ‘" + esc(g.cv) + "’ cultivar ↗" : "View on Gardening with Angus ↗") + "</a>";
+    if (g.cv) return '<div class="gwa"><div class="eyebrow">Gardening with Angus</div><p class="help" style="margin:4px 0">Only a cultivar is listed there, so its sizes aren\'t used here.</p>' + link + "</div>";
+    const diffH = g.h[1] > p.h[1] * 1.5 || g.h[1] < p.h[1] / 1.5;
+    return '<div class="gwa"><div class="eyebrow">Gardening with Angus</div><dl class="spec mini">' +
+      "<dt>Height</dt><dd>" + rng(g.h) + (diffH ? ' <span class="flag">differs from council list</span>' : "") + "</dd>" +
+      "<dt>Width</dt><dd>" + rng(g.w) + "</dd>" +
+      "<dt>Frost</dt><dd>Tolerates " + esc(g.frost.toLowerCase()) + "</dd>" +
+      (g.wildlife ? "<dt>Attracts</dt><dd>" + esc(g.wildlife) + "</dd>" : "") +
+      "</dl>" + link + "</div>";
+  }
   function closePanel() { $("#panel").hidden = true; $("#scrim").hidden = true; if (lastFocus && lastFocus.focus) lastFocus.focus(); }
   $("#scrim").addEventListener("click", closePanel);
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("#panel").hidden) closePanel(); });
 
   // ---------- CSV ----------
   $("#copyCsv").addEventListener("click", () => {
-    const head = ["Type", "Scientific name", "Common name", "Height (m)", "Width (m)", "Sunlight", "Water", "Soil", "Vegetation zone", "Toxicity", "Allergy", "Native to council", "Pot size", "Flower season", "Flower colour", "Note"];
+    const head = ["Type", "Scientific name", "Common name", "Height (m)", "Width (m)", "Sunlight", "Water", "Soil", "Vegetation zone", "Toxicity", "Allergy", "Native to council", "Pot size", "Flower season", "Flower colour", "Plant usage", "Note"];
     const q = (v) => '"' + String(v).replace(/"/g, '""') + '"';
-    const rows = current.map((p) => [p.size || p.type, p.sci, p.common, rng(p.h).replace(" m", ""), rng(p.w).replace(" m", ""), p.sun.map((s) => SUN[s]).join("/"), WATER[p.water], p.soil, p.zones.join("/"), TOX[p.tox[0]] + " – " + p.tox[1], ALG[p.allergy[0]] + " – " + p.allergy[1], p.councils.map((c) => COUNCILS[c].name).join("/"), p.pot, monthsText(p.months), p.colour, p.note].map(q).join(","));
+    const rows = current.map((p) => [p.size || p.type, p.sci, p.common, rng(p.h).replace(" m", ""), rng(p.w).replace(" m", ""), p.sun.map((s) => SUN[s]).join("/"), WATER[p.water], p.soil, p.zones.join("/"), TOX[p.tox[0]] + " – " + p.tox[1], ALG[p.allergy[0]] + " – " + p.allergy[1], p.councils.map((c) => COUNCILS[c].name).join("/"), p.pot, monthsText(p.months), p.colour, p.uses.join(", "), p.note].map(q).join(","));
     const csv = [head.map(q).join(",")].concat(rows).join("\n");
     const done = (msg) => { $("#toast").textContent = msg; setTimeout(() => ($("#toast").textContent = ""), 3000); };
     try {
