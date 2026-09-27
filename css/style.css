@@ -6,6 +6,7 @@
   --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
   --shadow: 0 1px 2px rgba(27,37,32,.06), 0 4px 16px rgba(27,37,32,.06);
+  --swatch-edge: rgba(27,37,32,.75); /* outline on flower-colour swatches, so pale flowers still show */
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
@@ -13,7 +14,7 @@
     --bg: #111713; --surface: #18201B; --surface-2: #1E2721; --ink: #E4EBE5; --muted: #98A69D; --line: #2E3A33;
     --accent: #6DB596; --accent-ink: #0E1611; --accent-soft: #1F3A2F; --wattle: #E2B53C; --wattle-soft: #3A3117;
     --good: #7BC08A; --good-soft: #1D3423; --warn: #E0A15A; --warn-soft: #3A2A17; --bad: #EE8A80; --bad-soft: #3D1F1C;
-    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25);
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25); --swatch-edge: rgba(228,235,229,.75);
   }
 }
 :root[data-theme="dark"] {
@@ -21,7 +22,7 @@
   --bg: #111713; --surface: #18201B; --surface-2: #1E2721; --ink: #E4EBE5; --muted: #98A69D; --line: #2E3A33;
   --accent: #6DB596; --accent-ink: #0E1611; --accent-soft: #1F3A2F; --wattle: #E2B53C; --wattle-soft: #3A3117;
   --good: #7BC08A; --good-soft: #1D3423; --warn: #E0A15A; --warn-soft: #3A2A17; --bad: #EE8A80; --bad-soft: #3D1F1C;
-  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25);
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25); --swatch-edge: rgba(228,235,229,.75);
 }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
@@ -103,16 +104,14 @@ aside.filters { background: var(--surface); border: 1px solid var(--line); borde
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 14px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; text-align: left; transition: border-color .15s, transform .15s; }
 .card:hover { border-color: var(--accent); transform: translateY(-1px); }
 .card { padding-top: 0; overflow: hidden; }
-/* Full-bleed photo: the width is set explicitly (not left to stretch + negative margins) because Safari can
-   size an aspect-ratio box in a flex column too narrow, leaving a blank strip on the right */
-.photo { position: relative; display: block; flex: none; box-sizing: border-box; width: calc(100% + 28px); max-width: none; margin: 0 -14px; aspect-ratio: 4 / 3; background: var(--surface-2); overflow: hidden; }
-.photo .ph { position: absolute; left: 50%; top: 50%; width: 56px; height: 56px; margin: -28px 0 0 -28px; color: var(--muted); opacity: .55; }
+.photo { position: relative; margin: 0 -14px; aspect-ratio: 4 / 3; max-width: calc(100% + 28px); background: var(--surface-2); display: grid; place-items: center; overflow: hidden; }
+.photo .ph { width: 56px; height: 56px; color: var(--muted); opacity: .55; }
 .photo .ph svg { width: 100%; height: 100%; }
-.photo img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .3s; transform: translateZ(0); }
+.photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .3s; }
 .photo img.ready { opacity: 1; }
 .photo .credit { position: absolute; left: 0; right: 0; bottom: 0; padding: 12px 8px 4px; font-size: 10px; line-height: 1.3; color: #fff; background: linear-gradient(transparent, rgba(0,0,0,.6)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .photo .credit[hidden] { display: none; }
-.panel .photo { margin: 0; border-radius: 6px; width: 100%; aspect-ratio: 3 / 2; }
+.panel .photo { margin: 0; border-radius: 6px; max-width: 100%; aspect-ratio: 3 / 2; }
 .panel .photo .credit { white-space: normal; font-size: 11px; }
 .swatch { width: 11px; height: 11px; border-radius: 50%; display: inline-block; vertical-align: -1px; margin-right: 4px; border: 1px solid rgba(0,0,0,.18); }
 .sort-sel { padding: 7px 10px; border: 1px solid var(--line); border-radius: 4px; background: var(--surface); }
@@ -129,11 +128,11 @@ aside.filters { background: var(--surface); border: 1px solid var(--line); borde
 .code.sun { background: var(--wattle-soft); border-color: transparent; }
 .code.water { background: var(--accent-soft); border-color: transparent; }
 .months { display: grid; grid-template-columns: repeat(12, 1fr); gap: 2px; }
-.months i { height: 7px; border-radius: 1px; background: var(--surface-2); border: 1px solid var(--line); }
-.months i.on { border-color: rgba(0,0,0,.14); }
+.months i { height: 7px; border-radius: 1px; background: transparent; border: 1px solid var(--line); }
+.months i.on { height: 9px; margin-top: -1px; border: 1.5px solid var(--swatch-edge); }
 .months-lbl { display: grid; grid-template-columns: repeat(12, 1fr); font-family: var(--mono); font-size: 9px; color: var(--muted); text-align: center; margin-top: 2px; }
 .flower { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
-.dot { width: 10px; height: 10px; border-radius: 50%; border: 1px solid rgba(0,0,0,.15); flex: none; }
+.dot { width: 10px; height: 10px; border-radius: 50%; border: 1px solid var(--swatch-edge); flex: none; }
 .pills { display: flex; flex-wrap: wrap; gap: 5px; margin-top: auto; }
 .pill { font-size: 11.5px; padding: 1px 8px; border-radius: 999px; font-weight: 500; }
 .pill.safe, .pill.low { background: var(--good-soft); color: var(--good); }
@@ -184,18 +183,17 @@ footer { font-size: 12px; color: var(--muted); border-top: 1px solid var(--line)
 @media (prefers-reduced-motion: reduce) { .card { transition: none; } .card:hover { transform: none; } }
 
 /* ---------- Landing ---------- */
-.landing { position: fixed; inset: 0; z-index: 20; background: var(--bg); overflow-x: hidden; overflow-y: auto; display: flex; flex-direction: column; align-items: center; gap: 14px; padding: calc(env(safe-area-inset-top, 0px) + 16px) 16px calc(env(safe-area-inset-bottom, 0px) + 16px); transition: opacity .45s ease, transform .45s ease; }
+.landing { position: fixed; inset: 0; z-index: 20; background: var(--bg); overflow: hidden; display: grid; place-items: center; padding: calc(env(safe-area-inset-top, 0px) + 16px) 16px calc(env(safe-area-inset-bottom, 0px) + 16px); transition: opacity .45s ease, transform .45s ease; }
 .landing.leaving { opacity: 0; transform: scale(1.03); pointer-events: none; }
-/* Council names are placed one by one by js/app.js (buildWall) in the space around the card */
-.names { position: absolute; inset: 0; line-height: 1.15; user-select: none; }
-.nm { position: absolute; display: inline-grid; white-space: nowrap; color: var(--ink); opacity: .16; font-family: var(--sans); font-weight: 400; letter-spacing: .01em; cursor: pointer; transition: opacity .25s, color .25s, transform .3s cubic-bezier(.2,.8,.2,1); will-change: transform; }
+.names { position: absolute; inset: -20px; display: flex; flex-wrap: wrap; justify-content: center; align-content: center; gap: 4px 18px; padding: 10px; line-height: 1.15; user-select: none; }
+.nm { position: relative; display: inline-grid; color: var(--ink); opacity: .16; font-family: var(--sans); font-weight: 400; letter-spacing: .01em; cursor: pointer; transition: opacity .25s, color .25s, transform .3s cubic-bezier(.2,.8,.2,1); will-change: transform; }
 .nm::after { content: attr(data-t); font-weight: 700; visibility: hidden; height: 0; overflow: hidden; }
 .nm > span { grid-area: 1 / 1; }
 .nm.serif { font-family: var(--serif); font-style: italic; }
 .nm.hot { opacity: 1; font-weight: 700; color: var(--accent); transform: scale(1.35); z-index: 2; }
-.nm.live { opacity: 1; color: var(--accent); font-weight: 600; }
+.nm.live { opacity: .42; color: var(--accent); }
 .nm.live.hot { opacity: 1; }
-.land-card { position: relative; z-index: 3; flex: none; margin-top: auto; width: min(560px, 100%); background: color-mix(in srgb, var(--surface) 88%, transparent); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 10px 40px rgba(20,35,28,.14); padding: 28px 28px 22px; display: flex; flex-direction: column; gap: 14px; }
+.land-card { position: relative; z-index: 3; width: min(560px, 100%); background: color-mix(in srgb, var(--surface) 88%, transparent); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 10px 40px rgba(20,35,28,.14); padding: 28px 28px 22px; display: flex; flex-direction: column; gap: 14px; }
 .land-card h1 { font-family: var(--serif); font-weight: 700; font-size: clamp(28px, 5vw, 40px); line-height: 1.05; margin: 0; letter-spacing: -.01em; text-wrap: balance; }
 .land-card h1 em { font-weight: 400; color: var(--accent); }
 .land-card .lede { margin: 0; color: var(--muted); font-size: 15px; max-width: 46ch; }
@@ -211,8 +209,7 @@ footer { font-size: 12px; color: var(--muted); border-top: 1px solid var(--line)
 .newaddr { align-self: flex-start; }
 .credit-line { text-align: center; font-size: 12px; color: var(--muted); letter-spacing: .02em; }
 .credit-line b { font-weight: 600; color: var(--ink); }
-/* Sits under the card (not on top of it), and the page scrolls if the window is too short for both */
-.landing .credit-line { position: relative; z-index: 3; flex: none; margin: 0 0 auto; white-space: nowrap; background: color-mix(in srgb, var(--surface) 90%, transparent); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); border: 1px solid var(--line); border-radius: 999px; padding: 4px 14px; }
+.landing .credit-line { position: absolute; z-index: 3; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 14px); transform: translateX(-50%); white-space: nowrap; background: color-mix(in srgb, var(--surface) 90%, transparent); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); border: 1px solid var(--line); border-radius: 999px; padding: 4px 14px; }
 footer .credit-line { border-top: 1px solid var(--line); padding-top: 14px; margin-top: 8px; }
 @media (prefers-reduced-motion: reduce) { .landing, .nm { transition: none; } }
-@media (max-width: 600px) { .land-card { padding: 20px 18px 16px; } }
+@media (max-width: 600px) { .land-card { padding: 20px 18px 16px; } .names { gap: 2px 12px; } }
