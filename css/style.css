@@ -182,17 +182,18 @@ footer { font-size: 12px; color: var(--muted); border-top: 1px solid var(--line)
 @media (prefers-reduced-motion: reduce) { .card { transition: none; } .card:hover { transform: none; } }
 
 /* ---------- Landing ---------- */
-.landing { position: fixed; inset: 0; z-index: 20; background: var(--bg); overflow: hidden; display: grid; place-items: center; padding: calc(env(safe-area-inset-top, 0px) + 16px) 16px calc(env(safe-area-inset-bottom, 0px) + 16px); transition: opacity .45s ease, transform .45s ease; }
+.landing { position: fixed; inset: 0; z-index: 20; background: var(--bg); overflow-x: hidden; overflow-y: auto; display: flex; flex-direction: column; align-items: center; gap: 14px; padding: calc(env(safe-area-inset-top, 0px) + 16px) 16px calc(env(safe-area-inset-bottom, 0px) + 16px); transition: opacity .45s ease, transform .45s ease; }
 .landing.leaving { opacity: 0; transform: scale(1.03); pointer-events: none; }
-.names { position: absolute; inset: -20px; display: flex; flex-wrap: wrap; justify-content: center; align-content: center; gap: 4px 18px; padding: 10px; line-height: 1.15; user-select: none; }
-.nm { position: relative; display: inline-grid; color: var(--ink); opacity: .16; font-family: var(--sans); font-weight: 400; letter-spacing: .01em; cursor: pointer; transition: opacity .25s, color .25s, transform .3s cubic-bezier(.2,.8,.2,1); will-change: transform; }
+/* Council names are placed one by one by js/app.js (buildWall) in the space around the card */
+.names { position: absolute; inset: 0; line-height: 1.15; user-select: none; }
+.nm { position: absolute; display: inline-grid; white-space: nowrap; color: var(--ink); opacity: .16; font-family: var(--sans); font-weight: 400; letter-spacing: .01em; cursor: pointer; transition: opacity .25s, color .25s, transform .3s cubic-bezier(.2,.8,.2,1); will-change: transform; }
 .nm::after { content: attr(data-t); font-weight: 700; visibility: hidden; height: 0; overflow: hidden; }
 .nm > span { grid-area: 1 / 1; }
 .nm.serif { font-family: var(--serif); font-style: italic; }
 .nm.hot { opacity: 1; font-weight: 700; color: var(--accent); transform: scale(1.35); z-index: 2; }
-.nm.live { opacity: .42; color: var(--accent); }
+.nm.live { opacity: 1; color: var(--accent); font-weight: 600; }
 .nm.live.hot { opacity: 1; }
-.land-card { position: relative; z-index: 3; width: min(560px, 100%); background: color-mix(in srgb, var(--surface) 88%, transparent); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 10px 40px rgba(20,35,28,.14); padding: 28px 28px 22px; display: flex; flex-direction: column; gap: 14px; }
+.land-card { position: relative; z-index: 3; flex: none; margin-top: auto; width: min(560px, 100%); background: color-mix(in srgb, var(--surface) 88%, transparent); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 10px 40px rgba(20,35,28,.14); padding: 28px 28px 22px; display: flex; flex-direction: column; gap: 14px; }
 .land-card h1 { font-family: var(--serif); font-weight: 700; font-size: clamp(28px, 5vw, 40px); line-height: 1.05; margin: 0; letter-spacing: -.01em; text-wrap: balance; }
 .land-card h1 em { font-weight: 400; color: var(--accent); }
 .land-card .lede { margin: 0; color: var(--muted); font-size: 15px; max-width: 46ch; }
@@ -208,7 +209,8 @@ footer { font-size: 12px; color: var(--muted); border-top: 1px solid var(--line)
 .newaddr { align-self: flex-start; }
 .credit-line { text-align: center; font-size: 12px; color: var(--muted); letter-spacing: .02em; }
 .credit-line b { font-weight: 600; color: var(--ink); }
-.landing .credit-line { position: absolute; z-index: 3; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 14px); transform: translateX(-50%); white-space: nowrap; background: color-mix(in srgb, var(--surface) 90%, transparent); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); border: 1px solid var(--line); border-radius: 999px; padding: 4px 14px; }
+/* Sits under the card (not on top of it), and the page scrolls if the window is too short for both */
+.landing .credit-line { position: relative; z-index: 3; flex: none; margin: 0 0 auto; white-space: nowrap; background: color-mix(in srgb, var(--surface) 90%, transparent); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); border: 1px solid var(--line); border-radius: 999px; padding: 4px 14px; }
 footer .credit-line { border-top: 1px solid var(--line); padding-top: 14px; margin-top: 8px; }
 @media (prefers-reduced-motion: reduce) { .landing, .nm { transition: none; } }
-@media (max-width: 600px) { .land-card { padding: 20px 18px 16px; } .names { gap: 2px 12px; } }
+@media (max-width: 600px) { .land-card { padding: 20px 18px 16px; } }

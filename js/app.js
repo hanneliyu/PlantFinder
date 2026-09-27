@@ -752,28 +752,66 @@
   // Background wall of council names: hover to highlight, click to open
   const wall = $("#names");
   const nice = (n) => n.toLowerCase().replace(/(^|[\s\-])([a-z])/g, (m, a, c) => a + c.toUpperCase()).replace(/\bOf\b/g, "of");
-  function rand(seed) { let x = Math.sin(seed * 9301 + 49297) * 233280; return x - Math.floor(x); }
+  // Seeded random numbers, so a given window size always gets the same layout
+  function seeded(seed) { return () => { seed = (seed + 0x6D2B79F5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+  const landCard = $(".land-card"), landCredit = $(".landing .credit-line");
+  // Each of the 128 councils appears once, scattered over the free space around the card and the credit line.
+  // Names are placed biggest first at random spots that don't overlap anything; if they don't all fit, the whole
+  // set is tried again smaller. Councils with a plant list are placed first, larger, and shown in green.
   function buildWall() {
+    if (landing.hidden) return;
+    const W = landing.clientWidth, H = landing.clientHeight;
+    const o = landing.getBoundingClientRect();
+    const blocks = [landCard, landCredit].map((el) => {
+      const r = el.getBoundingClientRect();
+      return { x: r.left - o.left - 16, y: r.top - o.top + landing.scrollTop - 12, w: r.width + 32, h: r.height + 24 };
+    });
+    const rnd = seeded(128);
     wall.innerHTML = "";
-    const add = (copy) => NSW_COUNCILS.forEach((n, i) => {
-      const k = i + copy * 131, r = rand(k);
+    const items = NSW_COUNCILS.map((n) => {
+      const key = n.toLowerCase().replace(/\s+/g, "-"), live = !!COUNCILS[key], t = nice(n);
       const el = document.createElement("span");
-      el.className = "nm" + (r > 0.72 ? " serif" : "") + (COUNCILS[n.toLowerCase().replace(/\s+/g, "-")] ? " live" : "");
-      const t = nice(n);
+      el.className = "nm" + (rnd() > 0.72 ? " serif" : "") + (live ? " live" : "");
       el.dataset.t = t;
-      el.dataset.key = n.toLowerCase().replace(/\s+/g, "-");
+      el.dataset.key = key;
       el.setAttribute("role", "button");
       el.tabIndex = -1;
-      el.innerHTML = "<span>" + t + "</span>";
-      el.style.fontSize = (15 + Math.round(rand(k + 7) * 17)) + "px";
+      el.innerHTML = "<span>" + esc(t) + "</span>";
       wall.appendChild(el);
+      return { el, live, size: live ? 24 + rnd() * 6 : 13 + rnd() * 15 };
     });
-    let copy = 0;
-    add(copy++);
-    while (wall.scrollHeight < window.innerHeight * 1.15 && copy < 5) add(copy++);
+    items.sort((a, b) => (b.live - a.live) || (b.size - a.size));
+    const hit = (a, list) => list.some((b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h);
+    // strict: every name must fit in the free space, or give up (returns false) so a smaller size can be tried.
+    // Not strict (window too small at the smallest size): names that don't fit go behind the card, never on the credit line.
+    function place(scale, strict) {
+      const r = seeded(Math.round(scale * 100)), done = [];
+      const find = (w, h, avoid, tries) => {
+        for (let k = 0; k < tries; k++) {
+          const c = { x: r() * Math.max(0, W - w), y: r() * Math.max(0, H - h), w, h };
+          if (!hit(c, done) && !hit(c, avoid)) return c;
+        }
+        return null;
+      };
+      for (const it of items) {
+        it.el.style.fontSize = Math.max(9, it.size * scale).toFixed(1) + "px";
+        const w = it.el.offsetWidth + 14, h = it.el.offsetHeight + 4; // include a little breathing room
+        const spot = find(w, h, blocks, 700) || (!strict && (find(w, h, [blocks[1]], 700) || { x: r() * Math.max(0, W - w), y: blocks[0].y + 12 + r() * Math.max(0, blocks[0].h - 24 - h), w, h }));
+        if (!spot) return false;
+        done.push(spot);
+        it.el.style.left = spot.x + 7 + "px";
+        it.el.style.top = spot.y + 2 + "px";
+      }
+      return true;
+    }
+    for (const scale of [1, 0.9, 0.8, 0.7, 0.62, 0.55]) if (place(scale, true)) return;
+    place(0.55, false);
   }
   buildWall();
-  let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(buildWall, 200); });
+  let rt; const rebuild = () => { clearTimeout(rt); rt = setTimeout(buildWall, 150); };
+  window.addEventListener("resize", rebuild);
+  if (window.ResizeObserver) new ResizeObserver(rebuild).observe(landCard); // e.g. a lookup message makes the card taller
+  if (document.fonts) document.fonts.ready.then(rebuild); // widths change once the web fonts arrive
   const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   let hot = null;
   function ripple(el, cx, cy) {
