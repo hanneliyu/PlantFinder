@@ -20,7 +20,6 @@ import argparse
 import io
 import json
 import re
-import subprocess
 import sys
 import time
 import urllib.parse
@@ -140,16 +139,8 @@ def save_images(url, name):
 
 
 def all_species():
-    plants_dir = ROOT / "data" / "plants"
-    files = sorted(plants_dir.glob("*.json")) if plants_dir.exists() else []
-    if files:
-        names = {p["sci"] for f in files for p in json.loads(f.read_text("utf8"))["plants"]}
-    else:  # data still inline in index.html
-        out = subprocess.run(["node", "-e", "import('./tools/eval-legacy-data.mjs').then(m => console.log(JSON.stringify("
-                              "m.evalLegacyData('index.html').PLANTS.map(p => p.sci))))"],
-                             cwd=ROOT, capture_output=True, text=True, check=True)
-        names = set(json.loads(out.stdout))
-    return sorted(names)
+    files = sorted((ROOT / "data" / "plants").glob("*.json"))
+    return sorted({p["sci"] for f in files for p in json.loads(f.read_text("utf8"))["plants"]})
 
 
 def main():

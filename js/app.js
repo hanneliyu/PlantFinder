@@ -1,5 +1,36 @@
-(function () {
+(async function () {
   const $ = (s) => document.querySelector(s);
+
+  // ---------- Data ----------
+  // data/councils.json is small and loaded up front; each council's plant list (data/plants/<key>.json)
+  // is loaded the first time that council is shown.
+  let COUNCILS, SUBURBS, NSW_COUNCILS;
+  $("#addrForm").addEventListener("submit", (e) => e.preventDefault()); // don't reload the page if Enter is pressed while loading
+  try {
+    const r = await fetch("data/councils.json");
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const d = await r.json();
+    COUNCILS = d.councils;
+    SUBURBS = d.suburbs.map(([name, pc, council, share]) => ({ name, pc, council, share: share || [] }));
+    NSW_COUNCILS = d.nswCouncils;
+  } catch (e) {
+    $("#landMsg").innerHTML = '<span class="status no">Couldn\'t load</span><div class="msg">The council data didn\'t load. Check your connection and reload the page. ' +
+      (location.protocol === "file:" ? "This page has to be opened through a web server, not as a file: run <code>python -m http.server</code> in the project folder and open http://localhost:8000." : "") + "</div>";
+    return;
+  }
+  const plantFiles = {};
+  const loadPlants = (key) => (plantFiles[key] = plantFiles[key] || fetch("data/plants/" + key + ".json")
+    .then((r) => (r.ok ? r.json() : Promise.reject(new Error("HTTP " + r.status))))
+    .then((d) => d.plants)
+    .catch((e) => { delete plantFiles[key]; throw e; }));
+  let PLANTS = [], plantsKey = null; // the plant list on screen, and which council it belongs to
+
+  const COLOUR_GROUPS = {
+    white: ["White & cream", "#F3F1E8"], yellow: ["Yellow", "#E6BE1A"], orange: ["Orange", "#E08A1E"],
+    pink: ["Pink", "#E07AA6"], red: ["Red", "#C0262F"], purple: ["Purple & mauve", "#7E5BB5"],
+    blue: ["Blue", "#3E6FC8"], green: ["Green", "#8DB04A"], brown: ["Brown seed heads", "#8A6A3E"]
+  };
+  const USAGES = ["Hedge", "Topiary", "Groundcover", "Feature plant", "Screen", "Windbreak", "Fragrant", "Border plant", "Attractive foliage", "Autumn foliage", "Lawn alternative", "Fire retardant", "Wow factor", "Bush tucker"];
   const MONTHS = ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"];
   const SEASONS = { spring: [9, 10, 11], summer: [12, 1, 2], autumn: [3, 4, 5], winter: [6, 7, 8] };
   const TYPES = ["Tree", "Shrub", "Climber", "Groundcover", "Fern", "Grass", "Strappy", "Sedge & Rush"];
@@ -85,16 +116,28 @@
     $("#hdrCouncil").textContent = "· " + c.short;
     $("#srcLinks").innerHTML = c.sources.map((s) => '<a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.label) + "</a>").join("<br>");
     $("#fUse").querySelectorAll(".chip").forEach((b) => {
-      const n = PLANTS.filter((p) => p.councils.includes(cur()) && p.uses.includes(b.dataset.v)).length;
+      const n = PLANTS.filter((p) => p.uses.includes(b.dataset.v)).length;
       b.querySelector(".n").textContent = n;
       b.disabled = !n && !state.uses.has(b.dataset.v);
       b.title = n ? "" : "None on this council's list yet";
     });
   }
-  chips($("#fUse"), USAGES, state.uses, (u) => esc(u) + '<span class="n">' + PLANTS.filter((p) => p.uses.includes(u)).length + "</span>");
-  $("#fUse").querySelectorAll(".chip").forEach((b) => {
-    if (!PLANTS.some((p) => p.uses.includes(b.dataset.v))) { b.disabled = true; b.title = "None on this list yet — local natives are evergreen"; }
-  });
+  chips($("#fUse"), USAGES, state.uses, (u) => esc(u) + '<span class="n"></span>'); // counts are filled in by applyCouncil
+  // Load a council's plant list (first time only) and make it the one on screen.
+  // Resolves false if it failed or another council was picked while it loaded.
+  async function showCouncil(key) {
+    $("#council").value = key;
+    if (plantsKey === key) return true;
+    $("#count").textContent = "Loading plant list…";
+    let list;
+    try { list = await loadPlants(key); } catch (e) {
+      if (cur() === key) { $("#count").textContent = ""; $("#out").innerHTML = '<div class="empty">This council\'s plant list didn\'t load. Check your connection and try again.</div>'; }
+      return false;
+    }
+    if (cur() !== key) return false;
+    if (plantsKey !== key) { PLANTS = list; plantsKey = key; applyCouncil(); }
+    return true;
+  }
   chips($("#fColour"), Object.keys(COLOUR_GROUPS), state.colours, (k) => '<span class="swatch" style="background:' + COLOUR_GROUPS[k][1] + '"></span>' + COLOUR_GROUPS[k][0]);
 
   $("#q").addEventListener("input", (e) => { state.q = e.target.value.trim().toLowerCase(); render(); });
@@ -111,9 +154,7 @@
   });
 
   function filtered() {
-    const c = $("#council").value;
     const list = PLANTS.filter((p) => {
-      if (!p.councils.includes(c)) return false;
       if (state.q && !(p.common + " " + p.sci).toLowerCase().includes(state.q)) return false;
       if (state.types.size && !state.types.has(p.type)) return false;
       if (state.sun.size && !p.sun.some((s) => state.sun.has(s))) return false;
@@ -280,8 +321,9 @@
   }
   let current = [];
   function render() {
+    if (plantsKey !== cur()) return; // still loading this council's list; showCouncil's caller renders when ready
     current = filtered();
-    const total = PLANTS.filter((p) => p.councils.includes($("#council").value)).length;
+    const total = PLANTS.length;
     $("#count").innerHTML = "<b>" + current.length + "</b> of " + total + " plants";
     $("#vCards").setAttribute("aria-pressed", state.view === "cards");
     $("#vTable").setAttribute("aria-pressed", state.view === "table");
@@ -330,7 +372,7 @@
       photoBox(p) + monthsBar(p) +
       '<dl class="spec">' +
       "<dt>Type</dt><dd>" + esc(p.size || p.type) + "</dd>" +
-      "<dt>Height</dt><dd>" + rng(p.h) + (p.type === "Climber" || p.hRef ? " " + ref : "") + (p.sizeClass && p.councils.includes("hornsby") ? '<br><span class="help">Hornsby size class: ' + esc(p.sizeClass) + "</span>" : "") + "</dd>" +
+      "<dt>Height</dt><dd>" + rng(p.h) + (p.type === "Climber" || p.hRef ? " " + ref : "") + "</dd>" +
       "<dt>Width</dt><dd>" + rng(p.w) + " " + ref + "</dd>" +
       "<dt>Sunlight</dt><dd>" + p.sun.map((s) => SUN[s]).join(", ") + "</dd>" +
       "<dt>Water</dt><dd>" + WATER[p.water] + ' <span class="mono">(' + p.water + ")</span></dd>" +
@@ -444,8 +486,8 @@
     }
   }
   function zonesFor(subs) { const z = [...new Set(subs.map((x) => x.zone).filter(Boolean))]; return z.length === 1 ? z : []; }
-  function selectCouncil(key, zones) {
-    if ($("#council").value !== key || !$("#fZone").children.length) { $("#council").value = key; applyCouncil(); }
+  async function selectCouncil(key, zones) {
+    if (!(await showCouncil(key))) return;
     state.zones.clear();
     (zones || []).forEach((z) => state.zones.add(z));
     $("#fZone").querySelectorAll(".chip").forEach((b) => b.setAttribute("aria-pressed", state.zones.has(b.dataset.v)));
@@ -672,7 +714,7 @@
     if (b.hasAttribute("data-suggest")) { input.focus(); input.dispatchEvent(new Event("input")); }
     else { closeList(); showResult(match(b.dataset.ex), b.dataset.ex); }
   }));
-  $("#council").addEventListener("change", () => { applyCouncil(); render(); });
+  $("#council").addEventListener("change", () => { showCouncil(cur()).then((ok) => ok && render()); });
 
   // ---------- Landing screen ----------
   function showResult(r, raw) { showResultInner(r, raw); if (raw) afterLookup(); }
@@ -693,7 +735,7 @@
     landing.classList.add("leaving");
     setTimeout(() => { landing.hidden = true; }, 450);
     window.scrollTo(0, 0);
-    render();
+    showCouncil(cur()).then((ok) => ok && render());
   }
   function showLanding() {
     onLanding = true;
@@ -777,7 +819,5 @@
   wall.addEventListener("pointerleave", () => { if (hot) { hot.classList.remove("hot"); hot = null; } });
   // Names sit behind the card, so let pointer events reach them around it
   $("#landSlot").appendChild(form);
-  applyCouncil();
   showResultInner(null, "");
-  render();
 })();
