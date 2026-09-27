@@ -781,6 +781,65 @@
       return { el, live, size: live ? 24 + rnd() * 6 : 13 + rnd() * 15 };
     });
     items.sort((a, b) => (b.live - a.live) || (b.size - a.size));
+    if (W >= 700 && rowLayout()) return;
+    // Wide screens: names fill the page in justified rows that part around the card, at the largest size that
+    // still fits all 128. Phones (and windows too small for rows) use the scattered layout below.
+    function rowLayout() {
+      const pad = 16, gapEm = 0.85, rr = seeded(7);
+      const order = items.slice();
+      for (let i = order.length - 1; i > 0; i--) { const j = Math.floor(rr() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; }
+      order.forEach((it) => {
+        it.base = it.live ? 34 : 17 + rr() * 15;
+        it.el.style.fontSize = "100px";
+        it.w100 = it.el.offsetWidth; // width scales with font size, so measure once at 100px
+      });
+      // Free horizontal stretches of the row between y and y + h
+      const segsAt = (y, h) => {
+        let segs = [[pad, W - pad]];
+        blocks.forEach((b) => {
+          if (y >= b.y + b.h || y + h <= b.y) return;
+          segs = segs.flatMap(([a, z]) => [[a, Math.min(z, b.x)], [Math.max(a, b.x + b.w), z]]).filter(([a, z]) => z - a > 40);
+        });
+        return segs;
+      };
+      function fit(sc) {
+        const rowH = 40 * sc, nRows = Math.floor((H - 2 * pad) / rowH), rows = [];
+        const top = pad + ((H - 2 * pad) - nRows * rowH) / 2;
+        let i = 0;
+        for (let r = 0; r < nRows && i < order.length; r++) {
+          const y = top + r * rowH;
+          segsAt(y, rowH).forEach(([a, z]) => {
+            const run = [];
+            let used = 0;
+            while (i < order.length) {
+              const it = order[i], f = it.base * sc, w = it.w100 * f / 100, g = run.length ? f * gapEm : 0;
+              if (used + g + w > z - a) break;
+              run.push({ it, f, w }); used += g + w; i++;
+            }
+            if (run.length) rows.push({ y, rowH, a, z, run, used });
+          });
+        }
+        return i === order.length ? rows : null;
+      }
+      let lo = 0.45, hi = 3, best = fit(lo);
+      if (!best) return false;
+      for (let k = 0; k < 14; k++) { const mid = (lo + hi) / 2, r = fit(mid); if (r) { lo = mid; best = r; } else hi = mid; }
+      best.forEach(({ y, rowH, a, z, run, used }, idx) => {
+        const spare = z - a - used;
+        // Justify each run edge to edge; if that would leave huge gaps (short last run), centre it instead
+        const stretch = run.length > 1 && spare / (run.length - 1) < 2.5 * run[0].f && idx !== best.length - 1;
+        const gapExtra = stretch ? spare / (run.length - 1) : 0;
+        let x = stretch ? a : a + spare / 2;
+        run.forEach(({ it, f, w }, j) => {
+          if (j) x += f * gapEm + gapExtra;
+          it.el.style.fontSize = f.toFixed(1) + "px";
+          it.el.style.left = x + "px";
+          it.el.style.top = y + (rowH - f * 1.15) / 2 + "px";
+          x += w;
+        });
+      });
+      return true;
+    }
     const hit = (a, list) => list.some((b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h);
     // strict: every name must fit in the free space, or give up (returns false) so a smaller size can be tried.
     // Not strict (window too small at the smallest size): names that don't fit go behind the card, never on the credit line.
