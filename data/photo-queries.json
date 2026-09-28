@@ -79,5 +79,44 @@
   },
   "Platanus × hispanica": {
     "q": "Platanus × hispanica"
+  },
+  "Gahnia spp.": {
+    "q": "Gahnia sieberiana",
+    "note": "Photo shows Gahnia sieberiana, one of the local saw-sedges"
+  },
+  "Citrus spp.": {
+    "q": "Citrus × limon",
+    "note": "Photo shows lemon"
+  },
+  "Prunus spp.": {
+    "q": "Prunus persica",
+    "note": "Photo shows peach"
+  },
+  "Photinia × fraseri 'Robusta'": {
+    "q": "Photinia × fraseri",
+    "note": "Photo shows Photinia × fraseri"
+  },
+  "Magnolia grandiflora 'Little Gem'": {
+    "q": "Magnolia grandiflora",
+    "note": "Photo shows the species Magnolia grandiflora"
+  },
+  "Platanus orientalis 'Digitata'": {
+    "q": "Platanus orientalis",
+    "note": "Photo shows the species Platanus orientalis"
+  },
+  "Tristaniopsis laurina 'Luscious'": {
+    "q": "Tristaniopsis laurina",
+    "note": "Photo shows the species Tristaniopsis laurina"
+  },
+  "Robinia pseudoacacia 'Frisia'": {
+    "q": "Robinia pseudoacacia",
+    "note": "Photo shows the species Robinia pseudoacacia"
+  },
+  "Schinus areira": {
+    "q": "Schinus molle",
+    "note": "Photo shows Schinus molle (areira is a variety of it)"
+  },
+  "Prunus × blireana": {
+    "q": "Prunus × blireana"
   }
 }

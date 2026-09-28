@@ -114,7 +114,9 @@
   function applyCouncil() {
     const c = C();
     state.zones.clear();
-    $("#fZone").innerHTML = Object.keys(c.zones).map((k) => '<button type="button" class="chip" aria-pressed="false" data-v="' + k + '" title="' + esc(c.zones[k]) + '">' + (zoneName(k) !== k ? esc(zoneName(k)) : '<span class="mono">' + k + "</span>") + "</button>").join("");
+    // Only zones that have plants on this list (e.g. North Sydney's mangrove and saltmarsh communities have none)
+    const used = new Set(PLANTS.flatMap(zonesOf));
+    $("#fZone").innerHTML = Object.keys(c.zones).filter((k) => used.has(k)).map((k) => '<button type="button" class="chip" aria-pressed="false" data-v="' + k + '" title="' + esc(c.zones[k]) + '">' + (zoneName(k) !== k ? esc(zoneName(k)) : '<span class="mono">' + k + "</span>") + "</button>").join("");
     $("#zoneLabel").textContent = c.zoneLabel;
     $("#zoneHelp").textContent = c.zoneHelp + " ";
     $("#zoneLink").href = c.url;
@@ -306,8 +308,15 @@
     return '<button type="button" class="star" data-fav="' + p.id + '" aria-pressed="' + favs.has(p.id) + '" aria-label="Add ' + esc(p.common) + ' to shortlist" title="Shortlist">' + (favs.has(p.id) ? "★" : "☆") + "</button>";
   }
   // Exotic trees are only on Ku-ring-gai's tree replacement list: dark red names and a tag
-  const exCls = (p) => (p.exotic ? " exotic" : "");
-  const exoticTag = (p) => (p.exotic ? '<span class="exotic-tag">Exotic</span>' : "");
+  // Origin on the list being shown: exotic (anywhere), or native elsewhere in Australia but not to this
+  // council area (set per council in nonlocalIn). Names get a colour, a tag and a note in the detail panel.
+  const originOf = (p) => (p.exotic ? "exotic" : (p.nonlocalIn || []).includes(cur()) ? "nonlocal" : "");
+  const ORIGIN = {
+    exotic: { tag: "Exotic", csv: "Exotic", note: "Exotic, not a native plant. It is on this council’s tree list; see the council notes below." },
+    nonlocal: { tag: "Non-local native", csv: "Non-local native", note: "Native to other parts of Australia, not to this council area. It is on the council’s recommended tree list; see the council notes below." }
+  };
+  const exCls = (p) => (originOf(p) ? " " + originOf(p) : "");
+  const exoticTag = (p) => (originOf(p) ? '<span class="origin-tag ' + originOf(p) + '">' + ORIGIN[originOf(p)].tag + "</span>" : "");
   function card(p) {
     return '<article class="card" tabindex="0" data-id="' + p.id + '">' + photoBox(p) +
       '<div class="card-head"><div class="ico">' + ICONS[p.type] + '</div><div><div class="type-tag">' + esc(p.size || p.type) + '</div><h3 class="' + exCls(p) + '">' + esc(p.common) + '</h3><div class="sci' + exCls(p) + '">' + esc(p.sci) + "</div>" + exoticTag(p) + "</div>" + starBtn(p) + "</div>" +
@@ -324,7 +333,7 @@
     return '<div class="table-wrap"><table><thead><tr><th scope="col" aria-label="Shortlist"></th>' +
       COLS.map(([k, l]) => '<th scope="col"' + (sortable.includes(k) ? ' data-sort="' + k + '"' + (state.sort.key === k ? ' aria-sort="' + (state.sort.dir > 0 ? "ascending" : "descending") + '"' : "") : ' style="cursor:default"') + ">" + l + "</th>").join("") +
       "</tr></thead><tbody>" +
-      list.map((p) => '<tr data-id="' + p.id + '"><td>' + starBtn(p) + '</td><td><b class="' + exCls(p) + '">' + esc(p.common) + "</b>" + (p.exotic ? "<br>" + exoticTag(p) : "") + '</td><td class="sci' + exCls(p) + '">' + esc(p.sci) + "</td><td>" + esc(p.size || p.type) + '</td><td class="num">' + rng(p.h) + '</td><td class="num">' + rng(p.w) + '</td><td class="num">' + p.sun.join(" ") + '</td><td class="num">' + p.water + '</td><td class="num">' + zoneText(p) + '</td><td><span class="dot" style="display:inline-block;vertical-align:-1px;background:' + p.hex + '"></span> ' + flowerText(p) + '</td><td>' + p.uses.map(esc).join(", ") + '</td><td><span class="pill ' + p.tox[0] + '">' + TOX[p.tox[0]] + '</span></td><td><span class="pill ' + p.allergy[0] + '">' + ALG[p.allergy[0]] + "</span></td><td>" + esc(p.pot) + "</td></tr>").join("") +
+      list.map((p) => '<tr data-id="' + p.id + '"><td>' + starBtn(p) + '</td><td><b class="' + exCls(p) + '">' + esc(p.common) + "</b>" + (originOf(p) ? "<br>" + exoticTag(p) : "") + '</td><td class="sci' + exCls(p) + '">' + esc(p.sci) + "</td><td>" + esc(p.size || p.type) + '</td><td class="num">' + rng(p.h) + '</td><td class="num">' + rng(p.w) + '</td><td class="num">' + p.sun.join(" ") + '</td><td class="num">' + p.water + '</td><td class="num">' + zoneText(p) + '</td><td><span class="dot" style="display:inline-block;vertical-align:-1px;background:' + p.hex + '"></span> ' + flowerText(p) + '</td><td>' + p.uses.map(esc).join(", ") + '</td><td><span class="pill ' + p.tox[0] + '">' + TOX[p.tox[0]] + '</span></td><td><span class="pill ' + p.allergy[0] + '">' + ALG[p.allergy[0]] + "</span></td><td>" + esc(p.pot) + "</td></tr>").join("") +
       "</tbody></table></div>";
   }
   let current = [];
@@ -377,7 +386,7 @@
     $("#panel").innerHTML =
       '<button class="btn close" type="button" id="pClose">Close</button>' +
       '<div class="card-head" style="padding-right:70px"><div class="ico">' + ICONS[p.type] + '</div><div><div class="type-tag">' + esc(p.size || p.type) + '</div><h2 id="pTitle" class="' + exCls(p) + '">' + esc(p.common) + '</h2><div class="sci' + exCls(p) + '">' + esc(p.sci) + "</div>" + exoticTag(p) + "</div></div>" +
-      (p.exotic ? '<p class="exotic-note">Exotic tree, not a local native. It is on Ku-ring-gai Council’s Tree Replacement Planting List, so consider it only when choosing a replacement tree.</p>' : "") +
+      (originOf(p) ? '<p class="origin-note ' + originOf(p) + '">' + ORIGIN[originOf(p)].note + "</p>" : "") +
       photoBox(p) + monthsBar(p) +
       '<dl class="spec">' +
       "<dt>Type</dt><dd>" + esc(p.size || p.type) + "</dd>" +
@@ -391,7 +400,7 @@
       '<dt>Toxicity</dt><dd><span class="pill ' + p.tox[0] + '">' + TOX[p.tox[0]] + "</span> " + ref + "<br>" + esc(p.tox[1]) + "</dd>" +
       '<dt>Allergy</dt><dd><span class="pill ' + p.allergy[0] + '">' + ALG[p.allergy[0]] + "</span> " + ref + "<br>" + esc(p.allergy[1]) + "</dd>" +
       "<dt>Pot size</dt><dd>" + esc(p.pot) + " " + ref + "</dd>" +
-      "<dt>" + (p.exotic ? "Listed by" : "Native to") + "</dt><dd>" + p.councils.map((c) => "<b>" + esc(COUNCILS[c].name) + '</b><br><span class="help">' + (p.zonesBy[c] || []).map((z) => esc(COUNCILS[c].zones[z])).concat(p.infoBy && p.infoBy[c] ? ["Council list: " + esc(p.infoBy[c])] : []).join("<br>") + "</span>").join("<br>") + (p.alias ? '<br><span class="help">' + esc(p.alias) + "</span>" : "") + "</dd>" +
+      "<dt>" + (p.exotic || p.councils.every((c) => (p.nonlocalIn || []).includes(c)) ? "Listed by" : "Native to") + "</dt><dd>" + p.councils.map((c) => "<b>" + esc(COUNCILS[c].name) + "</b>" + ((p.nonlocalIn || []).includes(c) ? ' <span class="help">(as a non-local native)</span>' : "") + '<br><span class="help">' + (p.zonesBy[c] || []).map((z) => esc(COUNCILS[c].zones[z])).concat(p.infoBy && p.infoBy[c] ? ["Council list: " + esc(p.infoBy[c])] : []).join("<br>") + "</span>").join("<br>") + (p.alias ? '<br><span class="help">' + esc(p.alias) + "</span>" : "") + "</dd>" +
       "</dl>" +
       '<div class="note-box"><div class="eyebrow" style="margin-bottom:4px">Note</div>' + esc(p.note) + "</div>" +
       (p.hRef || p.detailsRef ? '<p class="help" style="margin:0">' + (p.hRef ? "The council list gives no measurements for this plant, so the height, width," : "Height is from the council list. Width,") + " sun, water and flowering months shown here are general reference values; see the council notes under Native to.</p>" : "") +
@@ -428,7 +437,7 @@
     // Tab-separated, so pasting into Excel or Google Sheets puts each field in its own cell.
     // Tabs and line breaks inside a value would split it, and a leading " makes Excel parse quotes, so clean those out.
     const q = (v) => String(v).replace(/[\t\r\n]+/g, " ").replace(/"/g, "”");
-    const rows = current.map((p) => [p.size || p.type, p.sci, p.common, p.exotic ? "Exotic (tree replacement only)" : "Native", rng(p.h).replace(" m", ""), rng(p.w).replace(" m", ""), p.sun.map((s) => SUN[s]).join("/"), WATER[p.water], p.soil, zonesOf(p).map(zoneName).join("/"), TOX[p.tox[0]] + " – " + p.tox[1], ALG[p.allergy[0]] + " – " + p.allergy[1], p.councils.map((c) => COUNCILS[c].name).join("/"), p.pot, monthsText(p.months), p.colour, p.uses.join(", "), p.note].map(q).join("\t"));
+    const rows = current.map((p) => [p.size || p.type, p.sci, p.common, originOf(p) ? ORIGIN[originOf(p)].csv : "Native", rng(p.h).replace(" m", ""), rng(p.w).replace(" m", ""), p.sun.map((s) => SUN[s]).join("/"), WATER[p.water], p.soil, zonesOf(p).map(zoneName).join("/"), TOX[p.tox[0]] + " – " + p.tox[1], ALG[p.allergy[0]] + " – " + p.allergy[1], p.councils.map((c) => COUNCILS[c].name).join("/"), p.pot, monthsText(p.months), p.colour, p.uses.join(", "), p.note].map(q).join("\t"));
     const csv = [head.map(q).join("\t")].concat(rows).join("\n");
     const done = (msg) => { $("#toast").textContent = msg; setTimeout(() => ($("#toast").textContent = ""), 3000); };
     try {
