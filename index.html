@@ -7,13 +7,153 @@
 
 <div class="landing" id="landing">
   <div class="names" id="names" aria-hidden="true"></div>
-  <div class="land-card" role="region" aria-label="Start">
+  <div class="land-card" id="landCard" role="region" aria-label="Start">
+    <button type="button" class="land-min" id="landMin" aria-label="Minimise" title="Minimise"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     <h1>Council Plant Finder <em>· NSW</em></h1>
     <p class="lede">Every NSW council has its own list of local native plants. Enter your site address to find your council and the plants that belong there.</p>
     <div id="landSlot"></div>
     <div id="landMsg" aria-live="polite"></div>
     <div class="land-foot"><span><span id="nCouncils">128</span> NSW councils · Inner West and Hornsby plant lists available now</span><button type="button" id="skip">Browse all plants →</button></div>
   </div>
+  <button type="button" class="land-pill" id="landRestore" hidden aria-controls="landCard"><span>Council Plant Finder <em>· NSW</em></span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 10l4-4 4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  <p class="credit-line">Designed and built by <b>Hanneli Yu</b> · © 2026</p>
+</div>
+
+<div class="wrap" id="app" hidden>
+  <header class="top">
+    <div>
+      <h1>Council Plant Finder <em id="hdrCouncil">· Inner West</em></h1>
+      <p>Native plants from council planting lists, sorted by the conditions of your site. Enter an address to find its council, then filter by sun, water, height and flowering.</p>
+    </div>
+    <div class="src">Plant list source:<br><span id="srcLinks"></span></div>
+  </header>
+  <button class="btn newaddr" type="button" id="newAddr">← Start again with a new address</button>
+
+  <section class="matcher" aria-label="Find your council">
+    <form class="in" id="addrForm" autocomplete="off">
+      <label class="eyebrow" for="addr">Site address</label>
+      <div class="addr">
+        <div class="combo">
+          <input id="addr" type="text" placeholder="Street address, suburb or postcode" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="addrList" spellcheck="false">
+          <ul class="suggest" id="addrList" role="listbox" aria-label="Address suggestions" hidden></ul>
+        </div>
+        <button class="btn primary" type="submit">Find council</button>
+      </div>
+      <div class="examples">Try:
+        <button type="button" data-ex="Norton St Leich" data-suggest>Norton St Leich…</button>
+        <button type="button" data-ex="45 Norton St, Leichhardt NSW 2040">Leichhardt</button>
+        <button type="button" data-ex="Thornleigh 2120">Thornleigh</button>
+        <button type="button" data-ex="Newtown 2042">Newtown</button>
+        <button type="button" data-ex="2203">2203</button>
+        <button type="button" data-ex="Glebe NSW 2037">Glebe</button>
+      </div>
+      <p class="help" id="addrHelp">Pick an address from the list to check it against official NSW council boundaries. You can also enter just a suburb or postcode.</p>
+    </form>
+    <div class="result" id="result" aria-live="polite"></div>
+  </section>
+
+  <div class="main">
+    <aside class="filters" aria-label="Filters">
+      <div class="fgroup">
+        <label class="eyebrow" for="council">Council</label>
+        <select id="council">
+
+        </select>
+      </div>
+      <div class="fgroup">
+        <label class="eyebrow" for="q">Search</label>
+        <input id="q" type="search" placeholder="Common or scientific name">
+      </div>
+      <div class="fgroup"><span class="eyebrow">Type</span><div class="chips" id="fType"></div></div>
+      <div class="fgroup"><span class="eyebrow">Sunlight</span><div class="chips" id="fSun"></div><p class="help">Shows plants that tolerate any selected condition.</p></div>
+      <div class="fgroup"><span class="eyebrow">Water</span><div class="chips" id="fWater"></div></div>
+      <div class="fgroup">
+        <span class="eyebrow">Maximum height</span>
+        <div class="range-row"><input id="maxH" type="range" min="0.5" max="40" step="0.5" value="40" aria-label="Maximum height in metres"><output id="maxHOut">40 m</output></div>
+      </div>
+      <div class="fgroup">
+        <label class="eyebrow" for="season">Flowering in</label>
+        <select id="season">
+          <option value="">Any time</option>
+          <option value="spring">Spring (Sep–Nov)</option>
+          <option value="summer">Summer (Dec–Feb)</option>
+          <option value="autumn">Autumn (Mar–May)</option>
+          <option value="winter">Winter (Jun–Aug)</option>
+        </select>
+      </div>
+      <div class="fgroup"><span class="eyebrow">Plant usage</span><div class="chips" id="fUse"></div><p class="help">Shows plants that suit every usage you pick.</p></div>
+      <div class="fgroup"><span class="eyebrow">Flower colour</span><div class="chips" id="fColour"></div></div>
+      <div class="fgroup">
+        <span class="eyebrow" id="zoneLabel">Vegetation zone</span><div class="chips" id="fZone"></div>
+        <p class="help"><span id="zoneHelp"></span><a id="zoneLink" href="#" target="_blank" rel="noopener">More on council's website</a>.</p>
+      </div>
+      <div class="fgroup">
+        <span class="eyebrow">Household</span>
+        <label class="toggle"><input type="checkbox" id="petSafe"> Pet &amp; child friendly</label>
+        <label class="toggle"><input type="checkbox" id="lowAllergy"> Low allergy only</label>
+        <label class="toggle"><input type="checkbox" id="onlyFav"> My shortlist only</label>
+      </div>
+      <button class="btn reset" id="reset" type="button">Clear filters</button>
+    </aside>
+
+    <section class="results">
+      <div class="bar">
+        <div class="count" id="count"></div>
+        <div class="bar-right">
+          <span class="toast" id="toast" aria-live="polite"></span>
+          <label class="eyebrow" for="sortSel" style="letter-spacing:.06em">Sort</label>
+          <select id="sortSel" class="sort-sel">
+            <option value="sci">Scientific name A–Z</option>
+            <option value="common">Common name A–Z</option>
+            <option value="h">Height (low to high)</option>
+            <option value="type">Plant type</option>
+          </select>
+          <button class="btn" id="copyCsv" type="button">Copy as CSV</button>
+          <div class="seg" role="group" aria-label="View">
+            <button type="button" id="vCards" aria-pressed="true">Cards</button>
+            <button type="button" id="vTable" aria-pressed="false">Table</button>
+          </div>
+        </div>
+      </div>
+      <div class="legend">
+        <span><b class="mono">FS</b> full sun</span><span><b class="mono">PS</b> part shade</span><span><b class="mono">S</b> shade</span>
+        <span><b class="mono">LW</b> dry-tolerant</span><span><b class="mono">MW</b> moist soil</span><span><b class="mono">HW</b> wet-tolerant</span>
+      </div>
+      <div id="out"></div>
+    </section>
+  </div>
+
+  <footer>
+    <span>Plant lists, vegetation zones and areas come from each council. For Inner West, height, sunlight, water, soil and flowering also come from the council list; Hornsby's nursery list gives habitat notes only, so those values are general reference. Width, toxicity, allergy and pot size (marked <span class="ref">ref</span>) are general horticultural guidance — check before specifying. Plant usage is design guidance; "Fire retardant" means lower flammability, and no plant is fireproof.</span>
+    <span>Photos come from <a href="https://www.inaturalist.org" target="_blank" rel="noopener">iNaturalist</a>, with <a href="https://commons.wikimedia.org" target="_blank" rel="noopener">Wikimedia Commons</a> as a backup, and are credited to each photographer under their Creative Commons licence. Only openly licensed photos are shown.</span>
+    <span>Widths, frost tolerance and wildlife were cross-checked against <a href="https://gardeningwithangus.com.au/plantsearch/" target="_blank" rel="noopener">Gardening with Angus</a> (facts only; their text and photos are not reproduced).</span>
+    <span>Toxicity and allergy notes are not medical advice. If a child or pet eats a plant, call the Poisons Information Centre on 13 11 26 or your vet.</span>
+    <p class="credit-line">Designed and built by <b>Hanneli Yu</b> · © 2026</p>
+  </footer>
+</div>
+
+<div class="scrim" id="scrim" hidden></div>
+<aside class="panel" id="panel" hidden role="dialog" aria-modal="true" aria-labelledby="pTitle"></aside>
+<script src="js/app.js"></script>
+</html>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="author" content="Hanneli Yu">
+<title>Council Plant Finder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&display=swap">
+<link rel="stylesheet" href="css/style.css">
+
+<div class="landing" id="landing">
+  <div class="names" id="names" aria-hidden="true"></div>
+  <div class="land-card" id="landCard" role="region" aria-label="Start">
+    <button type="button" class="land-min" id="landMin" aria-label="Minimise" title="Minimise"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+    <h1>Council Plant Finder <em>· NSW</em></h1>
+    <p class="lede">Every NSW council has its own list of local native plants. Enter your site address to find your council and the plants that belong there.</p>
+    <div id="landSlot"></div>
+    <div id="landMsg" aria-live="polite"></div>
+    <div class="land-foot"><span><span id="nCouncils">128</span> NSW councils · Inner West and Hornsby plant lists available now</span><button type="button" id="skip">Browse all plants →</button></div>
+  </div>
+  <button type="button" class="land-pill" id="landRestore" hidden aria-controls="landCard"><span>Council Plant Finder <em>· NSW</em></span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 10l4-4 4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
   <p class="credit-line">Designed and built by <b>Hanneli Yu</b> · © 2026</p>
 </div>
 
