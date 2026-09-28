@@ -53,7 +53,51 @@
         "url": "https://www.hornsby.nsw.gov.au/files/assets/public/v/1/documents/production-list-for-hsc-nursery-january-2017.pdf"
       }
     ],
-    "pdf": "https://www.hornsby.nsw.gov.au/files/assets/public/v/1/documents/production-list-for-hsc-nursery-january-2017.pdf"
+    "pdf": "https://www.hornsby.nsw.gov.au/files/assets/public/v/1/documents/production-list-for-hsc-nursery-january-2017.pdf",
+    "allLabel": "All habitats",
+    "extraZones": [
+      "HORT"
+    ]
+  },
+  "ku-ring-gai": {
+    "name": "Ku-ring-gai Council",
+    "short": "Ku-ring-gai",
+    "list": "Grow native plant lists (heavy and light soil) and the Tree Replacement Planting List",
+    "url": "https://www.krg.nsw.gov.au/Environment/Your-local-environment/Grow-native/Native-gardening-in-Ku-ring-gai",
+    "zones": {
+      "HEAVY": "Heavy soil: clay, low to moderate nutrients; can get waterlogged after rain and compact when dry",
+      "LIGHT": "Light soil: sandy and shallow, very low in nutrients; drains quickly and dries out fast",
+      "TREES": "On the council's Tree Replacement Planting List (locally indigenous trees)"
+    },
+    "zoneNames": {
+      "HEAVY": "Heavy soil",
+      "LIGHT": "Light soil",
+      "TREES": "Replacement trees"
+    },
+    "zoneLabel": "Soil type / tree list",
+    "zoneHelp": "Ku-ring-gai's Grow native lists are split by soil type; council's online map shows whether your site has light (sandy) or heavy (clay) soil. Replacement trees are the locally indigenous trees on the council's tree replacement list.",
+    "allLabel": "Both soil types",
+    "extraZones": [
+      "TREES"
+    ],
+    "sources": [
+      {
+        "label": "Grow native – heavy soil",
+        "url": "https://www.krg.nsw.gov.au/Environment/Your-local-environment/Grow-native/Native-gardening-in-Ku-ring-gai/Grow-native-heavy-soil"
+      },
+      {
+        "label": "Grow native – light soil",
+        "url": "https://www.krg.nsw.gov.au/Environment/Your-local-environment/Grow-native/Native-gardening-in-Ku-ring-gai/Grow-native-light-soil"
+      },
+      {
+        "label": "Tree Replacement Planting List, DCP June 2023 (PDF)",
+        "url": "https://www.krg.nsw.gov.au/files/assets/public/v/2/hptrim/information-management-publications-public-website-ku-ring-gai-council-website-urban-planning-and-policies/dcp-june-2023-tree-replacement-planting-tree-species-list.pdf"
+      },
+      {
+        "label": "DCP Part 13 – Tree and vegetation preservation (PDF)",
+        "url": "https://www.krg.nsw.gov.au/files/assets/public/v/6/hptrim/information-management-publications-public-website-ku-ring-gai-council-website-ku-ring-gai-development-control-plan/kdcp-section-a-part-13-tree-and-vegetation-preservation.pdf"
+      }
+    ]
   }
 },
 "suburbs": [
@@ -120,7 +164,6 @@
 ["Hornsby","2077","hornsby"],
 ["Waitara","2077","hornsby"],
 ["Normanhurst","2076","hornsby"],
-["Wahroonga","2076","hornsby",["Ku-ring-gai Council"]],
 ["Thornleigh","2120","hornsby"],
 ["Pennant Hills","2120","hornsby"],
 ["Westleigh","2120","hornsby"],
@@ -139,7 +182,24 @@
 ["Cowan","2081","hornsby"],
 ["Berowra Heights","2082","hornsby"],
 ["Brooklyn","2083","hornsby"],
-["Dangar Island","2083","hornsby"]
+["Dangar Island","2083","hornsby"],
+["Gordon","2072","ku-ring-gai"],
+["Killara","2071","ku-ring-gai"],
+["East Killara","2071","ku-ring-gai"],
+["Lindfield","2070","ku-ring-gai"],
+["East Lindfield","2070","ku-ring-gai"],
+["Roseville","2069","ku-ring-gai"],
+["Roseville Chase","2069","ku-ring-gai"],
+["Pymble","2073","ku-ring-gai"],
+["West Pymble","2073","ku-ring-gai"],
+["Turramurra","2074","ku-ring-gai"],
+["North Turramurra","2074","ku-ring-gai"],
+["South Turramurra","2074","ku-ring-gai"],
+["Warrawee","2074","ku-ring-gai"],
+["North Wahroonga","2076","ku-ring-gai"],
+["St Ives","2075","ku-ring-gai"],
+["St Ives Chase","2075","ku-ring-gai"],
+["Wahroonga","2076","ku-ring-gai",["Hornsby Shire Council"]]
 ],
 "nswCouncils": ["ALBURY CITY","ARMIDALE REGIONAL","BALLINA","BALRANALD","BATHURST REGIONAL","BAYSIDE","BEGA VALLEY","BELLINGEN","BERRIGAN","BLACKTOWN","BLAND","BLAYNEY","BLUE MOUNTAINS","BOGAN","BOURKE","BREWARRINA","BROKEN HILL","BURWOOD","BYRON","CABONNE","CAMDEN","CAMPBELLTOWN","CANADA BAY","CANTERBURY-BANKSTOWN","CARRATHOOL","CENTRAL COAST","CENTRAL DARLING","CESSNOCK","CITY OF PARRAMATTA","CLARENCE VALLEY","COBAR","COFFS HARBOUR","COOLAMON","COONAMBLE","COOTAMUNDRA-GUNDAGAI REGIONAL","COWRA","CUMBERLAND","DUBBO REGIONAL","DUNGOG","EDWARD RIVER","EUROBODALLA","FAIRFIELD","FEDERATION","FORBES","GEORGES RIVER","GILGANDRA","GLEN INNES SEVERN","GOULBURN MULWAREE","GREATER HUME SHIRE","GRIFFITH","GUNNEDAH","GWYDIR","HAWKESBURY","HAY","HILLTOPS","HORNSBY","HUNTERS HILL","INNER WEST","INVERELL","JUNEE","KEMPSEY","KIAMA","KU-RING-GAI","KYOGLE","LACHLAN","LAKE MACQUARIE","LANE COVE","LEETON","LISMORE","LITHGOW CITY","LIVERPOOL","LIVERPOOL PLAINS","LOCKHART","MAITLAND","MID-COAST","MID-WESTERN REGIONAL","MOREE PLAINS","MOSMAN","MURRAY RIVER","MURRUMBIDGEE","MUSWELLBROOK","NAMBUCCA VALLEY","NARRABRI","NARRANDERA","NARROMINE","NEWCASTLE","NORTH SYDNEY","NORTHERN BEACHES","OBERON","ORANGE","PARKES","PENRITH","PORT MACQUARIE-HASTINGS","PORT STEPHENS","QUEANBEYAN-PALERANG REGIONAL","RANDWICK","RICHMOND VALLEY","RYDE","SHELLHARBOUR","SHOALHAVEN","SINGLETON","SNOWY MONARO REGIONAL","SNOWY VALLEYS","STRATHFIELD","SUTHERLAND SHIRE","SYDNEY","TAMWORTH REGIONAL","TEMORA","TENTERFIELD","THE HILLS SHIRE","TWEED","UPPER HUNTER","UPPER LACHLAN SHIRE","URALLA","WAGGA WAGGA","WALCHA","WALGETT","WARREN","WARRUMBUNGLE","WAVERLEY","WEDDIN","WENTWORTH","WILLOUGHBY","WINGECARRIBEE","WOLLONDILLY","WOLLONGONG","WOOLLAHRA","YASS VALLEY"]
 }

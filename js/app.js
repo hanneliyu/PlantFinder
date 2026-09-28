@@ -18,6 +18,9 @@
       (location.protocol === "file:" ? "This page has to be opened through a web server, not as a file: run <code>python -m http.server</code> in the project folder and open http://localhost:8000." : "") + "</div>";
     return;
   }
+  // "Inner West, Hornsby and Ku-ring-gai"
+  const listNames = () => Object.values(COUNCILS).map((c) => c.short).join(", ").replace(/, ([^,]*)$/, " and $1");
+  $("#liveLists").textContent = listNames();
   const plantFiles = {};
   const loadPlants = (key) => (plantFiles[key] = plantFiles[key] || fetch("data/plants/" + key + ".json")
     .then((r) => (r.ok ? r.json() : Promise.reject(new Error("HTTP " + r.status))))
@@ -78,10 +81,12 @@
   }
   const zonesOf = (p) => (p.zonesBy && p.zonesBy[cur()]) || [];
   const zoneName = (z) => (C().zoneNames && C().zoneNames[z]) || z;
+  // "All zones" (or the council's own wording) when a plant is in every main zone; extra zones such as
+  // Hornsby's horticultural group or Ku-ring-gai's replacement trees are listed after it
   const zoneText = (p) => {
-    const z = zonesOf(p), main = Object.keys(C().zones).filter((k) => k !== "HORT");
-    if (main.every((k) => z.includes(k))) return (cur() === "hornsby" ? "All habitats" : "All zones") + (z.includes("HORT") ? ", Horticultural" : "");
-    return z.map(zoneName).join(", ");
+    const z = zonesOf(p), extra = C().extraZones || [], main = Object.keys(C().zones).filter((k) => !extra.includes(k));
+    if (!main.every((k) => z.includes(k))) return z.map(zoneName).join(", ");
+    return [C().allLabel || "All zones"].concat(z.filter((k) => extra.includes(k)).map(zoneName)).join(", ");
   };
 
   // ---------- Filter chips ----------
@@ -109,7 +114,7 @@
   function applyCouncil() {
     const c = C();
     state.zones.clear();
-    $("#fZone").innerHTML = Object.keys(c.zones).map((k) => '<button type="button" class="chip" aria-pressed="false" data-v="' + k + '" title="' + esc(c.zones[k]) + '">' + (cur() === "hornsby" ? esc(zoneName(k)) : '<span class="mono">' + k + "</span>") + "</button>").join("");
+    $("#fZone").innerHTML = Object.keys(c.zones).map((k) => '<button type="button" class="chip" aria-pressed="false" data-v="' + k + '" title="' + esc(c.zones[k]) + '">' + (zoneName(k) !== k ? esc(zoneName(k)) : '<span class="mono">' + k + "</span>") + "</button>").join("");
     $("#zoneLabel").textContent = c.zoneLabel;
     $("#zoneHelp").textContent = c.zoneHelp + " ";
     $("#zoneLink").href = c.url;
@@ -382,10 +387,10 @@
       '<dt>Toxicity</dt><dd><span class="pill ' + p.tox[0] + '">' + TOX[p.tox[0]] + "</span> " + ref + "<br>" + esc(p.tox[1]) + "</dd>" +
       '<dt>Allergy</dt><dd><span class="pill ' + p.allergy[0] + '">' + ALG[p.allergy[0]] + "</span> " + ref + "<br>" + esc(p.allergy[1]) + "</dd>" +
       "<dt>Pot size</dt><dd>" + esc(p.pot) + " " + ref + "</dd>" +
-      "<dt>Native to</dt><dd>" + p.councils.map((c) => "<b>" + esc(COUNCILS[c].name) + '</b><br><span class="help">' + (p.zonesBy[c] || []).map((z) => esc(COUNCILS[c].zones[z])).join("<br>") + "</span>").join("<br>") + (p.alias ? '<br><span class="help">' + esc(p.alias) + "</span>" : "") + "</dd>" +
+      "<dt>Native to</dt><dd>" + p.councils.map((c) => "<b>" + esc(COUNCILS[c].name) + '</b><br><span class="help">' + (p.zonesBy[c] || []).map((z) => esc(COUNCILS[c].zones[z])).concat(p.infoBy && p.infoBy[c] ? ["Council list: " + esc(p.infoBy[c])] : []).join("<br>") + "</span>").join("<br>") + (p.alias ? '<br><span class="help">' + esc(p.alias) + "</span>" : "") + "</dd>" +
       "</dl>" +
       '<div class="note-box"><div class="eyebrow" style="margin-bottom:4px">Note</div>' + esc(p.note) + "</div>" +
-      (p.hRef ? '<p class="help" style="margin:0">Hornsby\'s nursery list describes habitat but gives no measurements, so the height, width, sun, water and flowering months shown here are general reference values.</p>' : "") +
+      (p.hRef || p.detailsRef ? '<p class="help" style="margin:0">' + (p.hRef ? "The council list gives no measurements for this plant, so the height, width," : "Height is from the council list. Width,") + " sun, water and flowering months shown here are general reference values; see the council notes under Native to.</p>" : "") +
       gwaBlock(p) +
       '<div style="display:flex;gap:8px;flex-wrap:wrap">' + '<button class="btn primary" type="button" id="pFav">' + (favs.has(p.id) ? "Remove from shortlist" : "Add to shortlist") + "</button>" +
       '<a class="btn" style="text-decoration:none;color:var(--ink)" target="_blank" rel="noopener" href="https://www.inaturalist.org/taxa/search?q=' + encodeURIComponent(p.sci) + '">More photos ↗</a>' +
@@ -774,7 +779,7 @@
 
   // Background wall of council names: hover to highlight, click to open
   const wall = $("#names");
-  const nice = (n) => n.toLowerCase().replace(/(^|[\s\-])([a-z])/g, (m, a, c) => a + c.toUpperCase()).replace(/\bOf\b/g, "of");
+  const nice = (n) => n.toLowerCase().replace(/(^|[\s\-])([a-z])/g, (m, a, c) => a + c.toUpperCase()).replace(/\bOf\b/g, "of").replace("Ku-Ring-Gai", "Ku-ring-gai");
   function rand(seed) { let x = Math.sin(seed * 9301 + 49297) * 233280; return x - Math.floor(x); }
   // Each council appears once. Names are dealt into rows in a fixed shuffled order, at the largest size
   // where the rows fill the screen; spare space is then shared out unevenly and each name is nudged up or
@@ -876,7 +881,7 @@
       selectCouncil(key);
       enterApp();
     } else {
-      $("#landMsg").innerHTML = '<span class="status no">Coming soon</span><div class="council">' + esc(name) + ' Council</div><div class="msg">This council\'s native plant list hasn\'t been added yet. Available now: ' + Object.values(COUNCILS).map((c) => esc(c.short)).join(" and ") + '.</div><button type="button" class="btn" id="anyway" style="align-self:flex-start;margin-top:4px">Browse the available plant lists</button>';
+      $("#landMsg").innerHTML = '<span class="status no">Coming soon</span><div class="council">' + esc(name) + ' Council</div><div class="msg">This council\'s native plant list hasn\'t been added yet. Available now: ' + esc(listNames()) + '.</div><button type="button" class="btn" id="anyway" style="align-self:flex-start;margin-top:4px">Browse the available plant lists</button>';
       $("#anyway").addEventListener("click", enterApp);
       restoreCard(false); // the message is shown in the card
     }
