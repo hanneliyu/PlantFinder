@@ -7,13 +7,15 @@
 
 <div class="landing" id="landing">
   <div class="names" id="names" aria-hidden="true"></div>
-  <div class="land-card" role="region" aria-label="Start">
+  <div class="land-card" id="landCard" role="region" aria-label="Start">
+    <button type="button" class="land-min" id="landMin" aria-label="Minimise" title="Minimise"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
     <h1>Council Plant Finder <em>· NSW</em></h1>
     <p class="lede">Every NSW council has its own list of local native plants. Enter your site address to find your council and the plants that belong there.</p>
     <div id="landSlot"></div>
     <div id="landMsg" aria-live="polite"></div>
     <div class="land-foot"><span><span id="nCouncils">128</span> NSW councils · Inner West and Hornsby plant lists available now</span><button type="button" id="skip">Browse all plants →</button></div>
   </div>
+  <button type="button" class="land-pill" id="landRestore" hidden aria-controls="landCard"><span>Council Plant Finder <em>· NSW</em></span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 10l4-4 4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
   <p class="credit-line">Designed and built by <b>Hanneli Yu</b> · © 2026</p>
 </div>
 

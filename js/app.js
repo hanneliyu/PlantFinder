@@ -744,6 +744,8 @@
     $("#landMsg").innerHTML = "";
     $("#landSlot").appendChild(form);
     landing.hidden = false;
+    restoreCard(false);
+    buildWall(); // the window may have been resized while the landing was hidden
     requestAnimationFrame(() => landing.classList.remove("leaving"));
     app.hidden = true;
     const i = $("#addr"); i.value = ""; i.focus();
@@ -751,30 +753,90 @@
   $("#skip").addEventListener("click", enterApp);
   $("#newAddr").addEventListener("click", showLanding);
 
+  // Minimise the start card into a pill at the bottom of the page, to see the council names behind it
+  const landCard = $("#landCard"), pill = $("#landRestore");
+  function minimiseCard() {
+    const r = landCard.getBoundingClientRect();
+    const target = window.innerHeight - 70; // about where the pill sits
+    landCard.style.setProperty("--drop", target - (r.top + r.height / 2) + "px");
+    landing.classList.add("min");
+    pill.hidden = false;
+    pill.focus();
+  }
+  function restoreCard(focus) {
+    if (!landing.classList.contains("min")) return;
+    landing.classList.remove("min");
+    pill.hidden = true;
+    if (focus) requestAnimationFrame(() => $("#landMin").focus()); // once the card is visible again
+  }
+  $("#landMin").addEventListener("click", minimiseCard);
+  pill.addEventListener("click", () => restoreCard(true));
+
   // Background wall of council names: hover to highlight, click to open
   const wall = $("#names");
   const nice = (n) => n.toLowerCase().replace(/(^|[\s\-])([a-z])/g, (m, a, c) => a + c.toUpperCase()).replace(/\bOf\b/g, "of");
   function rand(seed) { let x = Math.sin(seed * 9301 + 49297) * 233280; return x - Math.floor(x); }
+  // Each council appears once. Names are dealt into rows in a fixed shuffled order, at the largest size
+  // where the rows fill the screen; spare space is then shared out unevenly and each name is nudged up or
+  // down within its row, so the wall looks scattered but has no clumps or empty patches.
   function buildWall() {
+    const W = wall.clientWidth, H = wall.clientHeight;
+    if (!W || !H) return; // landing is hidden; rebuilt when shown
     wall.innerHTML = "";
-    const add = (copy) => NSW_COUNCILS.forEach((n, i) => {
-      const k = i + copy * 131, r = rand(k);
+    const BASE = 20, pad = 6, GX = 0.32, GY = 0.05; // gaps as a share of the name's height
+    const items = NSW_COUNCILS.map((n, i) => {
+      const key = n.toLowerCase().replace(/\s+/g, "-"), t = nice(n);
       const el = document.createElement("span");
-      el.className = "nm" + (r > 0.72 ? " serif" : "") + (COUNCILS[n.toLowerCase().replace(/\s+/g, "-")] ? " live" : "");
-      const t = nice(n);
+      el.className = "nm" + (rand(i) > 0.72 ? " serif" : "") + (COUNCILS[key] ? " live" : "");
       el.dataset.t = t;
-      el.dataset.key = n.toLowerCase().replace(/\s+/g, "-");
+      el.dataset.key = key;
       el.setAttribute("role", "button");
       el.tabIndex = -1;
       el.innerHTML = "<span>" + t + "</span>";
-      el.style.fontSize = (15 + Math.round(rand(k + 7) * 17)) + "px";
+      const weight = 0.85 + rand(i + 7) * 0.45; // relative size, varied per name
+      el.style.fontSize = BASE * weight + "px";
       wall.appendChild(el);
+      return { el, i, weight };
     });
-    let copy = 0;
-    add(copy++);
-    while (wall.scrollHeight < window.innerHeight * 1.15 && copy < 5) add(copy++);
+    items.forEach((it) => { it.w = it.el.offsetWidth; it.h = it.el.offsetHeight; }); // at BASE * weight
+    const order = items.slice().sort((a, b) => rand(a.i * 31 + 5) - rand(b.i * 31 + 5));
+    function rowsAt(s) {
+      const rows = [];
+      let row = [], x = 0;
+      for (const it of order) {
+        const w = it.w * s, g = it.h * s * GX;
+        if (row.length && x + g + w > W - 2 * pad) { rows.push(row); row = []; x = 0; }
+        x += (row.length ? g : 0) + w;
+        row.push(it);
+      }
+      rows.push(row);
+      const height = rows.reduce((a, r) => a + Math.max(...r.map((it) => it.h * s)) * (1 + GY), 0);
+      return { rows, height, fits: height <= H - 2 * pad && order.every((it) => it.w * s <= W - 2 * pad) };
+    }
+    let lo = 0.05, hi = 10;
+    for (let k = 0; k < 30; k++) { const m = (lo + hi) / 2; if (rowsAt(m).fits) lo = m; else hi = m; }
+    const s = lo, { rows, height } = rowsAt(s);
+    const vGap = (H - 2 * pad - height) / (rows.length + 1);
+    let y = pad + vGap;
+    rows.forEach((row, ri) => {
+      const rh = Math.max(...row.map((it) => it.h * s));
+      const used = row.reduce((a, it, j) => a + it.w * s + (j ? it.h * s * GX : 0), 0);
+      // Uneven shares of the row's spare width; the two ends get less so rows reach the page edges
+      const shares = row.concat([null]).map((_, k) => (k === 0 || k === row.length ? 0.4 : 1) * (0.3 + rand(ri * 101 + k * 7 + 11)));
+      const total = shares.reduce((a, b) => a + b, 0), spare = W - 2 * pad - used;
+      let x = pad;
+      row.forEach((it, j) => {
+        x += (spare * shares[j]) / total + (j ? it.h * s * GX : 0);
+        it.el.style.fontSize = BASE * it.weight * s + "px";
+        it.el.style.left = x + "px";
+        it.el.style.top = y + (rh - it.h * s) * rand(it.i * 13 + 3) + "px";
+        x += it.w * s;
+      });
+      y += rh * (1 + GY) + vGap;
+    });
   }
   buildWall();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(buildWall); // widths change once web fonts load
   let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(buildWall, 200); });
   const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   let hot = null;
@@ -816,6 +878,7 @@
     } else {
       $("#landMsg").innerHTML = '<span class="status no">Coming soon</span><div class="council">' + esc(name) + ' Council</div><div class="msg">This council\'s native plant list hasn\'t been added yet. Available now: ' + Object.values(COUNCILS).map((c) => esc(c.short)).join(" and ") + '.</div><button type="button" class="btn" id="anyway" style="align-self:flex-start;margin-top:4px">Browse the available plant lists</button>';
       $("#anyway").addEventListener("click", enterApp);
+      restoreCard(false); // the message is shown in the card
     }
   });
   wall.addEventListener("pointerleave", () => { if (hot) { hot.classList.remove("hot"); hot = null; } });
