@@ -1,15 +1,83 @@
 {
   "_comment": "Names to search photos under: current names for old synonyms, and the parent species for varieties/cultivars. Used by tools/fetch_photos.py.",
-  "Acmena smithii": { "q": "Syzygium smithii" },
-  "Acmena smithii var. minor": { "q": "Syzygium smithii", "note": "Photo shows the species Syzygium smithii" },
-  "Austrodanthonia racemosa": { "q": "Rytidosperma racemosum" },
-  "Austrodanthonia tenuior": { "q": "Rytidosperma tenuius" },
-  "Morinda jasminoides": { "q": "Gynochthodes jasminoides" },
-  "Pultenaea scabra var. biloba": { "q": "Pultenaea scabra", "note": "Photo shows the species Pultenaea scabra" },
-  "Eriostemon 'Profusion'": { "q": "Philotheca myoporoides", "note": "Photo shows a related species, Philotheca myoporoides" },
-  "Callistemon citrinus": { "q": "Melaleuca citrina" },
-  "Callistemon linearis": { "q": "Melaleuca linearis" },
-  "Pratia purpurascens": { "q": "Lobelia purpurascens" },
-  "Trema aspera": { "q": "Trema tomentosa", "note": "Photo shows Trema tomentosa (aspera is a variety of it)" },
-  "Themeda triandra": { "q": "Themeda triandra" }
+  "Acmena smithii": {
+    "q": "Syzygium smithii"
+  },
+  "Acmena smithii var. minor": {
+    "q": "Syzygium smithii",
+    "note": "Photo shows the species Syzygium smithii"
+  },
+  "Austrodanthonia racemosa": {
+    "q": "Rytidosperma racemosum"
+  },
+  "Austrodanthonia tenuior": {
+    "q": "Rytidosperma tenuius"
+  },
+  "Morinda jasminoides": {
+    "q": "Gynochthodes jasminoides"
+  },
+  "Pultenaea scabra var. biloba": {
+    "q": "Pultenaea scabra",
+    "note": "Photo shows the species Pultenaea scabra"
+  },
+  "Eriostemon 'Profusion'": {
+    "q": "Philotheca myoporoides",
+    "note": "Photo shows a related species, Philotheca myoporoides"
+  },
+  "Callistemon citrinus": {
+    "q": "Melaleuca citrina"
+  },
+  "Callistemon linearis": {
+    "q": "Melaleuca linearis"
+  },
+  "Pratia purpurascens": {
+    "q": "Lobelia purpurascens"
+  },
+  "Trema aspera": {
+    "q": "Trema tomentosa",
+    "note": "Photo shows Trema tomentosa (aspera is a variety of it)"
+  },
+  "Themeda triandra": {
+    "q": "Themeda triandra"
+  },
+  "Bauhinia spp.": {
+    "q": "Bauhinia variegata",
+    "note": "Photo shows Bauhinia variegata, one of the species sold as Butterfly Tree"
+  },
+  "Thuja orientalis 'Aurea Nana'": {
+    "q": "Platycladus orientalis",
+    "note": "Photo shows the species Platycladus orientalis"
+  },
+  "Michelia figo": {
+    "q": "Magnolia figo"
+  },
+  "Fraxinus angustifolia 'Raywood'": {
+    "q": "Fraxinus angustifolia",
+    "note": "Photo shows the species Fraxinus angustifolia"
+  },
+  "Fraxinus excelsior 'Aurea'": {
+    "q": "Fraxinus excelsior",
+    "note": "Photo shows the species Fraxinus excelsior"
+  },
+  "Ulmus glabra 'Lutescens'": {
+    "q": "Ulmus glabra",
+    "note": "Photo shows the species Ulmus glabra"
+  },
+  "Ulmus procera 'Louis van Houtte'": {
+    "q": "Ulmus minor",
+    "note": "Photo shows the species Ulmus minor (syn. U. procera)"
+  },
+  "Cedrus atlantica 'Glauca'": {
+    "q": "Cedrus atlantica",
+    "note": "Photo shows the species Cedrus atlantica"
+  },
+  "Podocarpus falcatus": {
+    "q": "Afrocarpus falcatus"
+  },
+  "Magnolia × soulangeana": {
+    "q": "Magnolia × soulangeana"
+  },
+  "Platanus × hispanica": {
+    "q": "Platanus × hispanica"
+  }
 }

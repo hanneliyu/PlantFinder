@@ -67,18 +67,21 @@
     "zones": {
       "HEAVY": "Heavy soil: clay, low to moderate nutrients; can get waterlogged after rain and compact when dry",
       "LIGHT": "Light soil: sandy and shallow, very low in nutrients; drains quickly and dries out fast",
-      "TREES": "On the council's Tree Replacement Planting List (locally indigenous trees)"
+      "TREES": "On the council's Tree Replacement Planting List (locally indigenous trees)",
+      "EXOTIC": "Exotic trees on the council's Tree Replacement Planting List: not local natives, only for choosing a replacement tree"
     },
     "zoneNames": {
       "HEAVY": "Heavy soil",
       "LIGHT": "Light soil",
-      "TREES": "Replacement trees"
+      "TREES": "Replacement trees",
+      "EXOTIC": "Exotic trees"
     },
     "zoneLabel": "Soil type / tree list",
-    "zoneHelp": "Ku-ring-gai's Grow native lists are split by soil type; council's online map shows whether your site has light (sandy) or heavy (clay) soil. Replacement trees are the locally indigenous trees on the council's tree replacement list.",
+    "zoneHelp": "Ku-ring-gai's Grow native lists are split by soil type; council's online map shows whether your site has light (sandy) or heavy (clay) soil. Replacement trees are the locally indigenous trees on the council's tree replacement list; exotic trees from the same list are shown in red and are only for tree replacement.",
     "allLabel": "Both soil types",
     "extraZones": [
-      "TREES"
+      "TREES",
+      "EXOTIC"
     ],
     "sources": [
       {

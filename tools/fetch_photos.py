@@ -80,7 +80,7 @@ def inat_large(url):
 
 
 def find_inat(q):
-    plain = not re.search(r"var\.|subsp\.|'", q)
+    plain = not re.search(r"var\.|subsp\.|'|×", q)
     d = get_json("https://api.inaturalist.org/v1/taxa?is_active=true&per_page=10"
                  + ("&rank=species" if plain else "") + "&q=" + urllib.parse.quote(q))
     res = d.get("results") or []
