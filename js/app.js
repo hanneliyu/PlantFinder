@@ -307,7 +307,7 @@
   }
   // Exotic trees are only on Ku-ring-gai's tree replacement list: dark red names and a tag
   const exCls = (p) => (p.exotic ? " exotic" : "");
-  const exoticTag = (p) => (p.exotic ? '<span class="exotic-tag">Exotic · tree replacement only</span>' : "");
+  const exoticTag = (p) => (p.exotic ? '<span class="exotic-tag">Exotic</span>' : "");
   function card(p) {
     return '<article class="card" tabindex="0" data-id="' + p.id + '">' + photoBox(p) +
       '<div class="card-head"><div class="ico">' + ICONS[p.type] + '</div><div><div class="type-tag">' + esc(p.size || p.type) + '</div><h3 class="' + exCls(p) + '">' + esc(p.common) + '</h3><div class="sci' + exCls(p) + '">' + esc(p.sci) + "</div>" + exoticTag(p) + "</div>" + starBtn(p) + "</div>" +
