@@ -313,7 +313,7 @@
   const originOf = (p) => (p.exotic ? "exotic" : (p.nonlocalIn || []).includes(cur()) ? "nonlocal" : "");
   const ORIGIN = {
     exotic: { tag: "Exotic", csv: "Exotic", note: "Exotic, not a native plant. It is on this council’s tree list; see the council notes below." },
-    nonlocal: { tag: "Non-local native", csv: "Non-local native", note: "Native to other parts of Australia, not to this council area. It is on the council’s recommended tree list; see the council notes below." }
+    nonlocal: { tag: "Non-local native", csv: "Non-local native", note: "Not native to this council area: it grows naturally in other parts of Australia, or is a garden cultivar. The council lists it as suitable to plant; see the council notes below." }
   };
   const exCls = (p) => (originOf(p) ? " " + originOf(p) : "");
   const exoticTag = (p) => (originOf(p) ? '<span class="origin-tag ' + originOf(p) + '">' + ORIGIN[originOf(p)].tag + "</span>" : "");

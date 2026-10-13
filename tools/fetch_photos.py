@@ -138,6 +138,19 @@ def save_images(url, name):
         out.save(IMG_DIR / folder / (name + ".webp"), "WEBP", quality=78, method=6)
 
 
+def save_photos(photos):
+    # Write to a temporary file and swap it in; retry briefly if another program has the file open
+    tmp = PHOTOS_JSON.with_suffix(".json.tmp")
+    tmp.write_text(json.dumps(dict(sorted(photos.items())), ensure_ascii=False, indent=1) + "\n", "utf8")
+    for attempt in range(10):
+        try:
+            tmp.replace(PHOTOS_JSON)
+            return
+        except OSError:
+            time.sleep(1)
+    raise OSError("Could not write " + str(PHOTOS_JSON))
+
+
 def all_species():
     files = sorted((ROOT / "data" / "plants").glob("*.json"))
     return sorted({p["sci"] for f in files for p in json.loads(f.read_text("utf8"))["plants"]})
@@ -178,7 +191,7 @@ def main():
         except Exception as e:  # keep going; the site falls back to a live lookup for this one
             print("[%d/%d] error %s: %s" % (i, len(todo), sci, e), file=sys.stderr)
             continue
-        PHOTOS_JSON.write_text(json.dumps(dict(sorted(photos.items())), ensure_ascii=False, indent=1) + "\n", "utf8")
+        save_photos(photos)
 
     misses = sorted(k for k, v in photos.items() if v.get("miss"))
     if misses:

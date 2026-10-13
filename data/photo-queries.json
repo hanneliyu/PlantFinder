@@ -118,5 +118,85 @@
   },
   "Prunus × blireana": {
     "q": "Prunus × blireana"
+  },
+  "Brachyscome 'Break O'Day'": {
+    "q": "Brachyscome multifida",
+    "note": "Photo shows the species Brachyscome multifida"
+  },
+  "Pandorea pandorana 'Golden Showers'": {
+    "q": "Pandorea pandorana",
+    "note": "Photo shows the species Pandorea pandorana"
+  },
+  "Pandorea pandorana 'Snow Bells'": {
+    "q": "Pandorea pandorana",
+    "note": "Photo shows the species Pandorea pandorana"
+  },
+  "Leptospermum polygalifolium 'Pacific Beauty'": {
+    "q": "Leptospermum polygalifolium",
+    "note": "Photo shows the species Leptospermum polygalifolium"
+  },
+  "Baeckea virgata 'Nana'": {
+    "q": "Sannantha virgata",
+    "note": "Photo shows the species Sannantha virgata (syn. Baeckea virgata)"
+  },
+  "Banksia integrifolia (prostrate form)": {
+    "q": "Banksia integrifolia",
+    "note": "Photo shows the tree form of Banksia integrifolia"
+  },
+  "Grevillea juniperina (prostrate form)": {
+    "q": "Grevillea juniperina",
+    "note": "Photo shows the species Grevillea juniperina"
+  },
+  "Grevillea 'Mt Tamboritha'": {
+    "q": "Grevillea victoriae",
+    "note": "Photo shows the species Grevillea victoriae"
+  },
+  "Allocasuarina diminuta subsp. diminuta": {
+    "q": "Allocasuarina diminuta"
+  },
+  "Ficus superba var. henneana": {
+    "q": "Ficus superba"
+  },
+  "Ipomoea pes-caprae subsp. brasiliensis": {
+    "q": "Ipomoea pes-caprae"
+  },
+  "Melaleuca bracteata": {
+    "q": "Melaleuca bracteata"
+  },
+  "Acacia brownei": {
+    "q": "Acacia brownii"
+  },
+  "Acacia sophorae": {
+    "q": "Acacia longifolia sophorae"
+  },
+  "Callistemon pinifolius": {
+    "q": "Melaleuca pityoides"
+  },
+  "Cassine australis": {
+    "q": "Elaeodendron australe"
+  },
+  "Myrsine howitteana": {
+    "q": "Myrsine howittiana"
+  },
+  "Rulingia dasyphylla": {
+    "q": "Commersonia dasyphylla"
+  },
+  "Sarcocornia quinqueflora": {
+    "q": "Salicornia quinqueflora"
+  },
+  "Helichrysum elatum": {
+    "q": "Coronidium elatum"
+  },
+  "Mirbelia rubifolia": {
+    "q": "Mirbelia rubiifolia"
+  },
+  "Rubus hillii": {
+    "q": "Rubus moluccanus"
+  },
+  "Hydrocotyle geranifolia": {
+    "q": "Hydrocotyle geraniifolia"
+  },
+  "Prostanthera sieberi": {
+    "q": "Prostanthera sieberi"
   }
 }
