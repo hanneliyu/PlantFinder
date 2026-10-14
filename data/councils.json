@@ -206,10 +206,6 @@
     ],
     "sources": [
       {
-        "label": "Native Plant Selector",
-        "url": "https://plantselector.ssc.nsw.gov.au/"
-      },
-      {
         "label": "Native plant selector (council page)",
         "url": "https://www.sutherlandshire.nsw.gov.au/your-environment/native-wildlife/native-plant-selector"
       }
