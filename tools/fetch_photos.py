@@ -9,7 +9,8 @@ Writes:
     images/plants/lg/<slug>.webp   1000 px wide, for the detail panel
     data/photos.json               credit, licence and source for every photo (the site shows the credit)
 
-Sources, in order: iNaturalist default photo, other iNaturalist taxon photos, Wikipedia/Wikimedia Commons.
+Sources, in order: iNaturalist default photo, other iNaturalist taxon photos, iNaturalist observation photos,
+the Wikipedia article image, a Wikimedia Commons file search.
 Only openly licensed photos are used ("all rights reserved" is skipped). Note that CC BY-NC photos are
 fine for a non-commercial site but not for commercial use; the licence code is saved so they can be filtered.
 
@@ -75,6 +76,9 @@ def is_open(code):
     return bool(code) and code != "all rights reserved"
 
 
+OPEN_LICENSES = "cc0,cc-by,cc-by-sa,cc-by-nc,cc-by-nc-sa,cc-by-nd,cc-by-nc-nd"
+
+
 def inat_large(url):
     return url.replace("/medium.", "/large.").replace("/square.", "/large.")
 
@@ -102,7 +106,16 @@ def find_inat(q):
     full = get_json("https://api.inaturalist.org/v1/taxa/%d" % t["id"])
     photos = [x.get("photo") for x in ((full.get("results") or [{}])[0].get("taxon_photos") or [])]
     ph = next((x for x in photos if x and is_open(x.get("license_code")) and x.get("medium_url")), None)
-    return pack(ph) if ph else None
+    if ph:
+        return pack(ph)
+    # The taxon's own photos are all rights reserved: take an openly licensed photo from an observation
+    obs = get_json("https://api.inaturalist.org/v1/observations?photos=true&order_by=votes&per_page=20"
+                   "&quality_grade=research,needs_id&photo_license=" + OPEN_LICENSES + "&taxon_id=%d" % t["id"])
+    for o in obs.get("results") or []:
+        ph = next((x for x in o.get("photos") or [] if is_open(x.get("license_code")) and x.get("url")), None)
+        if ph:
+            return pack({**ph, "medium_url": ph["url"]})
+    return None
 
 
 def find_wiki(q):
@@ -113,7 +126,25 @@ def find_wiki(q):
     src = s.get("originalimage") or s.get("thumbnail")
     if not src:
         return None
-    file = urllib.parse.unquote(re.sub(r"^\d+px-", "", src["source"].split("/")[-1]))
+    return commons_file(urllib.parse.unquote(re.sub(r"^\d+px-", "", src["source"].split("/")[-1])))
+
+
+def find_commons(q):
+    # Search Wikimedia Commons files whose title names every word of the query (e.g. "Bertya brownii 2.jpg")
+    words = re.findall(r"[a-z]+", q.lower().replace("subsp.", "").replace("var.", ""))
+    d = get_json("https://commons.wikimedia.org/w/api.php?action=query&format=json&list=search&srnamespace=6"
+                 "&srlimit=20&srsearch=" + urllib.parse.quote(" ".join(words)))
+    for hit in (d.get("query") or {}).get("search", []):
+        title = hit["title"]
+        if re.search(r"\.jpe?g$", title, re.I) and not re.search(r"map", title, re.I) \
+                and all(w in title.lower() for w in words):
+            info = commons_file(title[len("File:"):])
+            if info:
+                return info
+    return None
+
+
+def commons_file(file):
     d = get_json("https://commons.wikimedia.org/w/api.php?action=query&format=json&prop=imageinfo"
                  "&iiprop=url|extmetadata&iiurlwidth=1000&titles=File:" + urllib.parse.quote(file))
     page = next(iter((d.get("query") or {}).get("pages", {}).values()), None)
@@ -176,7 +207,7 @@ def main():
         m = queries.get(sci, {})
         q = m.get("q", sci)
         try:
-            info = find_inat(q) or find_wiki(q)
+            info = find_inat(q) or find_wiki(q) or find_commons(q)
             if info:
                 name = slug(sci)
                 save_images(info.pop("url"), name)

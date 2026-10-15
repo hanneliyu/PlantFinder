@@ -147,7 +147,11 @@
   "page": "https://www.inaturalist.org/photos/147212767"
  },
  "Acacia sophorae": {
-  "miss": true
+  "file": "acacia-sophorae",
+  "credit": "© Donald Hobern from Canberra, Australia (CC BY 2.0), via Wikimedia Commons",
+  "src": "Wikimedia",
+  "license": "CC BY 2.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Acacia_longifolia_subsp._sophorae_3.jpg"
  },
  "Acacia stricta": {
   "file": "acacia-stricta",
@@ -270,7 +274,11 @@
   "page": "https://www.inaturalist.org/photos/146757188"
  },
  "Allocasuarina diminuta subsp. diminuta": {
-  "miss": true
+  "file": "allocasuarina-diminuta-subsp-diminuta",
+  "credit": "(c) M.J. Baker, some rights reserved (CC BY-NC)",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/471906205"
  },
  "Allocasuarina distyla": {
   "file": "allocasuarina-distyla",
@@ -640,7 +648,11 @@
   "page": "https://www.inaturalist.org/photos/340575500"
  },
  "Bertya brownii": {
-  "miss": true
+  "file": "bertya-brownii",
+  "credit": "(c) Thomas Mesaglio, some rights reserved (CC BY)",
+  "src": "iNaturalist",
+  "license": "cc-by",
+  "page": "https://www.inaturalist.org/photos/653541419"
  },
  "Bertya pomaderroides": {
   "file": "bertya-pomaderroides",
@@ -664,7 +676,11 @@
   "page": "https://www.inaturalist.org/photos/370306"
  },
  "Blechnum camfieldii": {
-  "miss": true
+  "file": "blechnum-camfieldii",
+  "credit": "(c) mario_mairal, some rights reserved (CC BY-NC-ND)",
+  "src": "iNaturalist",
+  "license": "cc-by-nc-nd",
+  "page": "https://www.inaturalist.org/photos/252511340"
  },
  "Blechnum cartilagineum": {
   "file": "blechnum-cartilagineum",
@@ -852,10 +868,18 @@
   "miss": true
  },
  "Callistemon 'Eureka'": {
-  "miss": true
+  "file": "callistemon-eureka",
+  "credit": "© Melburnian (CC BY 3.0), via Wikimedia Commons",
+  "src": "Wikimedia",
+  "license": "CC BY 3.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Callistemon_%27Eureka%27.jpg"
  },
  "Callistemon 'Hannah Ray'": {
-  "miss": true
+  "file": "callistemon-hannah-ray",
+  "credit": "© Krzysztof Ziarnek, Kenraiz (CC BY-SA 4.0), via Wikimedia Commons",
+  "src": "Wikimedia",
+  "license": "CC BY-SA 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Callistemon_%27Hannah_Ray%27_kz2.jpg"
  },
  "Callistemon 'Kings Pk Special'": {
   "miss": true
@@ -1184,7 +1208,11 @@
   "page": "https://www.inaturalist.org/photos/12726130"
  },
  "Correa 'Dusky Bells'": {
-  "miss": true
+  "file": "correa-dusky-bells",
+  "credit": "© Mick Lobb (CC BY-SA 2.0), via Wikimedia Commons",
+  "src": "Wikimedia",
+  "license": "CC BY-SA 2.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Australian_fuchsia_(Correa_%27Dusky_Bells%27_)_in_the_ninfarium_-_Aberglasney_House_-_geograph.org.uk_-_1487984.jpg"
  },
  "Correa alba": {
   "file": "correa-alba",
@@ -1470,7 +1498,11 @@
   "page": "https://www.inaturalist.org/photos/93382330"
  },
  "Dichelachne crinita": {
-  "miss": true
+  "file": "dichelachne-crinita",
+  "credit": "(c) John Barkla, some rights reserved (CC BY), uploaded by John Barkla",
+  "src": "iNaturalist",
+  "license": "cc-by",
+  "page": "https://www.inaturalist.org/photos/1272939"
  },
  "Dichelachne micrantha": {
   "file": "dichelachne-micrantha",
@@ -1480,7 +1512,11 @@
   "page": "https://www.inaturalist.org/photos/239658456"
  },
  "Dichelachne rara": {
-  "miss": true
+  "file": "dichelachne-rara",
+  "credit": "(c) Joe Dillon, some rights reserved (CC BY)",
+  "src": "iNaturalist",
+  "license": "cc-by",
+  "page": "https://www.inaturalist.org/photos/497257787"
  },
  "Dichondra repens": {
   "file": "dichondra-repens",
@@ -1736,7 +1772,11 @@
   "page": "https://www.inaturalist.org/photos/179085213"
  },
  "Eucalyptus botryoides × saligna": {
-  "miss": true
+  "file": "eucalyptus-botryoides-saligna",
+  "credit": "(c) Eamonn Culhane, some rights reserved (CC BY), uploaded by Eamonn Culhane",
+  "src": "iNaturalist",
+  "license": "cc-by",
+  "page": "https://www.inaturalist.org/photos/287731150"
  },
  "Eucalyptus camfieldii": {
   "file": "eucalyptus-camfieldii",
@@ -2158,13 +2198,25 @@
   "miss": true
  },
  "Grevillea 'Honey Gem'": {
-  "miss": true
+  "file": "grevillea-honey-gem",
+  "credit": "© User:Orderinchaos (CC BY-SA 3.0), via Wikimedia Commons",
+  "src": "Wikimedia",
+  "license": "CC BY-SA 3.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Grevillea_Honey_Gem_ECU.jpg"
  },
  "Grevillea 'Ivanhoe'": {
-  "miss": true
+  "file": "grevillea-ivanhoe",
+  "credit": "© Akos Kokai (CC BY 2.0), via Wikimedia Commons",
+  "src": "Wikimedia",
+  "license": "CC BY 2.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Grevillea_%27Ivanhoe%27_(8044797414).jpg"
  },
  "Grevillea 'Moonlight'": {
-  "miss": true
+  "file": "grevillea-moonlight",
+  "credit": "(c) Errol Douwes, some rights reserved (CC BY-NC), uploaded by Errol Douwes",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/324968504"
  },
  "Grevillea 'Mt Tamboritha'": {
   "file": "grevillea-mt-tamboritha",
@@ -2175,19 +2227,35 @@
   "note": "Photo shows the species Grevillea victoriae"
  },
  "Grevillea 'Ned Kelly'": {
-  "miss": true
+  "file": "grevillea-ned-kelly",
+  "credit": "© Melburnian (CC BY 3.0), via Wikimedia Commons",
+  "src": "Wikimedia",
+  "license": "CC BY 3.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Grevillea_%27Ned_Kelly%27.jpg"
  },
  "Grevillea 'Poorinda Constance'": {
   "miss": true
  },
  "Grevillea 'Robyn Gordon'": {
-  "miss": true
+  "file": "grevillea-robyn-gordon",
+  "credit": "© Melburnian (CC BY 2.5), via Wikimedia Commons",
+  "src": "Wikimedia",
+  "license": "CC BY 2.5",
+  "page": "https://commons.wikimedia.org/wiki/File:Grevillea_Robyn_Gordon.jpg"
  },
  "Grevillea 'Royal Mantle'": {
-  "miss": true
+  "file": "grevillea-royal-mantle",
+  "credit": "© Daderot (CC0), via Wikimedia Commons",
+  "src": "Wikimedia",
+  "license": "CC0",
+  "page": "https://commons.wikimedia.org/wiki/File:Grevillea_%27Poorinda_Royal_Mantle%27,_grafted_form_-_Dunedin_Botanic_Garden_-_Dunedin,_NZ_-_DSC03817.jpg"
  },
  "Grevillea 'Superb'": {
-  "miss": true
+  "file": "grevillea-superb",
+  "credit": "(c) kathiemt, some rights reserved (CC BY-NC), uploaded by kathiemt",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/469224121"
  },
  "Grevillea banksii": {
   "file": "grevillea-banksii",
@@ -2275,7 +2343,11 @@
   "page": "https://www.inaturalist.org/photos/59812301"
  },
  "Grevillea × gaudichaudii": {
-  "miss": true
+  "file": "grevillea-gaudichaudii",
+  "credit": "(c) Chris Jonkers, some rights reserved (CC BY-NC), uploaded by Chris Jonkers",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/112066663"
  },
  "Guioa semiglauca": {
   "file": "guioa-semiglauca",
@@ -3281,7 +3353,11 @@
   "page": "https://www.inaturalist.org/photos/222304634"
  },
  "Oplismenus imbecillis": {
-  "miss": true
+  "file": "oplismenus-imbecillis",
+  "credit": "© Harry Rose from South West Rocks, Australia (CC BY 2.0), via Wikimedia Commons",
+  "src": "Wikimedia",
+  "license": "CC BY 2.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Oplismenus_imbecillis_habit1_(8239361203).jpg"
  },
  "Ozothamnus diosmifolius": {
   "file": "ozothamnus-diosmifolius",
@@ -3972,7 +4048,11 @@
   "page": "https://www.inaturalist.org/photos/110607739"
  },
  "Quercus robusta": {
-  "miss": true
+  "file": "quercus-robusta",
+  "credit": "(c) Paul Rust, some rights reserved (CC BY-NC), uploaded by Paul Rust",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/597854942"
  },
  "Rhagodia candolleana": {
   "file": "rhagodia-candolleana",
@@ -4145,7 +4225,11 @@
   "page": "https://www.inaturalist.org/photos/162384017"
  },
  "Schoenoplectus mucronatus": {
-  "miss": true
+  "file": "schoenoplectus-mucronatus",
+  "credit": "no rights reserved, uploaded by 葉子",
+  "src": "iNaturalist",
+  "license": "cc0",
+  "page": "https://www.inaturalist.org/photos/173683632"
  },
  "Schoenoplectus subulatus": {
   "file": "schoenoplectus-subulatus",
@@ -4351,7 +4435,11 @@
   "page": "https://www.inaturalist.org/photos/3462379"
  },
  "Tetratheca shiresii": {
-  "miss": true
+  "file": "tetratheca-shiresii",
+  "credit": "(c) amybuckner, some rights reserved (CC BY-NC), uploaded by amybuckner",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/94585756"
  },
  "Themeda triandra": {
   "file": "themeda-triandra",
