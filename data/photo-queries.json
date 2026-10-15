@@ -207,5 +207,20 @@
   },
   "Prostanthera sieberi": {
     "q": "Prostanthera sieberi"
+  },
+  "Pennisetum alopecuroides": {
+    "q": "Cenchrus purpurascens"
+  },
+  "Anigozanthos Bush Gems": {
+    "q": "Anigozanthos",
+    "note": "Photo shows a kangaroo paw, not necessarily a Bush Gems hybrid"
+  },
+  "Kniphofia 'Maid of Orleans'": {
+    "q": "Kniphofia",
+    "note": "Photo shows the genus Kniphofia"
+  },
+  "Photinia × fraseri 'Red Robin'": {
+    "q": "Photinia × fraseri",
+    "note": "Photo shows Photinia × fraseri"
   }
 }

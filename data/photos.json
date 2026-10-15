@@ -27,6 +27,13 @@
   "license": "cc-by",
   "page": "https://www.inaturalist.org/photos/73927980"
  },
+ "Acacia cognata": {
+  "file": "acacia-cognata",
+  "credit": "(c) tsaw91, some rights reserved (CC BY-NC)",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/157628535"
+ },
  "Acacia decurrens": {
   "file": "acacia-decurrens",
   "credit": "(c) Chris Ecroyd, some rights reserved (CC BY-NC), uploaded by Chris Ecroyd",
@@ -195,6 +202,13 @@
   "license": "cc-by",
   "page": "https://www.inaturalist.org/photos/5641007"
  },
+ "Acer rubrum": {
+  "file": "acer-rubrum",
+  "credit": "no rights reserved, uploaded by mefisher",
+  "src": "iNaturalist",
+  "license": "cc0",
+  "page": "https://www.inaturalist.org/photos/371065093"
+ },
  "Acmena smithii": {
   "file": "acmena-smithii",
   "credit": "(c) Ian D B Moodie, some rights reserved (CC BY-NC), uploaded by Ian D B Moodie",
@@ -357,6 +371,21 @@
   "license": "cc-by-nc",
   "page": "https://www.inaturalist.org/photos/330390691"
  },
+ "Angophora subvelutina": {
+  "file": "angophora-subvelutina",
+  "credit": "(c) Dean Nicolle, some rights reserved (CC BY-NC), uploaded by Dean Nicolle",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/320394234"
+ },
+ "Anigozanthos Bush Gems": {
+  "file": "anigozanthos-bush-gems",
+  "credit": "(c) Arthur Chapman, some rights reserved (CC BY-NC-SA)",
+  "src": "iNaturalist",
+  "license": "cc-by-nc-sa",
+  "page": "https://www.inaturalist.org/photos/77267",
+  "note": "Photo shows a kangaroo paw, not necessarily a Bush Gems hybrid"
+ },
  "Anisopogon avenaceus": {
   "file": "anisopogon-avenaceus",
   "credit": "(c) Stephen Csurhes, some rights reserved (CC BY-NC), uploaded by Stephen Csurhes",
@@ -378,12 +407,33 @@
   "license": "cc-by-nc-sa",
   "page": "https://www.inaturalist.org/photos/25986230"
  },
+ "Araucaria araucana": {
+  "file": "araucaria-araucana",
+  "credit": "(c) joseluisblazquez, some rights reserved (CC BY-NC)",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/176887961"
+ },
+ "Araucaria bidwillii": {
+  "file": "araucaria-bidwillii",
+  "credit": "(c) Tatters ✾, some rights reserved (CC BY-SA)",
+  "src": "iNaturalist",
+  "license": "cc-by-sa",
+  "page": "https://www.inaturalist.org/photos/114111778"
+ },
  "Araucaria columnaris": {
   "file": "araucaria-columnaris",
   "credit": "(c) Tatters ✾, some rights reserved (CC BY)",
   "src": "iNaturalist",
   "license": "cc-by",
   "page": "https://www.inaturalist.org/photos/100737127"
+ },
+ "Araucaria cunninghamii": {
+  "file": "araucaria-cunninghamii",
+  "credit": "(c) leithallb, some rights reserved (CC BY-NC), uploaded by leithallb",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/59217538"
  },
  "Archontophoenix cunninghamiana": {
   "file": "archontophoenix-cunninghamiana",
@@ -590,6 +640,13 @@
   "license": "cc-by-nc",
   "page": "https://www.inaturalist.org/photos/348374180"
  },
+ "Banksia speciosa": {
+  "file": "banksia-speciosa",
+  "credit": "(c) Leon Perrie, some rights reserved (CC BY-NC), uploaded by Leon Perrie",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/6091306"
+ },
  "Banksia spinulosa": {
   "file": "banksia-spinulosa",
   "credit": "(c) Reiner Richter, some rights reserved (CC BY-NC-SA), uploaded by Reiner Richter",
@@ -610,6 +667,20 @@
   "src": "iNaturalist",
   "license": "cc-by-nc",
   "page": "https://www.inaturalist.org/photos/67565106"
+ },
+ "Bauhinia galpinii": {
+  "file": "bauhinia-galpinii",
+  "credit": "(c) Wynand Uys, some rights reserved (CC BY), uploaded by Wynand Uys",
+  "src": "iNaturalist",
+  "license": "cc-by",
+  "page": "https://www.inaturalist.org/photos/216188152"
+ },
+ "Bauhinia hookeri": {
+  "file": "bauhinia-hookeri",
+  "credit": "(c) coenobita, some rights reserved (CC BY), uploaded by coenobita",
+  "src": "iNaturalist",
+  "license": "cc-by",
+  "page": "https://www.inaturalist.org/photos/27597389"
  },
  "Bauhinia spp.": {
   "file": "bauhinia-spp",
@@ -801,6 +872,27 @@
   "license": "cc-by-nc-sa",
   "page": "https://www.inaturalist.org/photos/761699"
  },
+ "Brachychiton discolor": {
+  "file": "brachychiton-discolor",
+  "credit": "(c) ian_mcallan, some rights reserved (CC BY)",
+  "src": "iNaturalist",
+  "license": "cc-by",
+  "page": "https://www.inaturalist.org/photos/467797839"
+ },
+ "Brachychiton populneus": {
+  "file": "brachychiton-populneus",
+  "credit": "(c) Salomé Bielsa, some rights reserved (CC BY-NC-SA)",
+  "src": "iNaturalist",
+  "license": "cc-by-nc-sa",
+  "page": "https://www.inaturalist.org/photos/58113928"
+ },
+ "Brachychiton rupestris": {
+  "file": "brachychiton-rupestris",
+  "credit": "(c) Matthieu Gauvain, some rights reserved (CC BY-NC), uploaded by Matthieu Gauvain",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/52329647"
+ },
  "Brachyscome 'Break O'Day'": {
   "file": "brachyscome-break-o-day",
   "credit": "(c) Brooke, some rights reserved (CC BY-NC), uploaded by Brooke",
@@ -822,6 +914,13 @@
   "src": "iNaturalist",
   "license": "cc-by-nc-nd",
   "page": "https://www.inaturalist.org/photos/1330224"
+ },
+ "Brunfelsia pauciflora": {
+  "file": "brunfelsia-pauciflora",
+  "credit": "(c) Carl Lewis, some rights reserved (CC BY)",
+  "src": "iNaturalist",
+  "license": "cc-by",
+  "page": "https://www.inaturalist.org/photos/722694"
  },
  "Brunoniella australis": {
   "file": "brunoniella-australis",
@@ -1051,6 +1150,13 @@
   "license": "cc-by-sa",
   "page": "https://www.inaturalist.org/photos/187025289"
  },
+ "Cedrus atlantica": {
+  "file": "cedrus-atlantica",
+  "credit": "(c) Eric Hunt, some rights reserved (CC BY-NC-ND)",
+  "src": "iNaturalist",
+  "license": "cc-by-nc-nd",
+  "page": "https://www.inaturalist.org/photos/177256"
+ },
  "Cedrus atlantica 'Glauca'": {
   "file": "cedrus-atlantica-glauca",
   "credit": "(c) Eric Hunt, some rights reserved (CC BY-NC-ND)",
@@ -1108,6 +1214,27 @@
   "license": "cc-by-nc",
   "page": "https://www.inaturalist.org/photos/281160261"
  },
+ "Cercis chinensis": {
+  "file": "cercis-chinensis",
+  "credit": "(c) Chicago Botanic Garden 2010, some rights reserved (CC BY-NC-SA)",
+  "src": "iNaturalist",
+  "license": "cc-by-nc-sa",
+  "page": "https://www.inaturalist.org/photos/1071698"
+ },
+ "Cercis occidentalis": {
+  "file": "cercis-occidentalis",
+  "credit": "(c) Orenda Randuch, some rights reserved (CC BY-NC), uploaded by Orenda Randuch",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/186630694"
+ },
+ "Cercis siliquastrum": {
+  "file": "cercis-siliquastrum",
+  "credit": "(c) Alenka Mihoric, some rights reserved (CC BY-NC), uploaded by Alenka Mihoric",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/594991963"
+ },
  "Chamaecyparis obtusa": {
   "file": "chamaecyparis-obtusa",
   "credit": "(c) Σ64, some rights reserved (CC BY)",
@@ -1121,6 +1248,13 @@
   "src": "iNaturalist",
   "license": "cc-by-nc",
   "page": "https://www.inaturalist.org/photos/193750369"
+ },
+ "Cheilanthes sieberi": {
+  "file": "cheilanthes-sieberi",
+  "credit": "(c) Third Silence, some rights reserved (CC BY-SA), uploaded by Third Silence",
+  "src": "iNaturalist",
+  "license": "cc-by-sa",
+  "page": "https://www.inaturalist.org/photos/72586233"
  },
  "Chloanthes stoechadis": {
   "file": "chloanthes-stoechadis",
@@ -1199,6 +1333,20 @@
   "src": "iNaturalist",
   "license": "cc-by",
   "page": "https://www.inaturalist.org/photos/107703518"
+ },
+ "Convolvulus sabatius": {
+  "file": "convolvulus-sabatius",
+  "credit": "(c) Sophia K, some rights reserved (CC BY), uploaded by Sophia K",
+  "src": "iNaturalist",
+  "license": "cc-by",
+  "page": "https://www.inaturalist.org/photos/33109887"
+ },
+ "Cordyline fruticosa": {
+  "file": "cordyline-fruticosa",
+  "credit": "(c) lerc-1, some rights reserved (CC BY-NC), uploaded by lerc-1",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/311053723"
  },
  "Cordyline petiolaris": {
   "file": "cordyline-petiolaris",
@@ -1312,6 +1460,13 @@
   "license": "cc-by-sa",
   "page": "https://www.inaturalist.org/photos/113578086"
  },
+ "Cupressus funebris": {
+  "file": "cupressus-funebris",
+  "credit": "(c) yuu kii, some rights reserved (CC BY-NC), uploaded by yuu kii",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/467778841"
+ },
  "Cupressus glabra": {
   "file": "cupressus-glabra",
   "credit": "(c) Chia aka Cory Chiappone, some rights reserved (CC BY-NC), uploaded by Chia aka Cory Chiappone",
@@ -1360,6 +1515,20 @@
   "src": "iNaturalist",
   "license": "cc-by-nc-nd",
   "page": "https://www.inaturalist.org/photos/55292704"
+ },
+ "Cynodon dactylon": {
+  "file": "cynodon-dactylon",
+  "credit": "(c) Jaxon Lane, some rights reserved (CC BY-NC), uploaded by Jaxon Lane",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/583408803"
+ },
+ "Cyperus exaltatus": {
+  "file": "cyperus-exaltatus",
+  "credit": "(c) eyeweed, some rights reserved (CC BY-NC-ND)",
+  "src": "iNaturalist",
+  "license": "cc-by-nc-nd",
+  "page": "https://www.inaturalist.org/photos/1476093"
  },
  "Cyperus polystachyos": {
   "file": "cyperus-polystachyos",
@@ -1560,6 +1729,13 @@
   "license": "cc-by",
   "page": "https://www.inaturalist.org/photos/3202118"
  },
+ "Dillwynia tenuifolia": {
+  "file": "dillwynia-tenuifolia",
+  "credit": "(c) Matt Goodwin, some rights reserved (CC BY-NC-ND), uploaded by Matt Goodwin",
+  "src": "iNaturalist",
+  "license": "cc-by-nc-nd",
+  "page": "https://www.inaturalist.org/photos/139901811"
+ },
  "Dioscorea transversa": {
   "file": "dioscorea-transversa",
   "credit": "(c) Martin Bennett, some rights reserved (CC BY-NC), uploaded by Martin Bennett",
@@ -1714,6 +1890,13 @@
   "license": "cc-by-nc",
   "page": "https://www.inaturalist.org/photos/199026966"
  },
+ "Eremophila debilis": {
+  "file": "eremophila-debilis",
+  "credit": "(c) John Eichler, some rights reserved (CC BY-NC), uploaded by John Eichler",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/225454889"
+ },
  "Eriobotrya japonica": {
   "file": "eriobotrya-japonica",
   "credit": "(c) ms_starla, some rights reserved (CC BY-NC)",
@@ -1764,6 +1947,13 @@
   "license": "cc-by-nc",
   "page": "https://www.inaturalist.org/photos/334263956"
  },
+ "Eucalyptus benthamii": {
+  "file": "eucalyptus-benthamii",
+  "credit": "(c) Dean Nicolle, some rights reserved (CC BY-NC), uploaded by Dean Nicolle",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/70638902"
+ },
  "Eucalyptus botryoides": {
   "file": "eucalyptus-botryoides",
   "credit": "(c) Tamara Leitch, some rights reserved (CC BY-NC-ND), uploaded by Tamara Leitch",
@@ -1805,6 +1995,13 @@
   "src": "iNaturalist",
   "license": "cc-by",
   "page": "https://www.inaturalist.org/photos/550302"
+ },
+ "Eucalyptus elata": {
+  "file": "eucalyptus-elata",
+  "credit": "(c) \nMurray Fagg, some rights reserved (CC BY)",
+  "src": "iNaturalist",
+  "license": "cc-by",
+  "page": "https://www.inaturalist.org/photos/195860403"
  },
  "Eucalyptus eugenioides": {
   "file": "eucalyptus-eugenioides",
@@ -1854,6 +2051,13 @@
   "src": "iNaturalist",
   "license": "cc-by-sa",
   "page": "https://www.inaturalist.org/photos/261710427"
+ },
+ "Eucalyptus moluccana": {
+  "file": "eucalyptus-moluccana",
+  "credit": "(c) Sue Jaggar, some rights reserved (CC BY-NC), uploaded by Sue Jaggar",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/348159325"
  },
  "Eucalyptus multicaulis": {
   "file": "eucalyptus-multicaulis",
@@ -1932,6 +2136,13 @@
   "license": "cc-by-nc",
   "page": "https://www.inaturalist.org/photos/70314522"
  },
+ "Eucalyptus sclerophylla": {
+  "file": "eucalyptus-sclerophylla",
+  "credit": "(c) Daniel Garcia, some rights reserved (CC BY-NC), uploaded by Daniel Garcia",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/225637083"
+ },
  "Eucalyptus sieberi": {
   "file": "eucalyptus-sieberi",
   "credit": "(c) Dean Nicolle, some rights reserved (CC BY-NC), uploaded by Dean Nicolle",
@@ -1952,6 +2163,13 @@
   "src": "iNaturalist",
   "license": "cc-by-nc",
   "page": "https://www.inaturalist.org/photos/162375615"
+ },
+ "Eucalyptus viminalis": {
+  "file": "eucalyptus-viminalis",
+  "credit": "(c) Wayne Martin, some rights reserved (CC BY-NC), uploaded by Wayne Martin",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/21705753"
  },
  "Eupomatia laurina": {
   "file": "eupomatia-laurina",
@@ -1995,6 +2213,13 @@
   "license": "cc-by-nc",
   "page": "https://www.inaturalist.org/photos/9003180"
  },
+ "Ficus macrophylla": {
+  "file": "ficus-macrophylla",
+  "credit": "(c) Kasey Joe-McIndoe, some rights reserved (CC BY-NC), uploaded by Kasey Joe-McIndoe",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/224658473"
+ },
  "Ficus rubiginosa": {
   "file": "ficus-rubiginosa",
   "credit": "(c) Tony Rebelo, some rights reserved (CC BY-SA), uploaded by Tony Rebelo",
@@ -2008,6 +2233,13 @@
   "src": "iNaturalist",
   "license": "cc-by-nc-sa",
   "page": "https://www.inaturalist.org/photos/459660040"
+ },
+ "Flindersia australis": {
+  "file": "flindersia-australis",
+  "credit": "(c) Lara Solyma, some rights reserved (CC BY-ND), uploaded by Lara Solyma",
+  "src": "iNaturalist",
+  "license": "cc-by-nd",
+  "page": "https://www.inaturalist.org/photos/92584429"
  },
  "Fraxinus angustifolia 'Raywood'": {
   "file": "fraxinus-angustifolia-raywood",
@@ -2081,6 +2313,13 @@
   "src": "iNaturalist",
   "license": "cc0",
   "page": "https://www.inaturalist.org/photos/313879218"
+ },
+ "Gelsemium sempervirens": {
+  "file": "gelsemium-sempervirens",
+  "credit": "(c) dogtooth77, some rights reserved (CC BY-NC-SA)",
+  "src": "iNaturalist",
+  "license": "cc-by-nc-sa",
+  "page": "https://www.inaturalist.org/photos/60591012"
  },
  "Geranium homeanum": {
   "file": "geranium-homeanum",
@@ -2671,6 +2910,13 @@
   "license": "cc-by-nc-nd",
   "page": "https://www.inaturalist.org/photos/305255"
  },
+ "Ixora chinensis": {
+  "file": "ixora-chinensis",
+  "credit": "(c) dfyp ip, some rights reserved (CC BY-NC), uploaded by dfyp ip",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/491941005"
+ },
  "Jacaranda mimosifolia": {
   "file": "jacaranda-mimosifolia",
   "credit": "(c) Art Mur, some rights reserved (CC BY-NC-ND), uploaded by Art Mur",
@@ -2684,6 +2930,13 @@
   "src": "iNaturalist",
   "license": "cc-by-nc",
   "page": "https://www.inaturalist.org/photos/176449437"
+ },
+ "Jubaea chilensis": {
+  "file": "jubaea-chilensis",
+  "credit": "(c) jnacho, some rights reserved (CC BY-NC)",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/198218913"
  },
  "Juncus continuus": {
   "file": "juncus-continuus",
@@ -2740,6 +2993,21 @@
   "src": "iNaturalist",
   "license": "cc-by-nc-sa",
   "page": "https://www.inaturalist.org/photos/26040822"
+ },
+ "Kniphofia 'Maid of Orleans'": {
+  "file": "kniphofia-maid-of-orleans",
+  "credit": "(c) magriet b, some rights reserved (CC BY-SA), uploaded by magriet b",
+  "src": "iNaturalist",
+  "license": "cc-by-sa",
+  "page": "https://www.inaturalist.org/photos/32371726",
+  "note": "Photo shows the genus Kniphofia"
+ },
+ "Koelreuteria paniculata": {
+  "file": "koelreuteria-paniculata",
+  "credit": "(c) Charles, some rights reserved (CC BY-NC), uploaded by Charles",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/334531030"
  },
  "Kunzea ambigua": {
   "file": "kunzea-ambigua",
@@ -3043,6 +3311,20 @@
   "license": "cc-by-nc-sa",
   "page": "https://www.inaturalist.org/photos/104589442"
  },
+ "Loropetalum chinense": {
+  "file": "loropetalum-chinense",
+  "credit": "(c) Stargazer, some rights reserved (CC BY-NC), uploaded by Stargazer",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/260516582"
+ },
+ "Macadamia integrifolia": {
+  "file": "macadamia-integrifolia",
+  "credit": "(c) Stephen Thorpe, some rights reserved (CC BY-NC), uploaded by Stephen Thorpe",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/10415482"
+ },
  "Macadamia tetraphylla": {
   "file": "macadamia-tetraphylla",
   "credit": "(c) Pete Woodall, some rights reserved (CC BY-NC), uploaded by Pete Woodall",
@@ -3071,6 +3353,13 @@
   "license": "cc-by",
   "page": "https://www.inaturalist.org/photos/1330246"
  },
+ "Magnolia denudata": {
+  "file": "magnolia-denudata",
+  "credit": "(c) Nuno Veríssimo P., some rights reserved (CC BY-NC-SA), uploaded by Nuno Veríssimo P.",
+  "src": "iNaturalist",
+  "license": "cc-by-nc-sa",
+  "page": "https://www.inaturalist.org/photos/152049949"
+ },
  "Magnolia grandiflora": {
   "file": "magnolia-grandiflora",
   "credit": "(c) 潘立傑 LiChieh Pan, some rights reserved (CC BY-NC-SA)",
@@ -3085,6 +3374,13 @@
   "license": "cc-by-nc-sa",
   "page": "https://www.inaturalist.org/photos/82254330",
   "note": "Photo shows the species Magnolia grandiflora"
+ },
+ "Magnolia stellata": {
+  "file": "magnolia-stellata",
+  "credit": "(c) mahaliamata, some rights reserved (CC BY-NC), uploaded by mahaliamata",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/66470463"
  },
  "Magnolia × soulangeana": {
   "file": "magnolia-soulangeana",
@@ -3176,6 +3472,13 @@
   "src": "iNaturalist",
   "license": "cc-by-nc",
   "page": "https://www.inaturalist.org/photos/96886971"
+ },
+ "Melaleuca pentagona": {
+  "file": "melaleuca-pentagona",
+  "credit": "(c) george_seagull, some rights reserved (CC BY-NC)",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/203171825"
  },
  "Melaleuca quinquenervia": {
   "file": "melaleuca-quinquenervia",
@@ -3295,6 +3598,34 @@
   "src": "iNaturalist",
   "license": "cc-by-nc",
   "page": "https://www.inaturalist.org/photos/153648441"
+ },
+ "Myoporum floribundum": {
+  "file": "myoporum-floribundum",
+  "credit": "(c) matthewlh, some rights reserved (CC BY-NC), uploaded by matthewlh",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/167801382"
+ },
+ "Myoporum insulare": {
+  "file": "myoporum-insulare",
+  "credit": "(c) Dr Manfred Jusaitis, some rights reserved (CC BY-NC), uploaded by Dr Manfred Jusaitis",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/279934779"
+ },
+ "Myoporum montanum": {
+  "file": "myoporum-montanum",
+  "credit": "(c) andamooka, some rights reserved (CC BY-NC), uploaded by andamooka",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/207316677"
+ },
+ "Myoporum parvifolium": {
+  "file": "myoporum-parvifolium",
+  "credit": "no rights reserved, uploaded by Irene",
+  "src": "iNaturalist",
+  "license": "cc0",
+  "page": "https://www.inaturalist.org/photos/327252853"
  },
  "Myrsine howitteana": {
   "file": "myrsine-howitteana",
@@ -3466,6 +3797,13 @@
   "license": "cc-by-nc-sa",
   "page": "https://www.inaturalist.org/photos/660699"
  },
+ "Pennisetum alopecuroides": {
+  "file": "pennisetum-alopecuroides",
+  "credit": "no rights reserved, uploaded by 葉子",
+  "src": "iNaturalist",
+  "license": "cc0",
+  "page": "https://www.inaturalist.org/photos/87738518"
+ },
  "Persea americana": {
   "file": "persea-americana",
   "credit": "(c) taylorrmp, some rights reserved (CC BY-NC)",
@@ -3557,12 +3895,27 @@
   "license": "cc-by-nc-nd",
   "page": "https://www.inaturalist.org/photos/1467021"
  },
+ "Phoenix canariensis": {
+  "file": "phoenix-canariensis",
+  "credit": "(c) alexcm, some rights reserved (CC BY-NC), uploaded by alexcm",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/431136790"
+ },
  "Photinia glabra": {
   "file": "photinia-glabra",
   "credit": "(c) 小铖/Smalltown, some rights reserved (CC BY-NC), uploaded by 小铖/Smalltown",
   "src": "iNaturalist",
   "license": "cc-by-nc",
   "page": "https://www.inaturalist.org/photos/343277808"
+ },
+ "Photinia × fraseri 'Red Robin'": {
+  "file": "photinia-fraseri-red-robin",
+  "credit": "(c) Natalie Wilkinson, some rights reserved (CC BY-NC), uploaded by Natalie Wilkinson",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/5188983",
+  "note": "Photo shows Photinia × fraseri"
  },
  "Photinia × fraseri 'Robusta'": {
   "file": "photinia-fraseri-robusta",
@@ -3606,6 +3959,13 @@
   "src": "iNaturalist",
   "license": "cc-by-nc",
   "page": "https://www.inaturalist.org/photos/189143313"
+ },
+ "Pinus pinea": {
+  "file": "pinus-pinea",
+  "credit": "(c) Paul Asman and Jill Lenoble, some rights reserved (CC BY), uploaded by Paul Asman and Jill Lenoble",
+  "src": "iNaturalist",
+  "license": "cc-by",
+  "page": "https://www.inaturalist.org/photos/164950767"
  },
  "Pinus strobus": {
   "file": "pinus-strobus",
@@ -3818,6 +4178,13 @@
   "license": "cc-by-nc-nd",
   "page": "https://www.inaturalist.org/photos/4350"
  },
+ "Potamogeton tricarinatus": {
+  "file": "potamogeton-tricarinatus",
+  "credit": "(c) Natalie Tapson, some rights reserved (CC BY-NC-SA)",
+  "src": "iNaturalist",
+  "license": "cc-by-nc-sa",
+  "page": "https://www.inaturalist.org/photos/854084"
+ },
  "Pratia purpurascens": {
   "file": "pratia-purpurascens",
   "credit": "(c) Michael Jefferies, some rights reserved (CC BY-NC)",
@@ -3976,6 +4343,13 @@
   "license": "cc-by-nc",
   "page": "https://www.inaturalist.org/photos/90406075"
  },
+ "Pultenaea parviflora": {
+  "file": "pultenaea-parviflora",
+  "credit": "(c) Lukas Clews, some rights reserved (CC BY), uploaded by Lukas Clews",
+  "src": "iNaturalist",
+  "license": "cc-by",
+  "page": "https://www.inaturalist.org/photos/218694813"
+ },
  "Pultenaea retusa": {
   "file": "pultenaea-retusa",
   "credit": "(c) Adrian Gale, some rights reserved (CC BY-NC), uploaded by Adrian Gale",
@@ -4012,6 +4386,13 @@
   "license": "cc-by-nc",
   "page": "https://www.inaturalist.org/photos/171808461"
  },
+ "Pyrus betulifolia": {
+  "file": "pyrus-betulifolia",
+  "credit": "(c) Jane Charlen, some rights reserved (CC BY-NC), uploaded by Jane Charlen",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/265925549"
+ },
  "Pyrus calleryana": {
   "file": "pyrus-calleryana",
   "credit": "(c) Benjamin Smith, some rights reserved (CC BY)",
@@ -4032,6 +4413,13 @@
   "src": "iNaturalist",
   "license": "cc-by-nc-sa",
   "page": "https://www.inaturalist.org/photos/177257"
+ },
+ "Quercus coccinea": {
+  "file": "quercus-coccinea",
+  "credit": "(c) Bruce Kirchoff, some rights reserved (CC BY)",
+  "src": "iNaturalist",
+  "license": "cc-by",
+  "page": "https://www.inaturalist.org/photos/18732434"
  },
  "Quercus palustris": {
   "file": "quercus-palustris",
@@ -4067,6 +4455,13 @@
   "src": "iNaturalist",
   "license": "cc-by-sa",
   "page": "https://www.inaturalist.org/photos/130680954"
+ },
+ "Rhodanthe anthemoides": {
+  "file": "rhodanthe-anthemoides",
+  "credit": "(c) Michael Keogh, some rights reserved (CC BY-NC-SA), uploaded by Michael Keogh",
+  "src": "iNaturalist",
+  "license": "cc-by-nc-sa",
+  "page": "https://www.inaturalist.org/photos/108673066"
  },
  "Ricinocarpos pinifolius": {
   "file": "ricinocarpos-pinifolius",
@@ -4245,6 +4640,13 @@
   "license": "cc-by-nd",
   "page": "https://www.inaturalist.org/photos/341177034"
  },
+ "Selenicereus grandiflorus": {
+  "file": "selenicereus-grandiflorus",
+  "credit": "(c) Sue, some rights reserved (CC BY-NC), uploaded by Sue",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/82089721"
+ },
  "Senecio hispidulus": {
   "file": "senecio-hispidulus",
   "credit": "(c) Jon Sullivan, some rights reserved (CC BY)",
@@ -4279,6 +4681,13 @@
   "src": "iNaturalist",
   "license": "cc0",
   "page": "https://www.inaturalist.org/photos/3028939"
+ },
+ "Sorghum leiocladum": {
+  "file": "sorghum-leiocladum",
+  "credit": "(c) Chris Jonkers, some rights reserved (CC BY-NC), uploaded by Chris Jonkers",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/249722729"
  },
  "Spinifex sericeus": {
   "file": "spinifex-sericeus",
@@ -4384,6 +4793,13 @@
   "src": "iNaturalist",
   "license": "cc-by-nc",
   "page": "https://www.inaturalist.org/photos/32269153"
+ },
+ "Syzygium luehmannii": {
+  "file": "syzygium-luehmannii",
+  "credit": "(c) Richard Dimon, some rights reserved (CC BY), uploaded by Richard Dimon",
+  "src": "iNaturalist",
+  "license": "cc-by",
+  "page": "https://www.inaturalist.org/photos/205605489"
  },
  "Syzygium oleosum": {
   "file": "syzygium-oleosum",
@@ -4491,6 +4907,13 @@
   "license": "cc-by-nc",
   "page": "https://www.inaturalist.org/photos/346961838"
  },
+ "Trachelospermum jasminoides": {
+  "file": "trachelospermum-jasminoides",
+  "credit": "(c) 羅忠良, some rights reserved (CC BY-NC), uploaded by 羅忠良",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/65041960"
+ },
  "Trachymene incisa": {
   "file": "trachymene-incisa",
   "credit": "(c) James Bailey, some rights reserved (CC BY-NC), uploaded by James Bailey",
@@ -4505,6 +4928,13 @@
   "license": "cc-by-nc",
   "page": "https://www.inaturalist.org/photos/388085224",
   "note": "Photo shows Trema tomentosa (aspera is a variety of it)"
+ },
+ "Triadica sebifera": {
+  "file": "triadica-sebifera",
+  "credit": "(c) WATANABE Hitoshi 渡辺仁, some rights reserved (CC BY), uploaded by WATANABE Hitoshi 渡辺仁",
+  "src": "iNaturalist",
+  "license": "cc-by",
+  "page": "https://www.inaturalist.org/photos/401041896"
  },
  "Tricoryne elatior": {
   "file": "tricoryne-elatior",
@@ -4742,6 +5172,13 @@
   "src": "iNaturalist",
   "license": "cc-by-nc",
   "page": "https://www.inaturalist.org/photos/58548069"
+ },
+ "Xanthorrhoea minor": {
+  "file": "xanthorrhoea-minor",
+  "credit": "(c) Wayne Martin, some rights reserved (CC BY-NC)",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/27749268"
  },
  "Xanthorrhoea resinosa": {
   "file": "xanthorrhoea-resinosa",
