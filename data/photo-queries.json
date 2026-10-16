@@ -222,5 +222,42 @@
   "Photinia × fraseri 'Red Robin'": {
     "q": "Photinia × fraseri",
     "note": "Photo shows Photinia × fraseri"
+  },
+  "Eucalyptus cladocalyx 'Nana'": {
+    "q": "Eucalyptus cladocalyx",
+    "note": "Photo shows the species Eucalyptus cladocalyx"
+  },
+  "Berberis thunbergii 'Atropurpurea'": {
+    "q": "Berberis thunbergii",
+    "note": "Photo shows the species Berberis thunbergii"
+  },
+  "Juniperus communis 'Hibernica'": {
+    "q": "Juniperus communis",
+    "note": "Photo shows the species Juniperus communis"
+  },
+  "Hebe 'Blue Gem'": {
+    "q": "Veronica speciosa",
+    "note": "Photo shows the species Veronica speciosa"
+  },
+  "Acer platanoides 'Crimson Sentry'": {
+    "q": "Acer platanoides",
+    "note": "Photo shows the species Acer platanoides"
+  },
+  "Acer × freemanii 'Jeffersred'": {
+    "q": "Acer freemanii",
+    "note": "Photo shows the species Acer freemanii"
+  },
+  "Fraxinus pennsylvanica 'Urbdell'": {
+    "q": "Fraxinus pennsylvanica",
+    "note": "Photo shows the species Fraxinus pennsylvanica"
+  },
+  "Callistemon speciosus": {
+    "q": "Melaleuca glauca"
+  },
+  "Oxylobium ilicifolium": {
+    "q": "Podolobium ilicifolium"
+  },
+  "Michelia doltsopa": {
+    "q": "Magnolia doltsopa"
   }
 }
