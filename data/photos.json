@@ -3367,6 +3367,13 @@
   "page": "https://www.inaturalist.org/photos/99754102",
   "note": "Photo shows the species Leptospermum polygalifolium"
  },
+ "Leptospermum scoparium": {
+  "file": "leptospermum-scoparium",
+  "credit": "no rights reserved, uploaded by Peter de Lange",
+  "src": "iNaturalist",
+  "license": "cc0",
+  "page": "https://www.inaturalist.org/photos/57833486"
+ },
  "Leptospermum squarrosum": {
   "file": "leptospermum-squarrosum",
   "credit": "(c) gillbsydney, some rights reserved (CC BY-NC), uploaded by gillbsydney",
@@ -3620,6 +3627,13 @@
   "license": "cc-by-nc-sa",
   "page": "https://www.inaturalist.org/photos/246162"
  },
+ "Malus floribunda": {
+  "file": "malus-floribunda",
+  "credit": "© MichaelMaggs (CC BY-SA 2.5), via Wikimedia Commons",
+  "src": "Wikimedia",
+  "license": "CC BY-SA 2.5",
+  "page": "https://commons.wikimedia.org/wiki/File:Malus_floribunda_(Japanese_crabapple).jpg"
+ },
  "Mangifera indica": {
   "file": "mangifera-indica",
   "credit": "no rights reserved, uploaded by 葉子",
@@ -3682,6 +3696,13 @@
   "src": "iNaturalist",
   "license": "cc-by-nc-nd",
   "page": "https://www.inaturalist.org/photos/370390"
+ },
+ "Melaleuca incana": {
+  "file": "melaleuca-incana",
+  "credit": "(c) ladyrobyn, some rights reserved (CC BY-NC), uploaded by ladyrobyn",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/49234948"
  },
  "Melaleuca linariifolia": {
   "file": "melaleuca-linariifolia",
@@ -3760,6 +3781,13 @@
   "license": "cc-by-nc",
   "page": "https://www.inaturalist.org/photos/58043299"
  },
+ "Michelia doltsopa": {
+  "file": "michelia-doltsopa",
+  "credit": "(c) James Gaither, some rights reserved (CC BY-NC-ND)",
+  "src": "iNaturalist",
+  "license": "cc-by-nc-nd",
+  "page": "https://www.inaturalist.org/photos/1542688"
+ },
  "Michelia figo": {
   "file": "michelia-figo",
   "credit": "(c) Tatiana Gerus, some rights reserved (CC BY-SA)",
@@ -3822,6 +3850,13 @@
   "src": "iNaturalist",
   "license": "cc-by",
   "page": "https://www.inaturalist.org/photos/854105"
+ },
+ "Murraya paniculata": {
+  "file": "murraya-paniculata",
+  "credit": "(c) jinze, some rights reserved (CC BY-NC), uploaded by jinze",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/169096158"
  },
  "Myoporum acuminatum": {
   "file": "myoporum-acuminatum",
@@ -3921,6 +3956,13 @@
   "license": "CC BY 2.0",
   "page": "https://commons.wikimedia.org/wiki/File:Oplismenus_imbecillis_habit1_(8239361203).jpg"
  },
+ "Oxylobium ilicifolium": {
+  "file": "oxylobium-ilicifolium",
+  "credit": "(c) Ray Turnbull, some rights reserved (CC BY-NC), uploaded by Ray Turnbull",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/351703570"
+ },
  "Ozothamnus diosmifolius": {
   "file": "ozothamnus-diosmifolius",
   "credit": "(c) Ian McMaster, some rights reserved (CC BY-NC), uploaded by Ian McMaster",
@@ -3978,6 +4020,13 @@
   "src": "iNaturalist",
   "license": "cc-by-nc",
   "page": "https://www.inaturalist.org/photos/118350740"
+ },
+ "Parthenocissus quinquefolia": {
+  "file": "parthenocissus-quinquefolia",
+  "credit": "(c) Suzanne Cadwell, some rights reserved (CC BY-NC)",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/428768"
  },
  "Paspalum distichum": {
   "file": "paspalum-distichum",
@@ -4468,6 +4517,13 @@
  "Prostanthera sieberi": {
   "miss": true
  },
+ "Prunus campanulata": {
+  "file": "prunus-campanulata",
+  "credit": "(c) 曾昱承 Yu-Cheng Zeng, some rights reserved (CC BY), uploaded by 曾昱承 Yu-Cheng Zeng",
+  "src": "iNaturalist",
+  "license": "cc-by",
+  "page": "https://www.inaturalist.org/photos/348834748"
+ },
  "Prunus cerasifera": {
   "file": "prunus-cerasifera",
   "credit": "(c) Pauk, some rights reserved (CC BY-SA)",
@@ -4617,6 +4673,13 @@
   "license": "cc-by-nc",
   "page": "https://www.inaturalist.org/photos/171808461"
  },
+ "Pyrostegia venusta": {
+  "file": "pyrostegia-venusta",
+  "credit": "(c) pvrooman, some rights reserved (CC BY-NC)",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/85275005"
+ },
  "Pyrus betulifolia": {
   "file": "pyrus-betulifolia",
   "credit": "(c) Jane Charlen, some rights reserved (CC BY-NC), uploaded by Jane Charlen",
@@ -4638,6 +4701,13 @@
   "license": "cc-by-sa",
   "page": "https://www.inaturalist.org/photos/16453411"
  },
+ "Pyrus salicifolia": {
+  "file": "pyrus-salicifolia",
+  "credit": "no rights reserved, uploaded by Piermario Maculan",
+  "src": "iNaturalist",
+  "license": "cc0",
+  "page": "https://www.inaturalist.org/photos/189109633"
+ },
  "Pyrus ussuriensis": {
   "file": "pyrus-ussuriensis",
   "credit": "(c) Arthur Chapman, some rights reserved (CC BY-NC-SA)",
@@ -4651,6 +4721,13 @@
   "src": "iNaturalist",
   "license": "cc-by",
   "page": "https://www.inaturalist.org/photos/18732434"
+ },
+ "Quercus ilex": {
+  "file": "quercus-ilex",
+  "credit": "(c) Platon Kleanthidis, some rights reserved (CC BY-NC), uploaded by Platon Kleanthidis",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/243199963"
  },
  "Quercus palustris": {
   "file": "quercus-palustris",
@@ -4694,6 +4771,13 @@
   "license": "cc-by-nc-sa",
   "page": "https://www.inaturalist.org/photos/108673066"
  },
+ "Rhododendron indicum": {
+  "file": "rhododendron-indicum",
+  "credit": "(c) 空猫, some rights reserved (CC BY-NC), uploaded by 空猫",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/513781029"
+ },
  "Ricinocarpos pinifolius": {
   "file": "ricinocarpos-pinifolius",
   "credit": "(c) eyeweed, some rights reserved (CC BY-NC-ND)",
@@ -4736,6 +4820,13 @@
   "src": "iNaturalist",
   "license": "cc-by-nc",
   "page": "https://www.inaturalist.org/photos/323481914"
+ },
+ "Russelia equisetiformis": {
+  "file": "russelia-equisetiformis",
+  "credit": "(c) Mauricio Mercadante, some rights reserved (CC BY-NC-SA)",
+  "src": "iNaturalist",
+  "license": "cc-by-nc-sa",
+  "page": "https://www.inaturalist.org/photos/30133820"
  },
  "Rytidosperma caespitosum": {
   "file": "rytidosperma-caespitosum",
@@ -5296,6 +5387,13 @@
   "license": "cc-by-nc-nd",
   "page": "https://www.inaturalist.org/photos/81122087"
  },
+ "Viburnum tinus": {
+  "file": "viburnum-tinus",
+  "credit": "(c) Cassiopée2010, some rights reserved (CC BY-NC-SA)",
+  "src": "iNaturalist",
+  "license": "cc-by-nc-sa",
+  "page": "https://www.inaturalist.org/photos/11569121"
+ },
  "Villarsia exaltata": {
   "file": "villarsia-exaltata",
   "credit": "(c) dhfischer, some rights reserved (CC BY), uploaded by dhfischer",
@@ -5375,6 +5473,13 @@
   "src": "iNaturalist",
   "license": "cc-by-nc-sa",
   "page": "https://www.inaturalist.org/photos/171164375"
+ },
+ "Wisteria sinensis": {
+  "file": "wisteria-sinensis",
+  "credit": "(c) Collin Willson, some rights reserved (CC BY-NC), uploaded by Collin Willson",
+  "src": "iNaturalist",
+  "license": "cc-by-nc",
+  "page": "https://www.inaturalist.org/photos/481687145"
  },
  "Woollsia pungens": {
   "file": "woollsia-pungens",
